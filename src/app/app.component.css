@@ -1,0 +1,12 @@
+.paddingDiv {
+  padding-top: 100px; /* Whatever the height of your navbar is; the
+                           default is 50px */
+}
+
+.nav-item {
+  color: white;
+}
+
+.bg-grey {
+  background-color: wheat;
+}
