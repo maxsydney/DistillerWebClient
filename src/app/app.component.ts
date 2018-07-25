@@ -16,6 +16,7 @@ export class AppComponent implements OnInit  {
   T1: number;
   T2: number;
   setpoint: number;
+  flowRate: number;
   deltaT: number;
   elementStatus: number;
   P_gain: number;
@@ -46,11 +47,11 @@ export class AppComponent implements OnInit  {
         data = JSON.parse(data);
         if (!Array.isArray(data)) {
           // If initial connection, server sends whole array of data
-            for (let i = 0; i < data.T1.length; i++) {
-              this.chartData.push(data.T1[i]);
-              this.dataSeries[0].data.push(data.T1[i]);
-              this.chartLabels.push(data.time[i]);
-              this.dataSeries[1].data.push(data.setpoint[i]);
+            for (let i = 0; i < data['T1'].length; i++) {
+              this.chartData.push(data['T1'][i]);
+              this.dataSeries[0].data.push(data['T1'][i]);
+              this.chartLabels.push(data['time'][i]);
+              this.dataSeries[1].data.push(data['setpoint'][i]);
             }
 
           } else {
@@ -59,10 +60,11 @@ export class AppComponent implements OnInit  {
             const T2 = data[1];
             const setpoint = data[2];
             const time = data[3];
-            this.elementStatus = data[4];
-            this.P_gain = data[5];
-            this.I_gain = data[6];
-            this.D_gain = data[7];
+            this.flowRate = data[4];
+            this.elementStatus = data[5];
+            this.P_gain = data[6];
+            this.I_gain = data[7];
+            this.D_gain = data[8];
 
             this.chartLabels.push(this.measuredTime);
             this.dataSeries[0].data.push(parseFloat(T1));
@@ -72,6 +74,7 @@ export class AppComponent implements OnInit  {
       });
   }
 
+  // Chart config
   chartOptions = {
       responsive: true,
       animation: false,
@@ -127,7 +130,7 @@ export class AppComponent implements OnInit  {
   updateCurrentVals(T1, T2, setpoint, time) {
     this.T1 = T1;
     this.T2 = T2;
-    this.deltaT = T2 - T1;
+    this.deltaT = T1 - T2;
     this.setpoint = setpoint;
     this.measuredTime = this.msToHMS(time);
   }
