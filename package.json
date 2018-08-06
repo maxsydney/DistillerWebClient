@@ -28,6 +28,7 @@
     "chartjs-plugin-downsample": "^1.0.2",
     "core-js": "^2.4.1",
     "ng2-charts": "^1.6.0",
+    "ngx-ui-switch": "^6.0.3",
     "npm": "^6.2.0",
     "rxjs": "^6.2.2",
     "rxjs-tslint": "^0.1.5",

@@ -22,6 +22,8 @@ export class AppComponent implements OnInit  {
   P_gain: number;
   I_gain: number;
   D_gain: number;
+  fanState = false;
+  Qdot: number;
   time = [];
   T1Series = [];
   T2Series = [];
@@ -30,11 +32,15 @@ export class AppComponent implements OnInit  {
   dataSeries = [
     {
       data: [],
-      label: 'Temperature'
+      label: 'Distiller outflow temp'
     },
     {
       data: [],
       label: 'Setpoint'
+    },
+    {
+      data: [],
+      label: 'Radiator outflow temp'
     }
   ];
   chartData = [];
@@ -48,10 +54,11 @@ export class AppComponent implements OnInit  {
         if (!Array.isArray(data)) {
           // If initial connection, server sends whole array of data
             for (let i = 0; i < data['T1'].length; i++) {
-              this.chartData.push(data['T1'][i]);
+              // this.chartData.push(data['T1'][i]);
               this.dataSeries[0].data.push(data['T1'][i]);
               this.chartLabels.push(data['time'][i]);
               this.dataSeries[1].data.push(data['setpoint'][i]);
+              this.dataSeries[2].data.push(data['T2'][i]);
             }
 
           } else {
@@ -60,16 +67,11 @@ export class AppComponent implements OnInit  {
             const T2 = data[1];
             const setpoint = data[2];
             const time = data[3];
-            this.flowRate = data[4];
-            this.elementStatus = data[5];
-            this.P_gain = data[6];
-            this.I_gain = data[7];
-            this.D_gain = data[8];
-
+            this.updateCurrentVals(data);
             this.chartLabels.push(this.measuredTime);
-            this.dataSeries[0].data.push(parseFloat(T1));
+            this.dataSeries[0].data.push(T1);
             this.dataSeries[1].data.push(setpoint);
-            this.updateCurrentVals(T1, T2, setpoint, time);
+            this.dataSeries[2].data.push(T2);
         }
       });
   }
@@ -85,7 +87,7 @@ export class AppComponent implements OnInit  {
       },
       elements: {
           line: {
-              fill: false
+              fill: false,
           },
           point: {
               radius: 0
@@ -127,12 +129,18 @@ export class AppComponent implements OnInit  {
     this.chart.chart.update();
   }
 
-  updateCurrentVals(T1, T2, setpoint, time) {
-    this.T1 = T1;
-    this.T2 = T2;
-    this.deltaT = T1 - T2;
-    this.setpoint = setpoint;
-    this.measuredTime = this.msToHMS(time);
+  updateCurrentVals(data) {
+    this.T1 = data[0];
+    this.T2 = data[1];
+    this.setpoint = data[2];
+    this.measuredTime = this.msToHMS(data[3]);
+    this.flowRate = data[4];
+    this.elementStatus = data[5];
+    this.P_gain = data[6];
+    this.I_gain = data[7];
+    this.D_gain = data[8];
+    this.Qdot = this.flowRate / 60 * 4.18 * (this.T1 - this.T2);
+    this.deltaT = this.T1 - this.T2;
   }
 
   msToHMS(seconds) {
@@ -151,20 +159,36 @@ export class AppComponent implements OnInit  {
   receiveControllerParams($event) {
     let message: string = $event;
     const dataArray = message.split(',');
-    if (dataArray[0] == '-1') {
+    if (dataArray[0] === '-1') {
       dataArray[0] = this.P_gain.toString();
     }
-    if (dataArray[1] == '-1') {
+    if (dataArray[1] === '-1') {
       dataArray[1] = this.I_gain.toString();
     }
-    if (dataArray[2] == '-1') {
+    if (dataArray[2] === '-1') {
       dataArray[2] = this.D_gain.toString();
     }
-    if (dataArray[3] == '-1') {
+    if (dataArray[3] === '-1') {
       dataArray[3] = this.setpoint.toString();
     }
 
     message = `INFO&setpoint:${dataArray[3]},P:${dataArray[0]},I:${dataArray[1]},D:${dataArray[2]}`;
+    this.socketService.sendMessage(message);
+  }
+
+  fanControl(status) {
+    this.fanState = status;
+    const message = `CMD&fanState:${status}`;
+    this.socketService.sendMessage(message);
+  }
+
+  swapTempSensors() {
+    const message = 'CMD&swapTempSensors:1';
+    this.socketService.sendMessage(message);
+  }
+
+  refreshScreen() {
+    const message = 'PICMD&refreshScreen';
     this.socketService.sendMessage(message);
   }
 

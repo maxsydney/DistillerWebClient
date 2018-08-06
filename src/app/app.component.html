@@ -8,9 +8,7 @@
         <ul class="navbar-nav nav-fill w-100">
           <li class="nav-item">Distiller outflow temp: {{ T1 | number:'2.2-2'}} °C</li>
           <li class="nav-item">Radiator outflow temp: {{ T2 | number:'2.2-2'}} °C</li>
-          <li class="nav-item">ΔT: {{ deltaT | number:'2.2-2'}} °C</li>
           <li class="nav-item">Setpoint: {{ setpoint | number:'2.2-2'}} °C</li>
-          <li class="nav-item">Flow rate: {{ flowRate | number:'1.2-2'}} L/min</li>
           <li class="nav-item">Run time: {{ measuredTime }} </li>
         </ul>
     </div>
@@ -18,10 +16,10 @@
 
 <div class="paddingDiv">
     <div class="row">
-        <div class="col-xl-1">
+        <div class="col-sm-1">
 
         </div>
-        <div class="col-xl-9">
+        <div class="col-sm-8">
             <div class="">
                 <canvas
                     baseChart
@@ -34,7 +32,7 @@
                 </canvas>
               </div>
         </div>
-        <div class="col-xls-2 sidebar navbar-dark">
+        <div class="col-sm-3 sidebar navbar-dark">
           <h2> Controller Settings</h2>
             <h6>P gain: {{ P_gain | number:'.1-1'}}</h6>
             <h6>I gain: {{ I_gain | number:'.1-1'}}</h6>
@@ -42,11 +40,29 @@
             <h6>Setpoint: {{ setpoint | number:'.0-0'}} °C</h6>
             <br>
             <app-tune-controller (messageEvent)="receiveControllerParams($event)"></app-tune-controller>
+
+          <h2> System Info </h2>
+            <h6>ΔT: {{ deltaT | number:'2.2-2'}} °C</h6>
+            <h6>Flow rate: {{ flowRate | number:'1.2-2'}} L/min</h6>
+            <h6>Setpoint: {{ setpoint | number:'2.2-2'}} °C</h6>
+            <h6>Heat flow rate {{ Qdot | number:'1.2-2' }} kW</h6>
+            <br>
+          <h2> Commands </h2>
+            Fan &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button *ngIf="!fanState" (click)="fanControl(1)" type="button" class="btn btn-danger btn-sm"> Off</button>
+            <button *ngIf="fanState" (click)="fanControl(0)" type="button" class="btn btn-success btn-sm"> On </button>
+            <br>
+            <br>
+            Swap temp sensors &nbsp;&nbsp;&nbsp;&nbsp;
+            <button (click)="swapTempSensors()" type="button" class="btn btn-success btn-sm"> Swap </button>
+            <br>
+            <br>
+            Refresh screen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button (click)="refreshScreen()" type="button" class="btn btn-success btn-sm"> Refresh </button>
+            <br>
         </div>
     </div>
 </div>
-
-
 
 
 
