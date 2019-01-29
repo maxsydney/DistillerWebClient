@@ -9,6 +9,7 @@
           <li class="nav-item">Distiller outflow temp: {{ T1 | number:'2.2-2'}} °C</li>
           <li class="nav-item">Radiator outflow temp: {{ T2 | number:'2.2-2'}} °C</li>
           <li class="nav-item">Setpoint: {{ setpoint | number:'2.2-2'}} °C</li>
+          <!-- <li class="nav-item">Run time: {{ measuredTime.hours | number:'2.0' }}:{{ measuredTime.minutes | number:'2.0' }}:{{ measuredTime.seconds | number:'2.0'}} </li> -->
           <li class="nav-item">Run time: {{ measuredTime }} </li>
         </ul>
     </div>
@@ -60,6 +61,15 @@
             Refresh screen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <button (click)="refreshScreen()" type="button" class="btn btn-success btn-sm"> Refresh </button>
             <br>
+            <br>
+            Flush system &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button *ngIf="!flush" (click)="flushSystem(1)" type="button" class="btn btn-danger btn-sm"> Off</button>
+            <button *ngIf="flush" (click)="flushSystem(0)" type="button" class="btn btn-success btn-sm"> On </button>
+            <br>
+            <br>
+            Filter  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button *ngIf="!filter" (click)="filterTempSensors(1)" type="button" class="btn btn-danger btn-sm"> Off</button>
+            <button *ngIf="filter" (click)="filterTempSensors(0)" type="button" class="btn btn-success btn-sm"> On </button>
         </div>
     </div>
 </div>

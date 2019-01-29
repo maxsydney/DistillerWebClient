@@ -4,6 +4,7 @@ import { Chart } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 // import { Chart } from 'chartjs-plugin-downsample';
 import { TuneControllerComponent } from './tune-controller';
+import { splitMatchedQueriesDsl } from '@angular/core/src/view/util';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +24,8 @@ export class AppComponent implements OnInit  {
   I_gain: number;
   D_gain: number;
   fanState = false;
+  flush = false;
+  filter = false;
   Qdot: number;
   time = [];
   T1Series = [];
@@ -31,7 +34,7 @@ export class AppComponent implements OnInit  {
 
   dataSeries = [
     {
-      data: [],
+      data:  [],
       label: 'Distiller outflow temp'
     },
     {
@@ -48,17 +51,22 @@ export class AppComponent implements OnInit  {
   measuredTime = '';
 
   constructor(private socketService: SocketService) {
-    this.socketService.createSocket('ws://raspberrypi:8080/ws')
+    this.socketService.createSocket('ws://pissbotServer:8080/ws')
       .subscribe(data => {
-        data = JSON.parse(data);
-        if (!Array.isArray(data)) {
+        try {
+          data = JSON.parse(data);
+          console.log(data);
+          if (!Array.isArray(data)) {
           // If initial connection, server sends whole array of data
             for (let i = 0; i < data['T1'].length; i++) {
-              // this.chartData.push(data['T1'][i]);
-              this.dataSeries[0].data.push(data['T1'][i]);
-              this.chartLabels.push(data['time'][i]);
+              if (i % 10 === 0) {
+                this.dataSeries[0].data.push(data['T1'][i]);
+              const time = this.msToHMS(data['time'][i]);
+              this.chartLabels.push(this.FormatTimeString(time[0], time[1], time[2]));
               this.dataSeries[1].data.push(data['setpoint'][i]);
               this.dataSeries[2].data.push(data['T2'][i]);
+              }
+
             }
 
           } else {
@@ -72,14 +80,19 @@ export class AppComponent implements OnInit  {
             this.dataSeries[0].data.push(T1);
             this.dataSeries[1].data.push(setpoint);
             this.dataSeries[2].data.push(T2);
-        }
-      });
-  }
+        // }
+      }
+    } catch (err) {
+      console.log(`Failed string ${data}`);
+    }
+  });
+}
 
   // Chart config
   chartOptions = {
       responsive: true,
       animation: false,
+      cubicInterpolationMode: 'monotone',
       downsample: {
           enabled: true,
           threshold: 50,
@@ -121,7 +134,7 @@ export class AppComponent implements OnInit  {
       },
       legend: {
           display: true,
-          position: 'right'
+          position: 'top'
       }
   };
 
@@ -133,7 +146,8 @@ export class AppComponent implements OnInit  {
     this.T1 = data[0];
     this.T2 = data[1];
     this.setpoint = data[2];
-    this.measuredTime = this.msToHMS(data[3]);
+    const time = this.msToHMS(data[3]);
+    this.measuredTime = this.FormatTimeString(time[0], time[1], time[2]);
     this.flowRate = data[4];
     this.elementStatus = data[5];
     this.P_gain = data[6];
@@ -142,6 +156,8 @@ export class AppComponent implements OnInit  {
     this.Qdot = this.flowRate / 60 * 4.18 * (this.T1 - this.T2);
     this.deltaT = this.T1 - this.T2;
   }
+
+
 
   msToHMS(seconds) {
     // 1- Convert to seconds:
@@ -153,7 +169,20 @@ export class AppComponent implements OnInit  {
     const minutes = Math.floor(seconds / 60 ); // 60 seconds in 1 minute
     // 4- Keep only seconds not extracted to minutes:
     seconds = Math.floor(seconds % 60);
-    return(hours + ':' + minutes + ':' + seconds);
+    // return(hours + ':' + minutes + ':' + seconds);
+    return [hours, minutes, seconds];
+  }
+
+  FormatNumberLength(num, length) {
+    let r = '' + num;
+    while (r.length < length) {
+        r = '0' + r;
+    }
+    return r;
+  }
+
+  FormatTimeString(hours, mins, seconds) {
+    return `${this.FormatNumberLength(hours, 2)}:${this.FormatNumberLength(mins, 2)}:${this.FormatNumberLength(seconds, 2)}`;
   }
 
   receiveControllerParams($event) {
@@ -172,23 +201,40 @@ export class AppComponent implements OnInit  {
       dataArray[3] = this.setpoint.toString();
     }
 
-    message = `INFO&setpoint:${dataArray[3]},P:${dataArray[0]},I:${dataArray[1]},D:${dataArray[2]}`;
+    message = `INFO&setpoint:${dataArray[3]},P:${dataArray[0]},I:${dataArray[1]},D:${dataArray[2]}\n`;
     this.socketService.sendMessage(message);
   }
 
   fanControl(status) {
     this.fanState = status;
-    const message = `CMD&fanState:${status}`;
+    const message = `CMD&fanState:${status}\n`;
+    this.socketService.sendMessage(message);
+  }
+
+  flushSystem(status) {
+    this.flush = status;
+    let myvar = '0';
+
+    if (status) {
+      myvar = '1';
+    }
+    const message = `CMD&flush:${status}\n`;
+    this.socketService.sendMessage(message);
+  }
+
+  filterTempSensors(status) {
+    this.filter = status;
+    const message = `CMD&filterT:${status}\n`;
     this.socketService.sendMessage(message);
   }
 
   swapTempSensors() {
-    const message = 'CMD&swapTempSensors:1';
+    const message = 'CMD&swapTempSensors:1\n';
     this.socketService.sendMessage(message);
   }
 
   refreshScreen() {
-    const message = 'PICMD&refreshScreen';
+    const message = 'PICMD&refreshScreen\n';
     this.socketService.sendMessage(message);
   }
 
