@@ -14,8 +14,8 @@ import { splitMatchedQueriesDsl } from '@angular/core/src/view/util';
 export class AppComponent implements OnInit  {
   @ViewChild(BaseChartDirective)
   public chart: BaseChartDirective; // Now you can reference your chart via `this.chart`
-  T1: number;
-  T2: number;
+  T1 = 0;
+  T2 = 0;
   setpoint: number;
   flowRate: number;
   deltaT: number;
@@ -27,10 +27,6 @@ export class AppComponent implements OnInit  {
   flush = false;
   filter = false;
   Qdot: number;
-  time = [];
-  T1Series = [];
-  T2Series = [];
-  setpointSeries = [];
 
   dataSeries = [
     {
@@ -55,87 +51,91 @@ export class AppComponent implements OnInit  {
       .subscribe(data => {
         try {
           data = JSON.parse(data);
-          console.log(data);
+          let len: number;
           if (!Array.isArray(data)) {
-          // If initial connection, server sends whole array of data
-            for (let i = 0; i < data['T1'].length; i++) {
-              if (i % 10 === 0) {
-                this.dataSeries[0].data.push(data['T1'][i]);
+            // If initial connection, server sends whole array of data
+            len = data['T1'].length;
+            for (let i = 1; i < len; i++) {
+              // IIR filter on temperature data for smoothing plotting
+              const T1 = data['T1'][i - 1] * 0.75 + data['T1'][i] * 0.25;
+              const T2 = data['T2'][i - 1] * 0.75 + data['T2'][i] * 0.25;
+              data['T1'][i] = T1;
+              data['T2'][i] = T2;
+
+              // Push data to chart series
+              this.dataSeries[0].data.push(T1);
+              this.dataSeries[2].data.push(T2);
+              this.dataSeries[1].data.push(data['setpoint'][i]);
               const time = this.msToHMS(data['time'][i]);
               this.chartLabels.push(this.FormatTimeString(time[0], time[1], time[2]));
-              this.dataSeries[1].data.push(data['setpoint'][i]);
-              this.dataSeries[2].data.push(data['T2'][i]);
-              }
-
             }
-
+            // Set current temp variables so filter continues to run without break
+            this.T1 = data['T1'][len - 1];
+            this.T2 = data['T2'][len - 1];
           } else {
             // If already connected, server sends one sample of data as [temp, setpoint, time]
-            const T1 = data[0];
-            const T2 = data[1];
-            const setpoint = data[2];
-            const time = data[3];
             this.updateCurrentVals(data);
             this.chartLabels.push(this.measuredTime);
-            this.dataSeries[0].data.push(T1);
-            this.dataSeries[1].data.push(setpoint);
-            this.dataSeries[2].data.push(T2);
-        // }
-      }
-    } catch (err) {
-      console.log(`Failed string ${data}`);
-    }
-  });
-}
+            this.dataSeries[0].data.push(this.T1);
+            this.dataSeries[1].data.push(this.setpoint);
+            this.dataSeries[2].data.push(this.T2);
+          }
+        } catch (err) {
+          console.log(`Failed string ${data}`);
+        }
+      });
+  }
 
   // Chart config
   chartOptions = {
-      responsive: true,
-      animation: false,
-      cubicInterpolationMode: 'monotone',
-      downsample: {
-          enabled: true,
-          threshold: 50,
-          preferOriginalData: false,
+    responsive: true,
+    animation: false,
+    cubicInterpolationMode: 'monotone',
+    downsample: {
+      enabled: true,
+      threshold: 50,
+      preferOriginalData: false,
+    },
+    elements: {
+      line: {
+        fill: false,
       },
-      elements: {
-          line: {
-              fill: false,
-          },
-          point: {
-              radius: 0
-          }
-      },
-      scales: {
-          yAxes: [{
-            display: true,
-              scaleLabel: {
-                display: true,
-                labelString: 'Temperature (°C)'
-              },
-              id: 'y-axis-1',
-              type: 'linear',
-              position: 'left',
-              ticks: {min: 10, max: 80}
-          }],
-          xAxes: [{
-              display: true,
-              scaleLabel: {
-                display: true,
-                labelString: 'Run Time'
-              },
-              ticks: {
-                  maxTicksLimit: 30,
-              }
-          }]
-      },
-      gridlines: {
-          drawBorder: true
-      },
-      legend: {
-          display: true,
-          position: 'top'
+      point: {
+        radius: 0
       }
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        scaleLabel: {
+          display: true,
+          fontSize: 16,
+          labelString: 'Temperature (°C)'
+        },
+        id: 'y-axis-1',
+        type: 'linear',
+        position: 'left',
+        ticks: {min: 10, max: 80}
+      }],
+      xAxes: [{
+        display: true,
+        scaleLabel: {
+          display: true,
+          fontSize: 16,
+          labelString: 'Run Time'
+        },
+        ticks: {
+          maxTicksLimit: 30,
+        }
+      }]
+    },
+    gridlines: {
+      drawBorder: true
+    },
+    legend: {
+      display: true,
+      position: 'top'
+    }
   };
 
   updateChart() {
@@ -143,8 +143,8 @@ export class AppComponent implements OnInit  {
   }
 
   updateCurrentVals(data) {
-    this.T1 = data[0];
-    this.T2 = data[1];
+    this.T1 = this.T1 * 0.75 + parseFloat(data[0]) * 0.25;
+    this.T2 = this.T2 * 0.75 + parseFloat(data[1]) * 0.25;
     this.setpoint = data[2];
     const time = this.msToHMS(data[3]);
     this.measuredTime = this.FormatTimeString(time[0], time[1], time[2]);
@@ -156,8 +156,6 @@ export class AppComponent implements OnInit  {
     this.Qdot = this.flowRate / 60 * 4.18 * (this.T1 - this.T2);
     this.deltaT = this.T1 - this.T2;
   }
-
-
 
   msToHMS(seconds) {
     // 1- Convert to seconds:
@@ -239,7 +237,6 @@ export class AppComponent implements OnInit  {
   }
 
   ngOnInit() {
-    // this.chart.ngOnChanges({});
     setInterval(() => {
       this.updateChart();
     }, 50);
