@@ -48,6 +48,7 @@ export class AppComponent implements OnInit  {
 
   constructor(private socketService: SocketService) {
     this.socketService.createSocket('ws://pissbotServer:8080/ws')
+    // this.socketService.createSocket('ws://192.168.1.201:80/ws')
       .subscribe(data => {
         try {
           data = JSON.parse(data);
@@ -211,11 +212,6 @@ export class AppComponent implements OnInit  {
 
   flushSystem(status) {
     this.flush = status;
-    let myvar = '0';
-
-    if (status) {
-      myvar = '1';
-    }
     const message = `CMD&flush:${status}\n`;
     this.socketService.sendMessage(message);
   }

@@ -18,5 +18,6 @@ export class SocketService {
 
   sendMessage(message: any): void {
     this.sock.send(message);
+    console.log(message);
   }
 }
