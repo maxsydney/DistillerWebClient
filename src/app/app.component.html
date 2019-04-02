@@ -15,14 +15,12 @@
     </div>
 </nav>
 
-<div class="paddingDiv">
-    <div class="row">
-        <div class="col-sm-1">
-
-        </div>
-        <div class="col-sm-8">
-            <div class="">
-                <canvas
+<div class="jumbotron top-border bg-grey">
+  <div class="paddingDiv container-fluid">
+      <div class="row">
+          <div class="col-md-10 mycontent-left">
+              <div class="">
+                  <canvas
                     baseChart
                     [chartType]="'line'"
                     [data]="chartData"
@@ -32,46 +30,99 @@
                     [legend]="true">
                 </canvas>
               </div>
-        </div>
-        <div class="col-sm-3 sidebar navbar-dark">
-          <h2> Controller Settings</h2>
-            <h6>P gain: {{ P_gain | number:'.1-1'}}</h6>
-            <h6>I gain: {{ I_gain | number:'.1-1'}}</h6>
-            <h6>D gain: {{ D_gain | number:'.1-1'}}</h6>
-            <h6>Setpoint: {{ setpoint | number:'.0-0'}} °C</h6>
-            <br>
-            <app-tune-controller (messageEvent)="receiveControllerParams($event)"></app-tune-controller>
+          </div>
 
-          <h2> System Info </h2>
-            <h6>ΔT: {{ deltaT | number:'2.2-2'}} °C</h6>
-            <h6>Flow rate: {{ flowRate | number:'1.2-2'}} L/min</h6>
-            <h6>Setpoint: {{ setpoint | number:'2.2-2'}} °C</h6>
-            <h6>Heat flow rate {{ Qdot | number:'1.2-2' }} kW</h6>
-            <br>
-          <h2> Commands </h2>
-            Fan &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button *ngIf="!fanState" (click)="fanControl(1)" type="button" class="btn btn-danger btn-sm"> Off</button>
-            <button *ngIf="fanState" (click)="fanControl(0)" type="button" class="btn btn-success btn-sm"> On </button>
-            <br>
-            <br>
-            Swap temp sensors &nbsp;&nbsp;&nbsp;&nbsp;
-            <button (click)="swapTempSensors()" type="button" class="btn btn-success btn-sm"> Swap </button>
-            <br>
-            <br>
-            Refresh screen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button (click)="refreshScreen()" type="button" class="btn btn-success btn-sm"> Refresh </button>
-            <br>
-            <br>
-            Flush system &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button *ngIf="!flush" (click)="flushSystem(1)" type="button" class="btn btn-danger btn-sm"> Off</button>
-            <button *ngIf="flush" (click)="flushSystem(0)" type="button" class="btn btn-success btn-sm"> On </button>
-            <br>
-            <br>
-            Filter  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button *ngIf="!filter" (click)="filterTempSensors(1)" type="button" class="btn btn-danger btn-sm"> Off</button>
-            <button *ngIf="filter" (click)="filterTempSensors(0)" type="button" class="btn btn-success btn-sm"> On </button>
-        </div>
-    </div>
+          <div class="col-md-2 sidebar navbar-dark">
+            <div class="container-fluid">
+              <h2> Controller Settings</h2>
+              <div class="row">
+                <div class="col-sm-6"> <h6> P gain: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ P_gain | number}} </h6> </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6"> <h6> I gain: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ I_gain | number}} </h6> </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6"> <h6> D gain: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ D_gain | number}} </h6> </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6"> <h6> Setpoint: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ setpoint | number:'.0-0'}} °C </h6> </div>
+              </div>
+              <app-tune-controller (messageEvent)="receiveControllerParams($event)"></app-tune-controller>
+            </div>
+
+            <div class="container-fluid">
+              <h2> System Info </h2>
+              <div class="row">
+                <div class="col-sm-6"> <h6> ΔT: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ deltaT | number:'2.2-2'}} °C </h6> </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6"> <h6> Flow rate: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ flowRate | number:'1.2-2'}} L/min </h6> </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6"> <h6> Setpoint: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ setpoint | number:'2.2-2'}} °C </h6> </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6"> <h6> Heat flow rate: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ Qdot | number:'1.2-2' }} kW </h6> </div>
+              </div>
+            </div>
+
+            <div class="container-fluid">
+                <h2> Commands </h2>
+                <div class="row">
+                  <div class="col-sm-8">
+                    <h6>Fan</h6>
+                  </div>
+                  <div class="col-sm-2">
+                    <button *ngIf="!fanState" (click)="fanControl(1)" type="button" class="btn btn-danger btn-sm"> Off</button>
+                    <button *ngIf="fanState" (click)="fanControl(0)" type="button" class="btn btn-success btn-sm"> On </button>
+                  </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
+                    <h6>Swap temp sensors</h6>
+                  </div>
+                  <div class="col-sm-2">
+                    <button (click)="swapTempSensors()" type="button" class="btn btn-success btn-sm"> Swap </button>
+                  </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
+                      <h6> Refresh screen </h6>
+                    </div>
+                    <div class="col-sm-2">
+                        <button (click)="refreshScreen()" type="button" class="btn btn-success btn-sm"> Refresh </button>
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
+                    <h6> Flush system </h6>
+                  </div>
+                  <div class="col-sm-2">
+                    <button *ngIf="!flush" (click)="flushSystem(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
+                    <button *ngIf="flush" (click)="flushSystem(0)" type="button" class="btn btn-success btn-sm"> On </button>
+                  </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
+                    <h6> Filter </h6>
+                  </div>
+                  <div class="col-sm-2">
+                    <button *ngIf="!filter" (click)="filterTempSensors(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
+                    <button *ngIf="filter" (click)="filterTempSensors(0)" type="button" class="btn btn-success btn-sm"> On </button>
+                  </div>
+                </div>
+            </div>
+          </div>
+      </div>
+  </div>
 </div>
 
 

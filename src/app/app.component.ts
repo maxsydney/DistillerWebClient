@@ -110,7 +110,7 @@ export class AppComponent implements OnInit  {
         display: true,
         scaleLabel: {
           display: true,
-          fontSize: 16,
+          fontSize: 22,
           labelString: 'Temperature (°C)'
         },
         id: 'y-axis-1',
@@ -122,7 +122,7 @@ export class AppComponent implements OnInit  {
         display: true,
         scaleLabel: {
           display: true,
-          fontSize: 16,
+          fontSize: 22,
           labelString: 'Run Time'
         },
         ticks: {

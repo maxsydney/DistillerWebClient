@@ -1,5 +1,5 @@
 .paddingDiv {
-  padding-top: 100px; /* Whatever the height of your navbar is; the
+  padding-top: 50px; /* Whatever the height of your navbar is; the
                            default is 50px */
 }
 
@@ -8,5 +8,18 @@
 }
 
 .bg-grey {
-  background-color: wheat;
+  background-color: white;
+}
+
+.top-buffer {
+  margin-top: 10px;
+}
+
+.mycontent-left {
+  border-right: 2px solid rgb(75, 72, 72);
+}
+
+.top-border {
+  border-top: 2px solid #828891;
+  border-bottom: 2px solid #828891;
 }
