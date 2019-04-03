@@ -232,6 +232,11 @@ export class AppComponent implements OnInit  {
     this.socketService.sendMessage(message);
   }
 
+  runOTA() {
+    const message = 'CMD&OTA:1\n';
+    this.socketService.sendMessage(message);
+  }
+
   ngOnInit() {
     setInterval(() => {
       this.updateChart();
