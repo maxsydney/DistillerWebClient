@@ -1,41 +1,54 @@
 <ng-template #content let-c="close" let-d="dismiss">
-    <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">Tune PID controller</h4>
-      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <form>
-        <div class="input-group mb-3">
-            <div class="input-group mb-3">
-              <h5>P gain: </h5>
-              <pre>&#9;</pre>
-              <input type="text" [(ngModel)]="P_gain" name="P_gain"/>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Tune PID controller</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="input-group mb-3">
+          <div class="container-fluid">
+            <div class="input-group mb-3 row">
+              <div class="col-sm-4">
+                <h5>P gain: </h5>
+              </div>
+              <div class="col-sm-2">
+                <input type="text" [(ngModel)]="P_gain" name="P_gain"/>
+              </div>
             </div>
-            <div class="input-group mb-3">
-              <h5>I gain: </h5>
-              <pre>&#9;</pre>
-              <input type="text" [(ngModel)]="I_gain" name="I_gain"/>
+            <div class="input-group mb-3 row">
+              <div class="col-sm-4">
+                <h5>I gain: </h5>
+              </div>
+              <div class="col-sm-2">
+                <input type="text" [(ngModel)]="I_gain" name="I_gain"/>
+              </div>
             </div>
-            <div class="input-group mb-3">
-              <h5>D gain: </h5>
-              <pre>&#9;</pre>
-              <input type="text" [(ngModel)]="D_gain" name="D_gain"/>
+            <div class="input-group mb-3 row">
+              <div class="col-sm-4">
+                <h5>D gain: </h5>
+              </div>
+              <div class="col-sm-2">
+                <input type="text" [(ngModel)]="D_gain" name="D_gain"/>
+              </div>
             </div>
-            <div class="input-group mb-3">
-              <h5>Setpoint: </h5>
-              <pre>&#9;</pre>
-              <input type="text" [(ngModel)]="setpoint" name="setpoint"/>
+            <div class="input-group mb-3 row">
+              <div class="col-sm-4">
+                <h5>Setpoint: </h5>
+              </div>
+              <div class="col-sm-2">
+                <input type="text" [(ngModel)]="setpoint" name="setpoint"/>
+              </div>
             </div>
-        </div>
-      </form>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline-dark" (click)="sendParams()">Save</button>
-    </div>
-  </ng-template>
-
+          </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="sendParams()">Save</button>
+  </div>
+</ng-template>
   <button class="btn btn-outline-primary" (click)="open(content)">Tune controller</button>
 
   <hr>
