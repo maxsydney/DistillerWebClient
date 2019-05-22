@@ -6,8 +6,8 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav nav-fill w-100">
-          <li class="nav-item">Distiller outflow temp: {{ T1 | number:'2.2-2'}} °C</li>
-          <li class="nav-item">Radiator outflow temp: {{ T2 | number:'2.2-2'}} °C</li>
+          <li class="nav-item">Distiller outflow temp: {{ currentTemps[0] | number:'2.2-2'}} °C</li>
+          <li class="nav-item">Radiator outflow temp: {{ currentTemps[1] | number:'2.2-2'}} °C</li>
           <li class="nav-item">Setpoint: {{ setpoint | number:'2.2-2'}} °C</li>
           <!-- <li class="nav-item">Run time: {{ measuredTime.hours | number:'2.0' }}:{{ measuredTime.minutes | number:'2.0' }}:{{ measuredTime.seconds | number:'2.0'}} </li> -->
           <li class="nav-item">Run time: {{ measuredTime }} </li>
@@ -21,12 +21,23 @@
           <div class="col-md-10 mycontent-left">
               <div class="">
                   <canvas
+                    *ngIf="mainChart"
                     baseChart
                     [chartType]="'line'"
                     [data]="chartData"
-                    [datasets]="dataSeries"
+                    [datasets]="dataSeriesMainChart"
                     [labels]="chartLabels"
-                    [options]="chartOptions"
+                    [options]="chartOptionsMain"
+                    [legend]="true">
+                </canvas>
+                <canvas
+                    *ngIf="!mainChart"
+                    baseChart
+                    [chartType]="'line'"
+                    [data]="chartData"
+                    [datasets]="dataSeriesSecondary"
+                    [labels]="chartLabels"
+                    [options]="chartOptionsSecondary"
                     [legend]="true">
                 </canvas>
               </div>
@@ -122,10 +133,19 @@
                 <div class="row top-buffer">
                   <div class="col-sm-8">
                       <h6> Update software </h6>
-                    </div>
-                    <div class="col-sm-2">
+                  </div>
+                  <div class="col-sm-2">
                         <button (click)="runOTA()" type="button" class="btn btn-success btn-sm"> Update </button>
-                    </div>
+                  </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
+                      <h6> Switch charts </h6>
+                  </div>
+                  <div class="col-sm-2">
+                        <button *ngIf="mainChart" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Auxilliary Chart </button>
+                        <button *ngIf="!mainChart" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Main Chart </button>
+                  </div>
                 </div>
             </div>
           </div>
