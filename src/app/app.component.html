@@ -9,7 +9,6 @@
           <li class="nav-item">Distiller outflow temp: {{ currentTemps[0] | number:'2.2-2'}} °C</li>
           <li class="nav-item">Radiator outflow temp: {{ currentTemps[1] | number:'2.2-2'}} °C</li>
           <li class="nav-item">Setpoint: {{ setpoint | number:'2.2-2'}} °C</li>
-          <!-- <li class="nav-item">Run time: {{ measuredTime.hours | number:'2.0' }}:{{ measuredTime.minutes | number:'2.0' }}:{{ measuredTime.seconds | number:'2.0'}} </li> -->
           <li class="nav-item">Run time: {{ measuredTime }} </li>
         </ul>
     </div>
@@ -132,6 +131,15 @@
                 </div>
                 <div class="row top-buffer">
                   <div class="col-sm-8">
+                      <h6> Switch charts </h6>
+                  </div>
+                  <div class="col-sm-2">
+                        <button *ngIf="mainChart" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Auxilliary Chart </button>
+                        <button *ngIf="!mainChart" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Main Chart </button>
+                  </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
                       <h6> Update software </h6>
                   </div>
                   <div class="col-sm-2">
@@ -139,12 +147,10 @@
                   </div>
                 </div>
                 <div class="row top-buffer">
-                  <div class="col-sm-8">
-                      <h6> Switch charts </h6>
-                  </div>
-                  <div class="col-sm-2">
-                        <button *ngIf="mainChart" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Auxilliary Chart </button>
-                        <button *ngIf="!mainChart" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Main Chart </button>
+                  <div class="col-sm-12">
+                    <div class="md-form">
+                      <input mdbInput type="text" name="text" [(ngModel)]="OTA_IP" id="form1" class="form-control" placeholder="Enter OTA IP">
+                    </div>
                   </div>
                 </div>
             </div>

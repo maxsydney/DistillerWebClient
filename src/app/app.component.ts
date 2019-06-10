@@ -28,6 +28,7 @@ export class AppComponent {
   filter = false;
   Qdot: number;
   mainChart = true;
+  OTA_IP: string;
 
   dataSeriesMainChart = [
     {
@@ -320,7 +321,8 @@ export class AppComponent {
   }
 
   runOTA() {
-    const message = 'CMD&OTA:1\n';
+    const message = `CMD&OTA:${this.OTA_IP}\n`;
+    console.log(message);
     this.socketService.sendMessage(message);
   }
 
