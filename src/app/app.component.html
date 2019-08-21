@@ -140,6 +140,15 @@
                 </div>
                 <div class="row top-buffer">
                   <div class="col-sm-8">
+                    <h6> Element </h6>
+                  </div>
+                  <div class="col-sm-2">
+                    <button *ngIf="!element1" (click)="elementControlLowPower(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
+                    <button *ngIf="element1" (click)="elementControlLowPower(0)" type="button" class="btn btn-success btn-sm"> On </button>
+                  </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
                       <h6> Update software </h6>
                   </div>
                   <div class="col-sm-2">

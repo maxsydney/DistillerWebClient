@@ -26,6 +26,7 @@ export class AppComponent {
   fanState = false;
   flush = false;
   filter = false;
+  element1 = false;
   Qdot: number;
   mainChart = true;
   OTA_IP: string;
@@ -295,6 +296,12 @@ export class AppComponent {
   fanControl(status) {
     this.fanState = status;
     const message = `CMD&fanState:${status}\n`;
+    this.socketService.sendMessage(message);
+  }
+
+  elementControlLowPower(status) {
+    this.element1 = status;
+    const message = `CMD&element1:${status}\n`;
     this.socketService.sendMessage(message);
   }
 
