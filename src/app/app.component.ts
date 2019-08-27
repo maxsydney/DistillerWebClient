@@ -30,6 +30,8 @@ export class AppComponent {
   Qdot: number;
   mainChart = true;
   OTA_IP: string;
+  vapConc = 0;
+  liquidConc = 0;
 
   dataSeriesMainChart = [
     {
@@ -211,7 +213,7 @@ export class AppComponent {
     },
     title: {
       display: true,
-      text: "Auxilliary Data",
+      text: 'Auxilliary Data',
       fontSize: 22
     }
   };
@@ -244,6 +246,8 @@ export class AppComponent {
     this.D_gain = data[11];
     this.Qdot = this.flowRate / 60 * 4.18 * (this.currentTemps[0] - this.currentTemps[1]);
     this.deltaT = this.currentTemps[0] - this.currentTemps[1];
+    this.liquidConc = data[12];
+    this.vapConc = data[13];
   }
 
   msToHMS(seconds) {

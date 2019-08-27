@@ -82,6 +82,14 @@
                 <div class="col-sm-6"> <h6> Heat flow rate: </h6> </div>
                 <div class="col-sm-5"> <h6> {{ Qdot | number:'1.2-2' }} kW </h6> </div>
               </div>
+              <div class="row">
+                <div class="col-sm-6"> <h6> Vapour: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ vapConc | number:'1.2-2' }} % </h6> </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6"> <h6> Boiler: </h6> </div>
+                <div class="col-sm-5"> <h6> {{ liquidConc | number:'1.2-2' }} % </h6> </div>
+              </div>
             </div>
 
             <div class="container-fluid">
