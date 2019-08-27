@@ -6,6 +6,12 @@ import { BaseChartDirective } from 'ng2-charts';
 import { TuneControllerComponent } from './tune-controller';
 import { splitMatchedQueriesDsl } from '@angular/core/src/view/util';
 
+enum chartType {
+  mainChart,
+  secondaryChart,
+  concentrationChart
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -28,7 +34,7 @@ export class AppComponent {
   filter = false;
   element1 = false;
   Qdot: number;
-  mainChart = true;
+  activeChart = chartType.mainChart;
   OTA_IP: string;
   vapConc = 0;
   liquidConc = 0;
@@ -60,6 +66,17 @@ export class AppComponent {
     {
       data: [],
       label: 'Boiler'
+    }
+  ];
+
+  dataSeriesConcentration = [
+    {
+      data:  [],
+      label: 'Vapour Concentration'
+    },
+    {
+      data: [],
+      label: 'Boiler Concentration'
     }
   ];
   chartData = [];
@@ -156,7 +173,7 @@ export class AppComponent {
     },
     title: {
       display: true,
-      text: "Main Process",
+      text: 'Main Process',
       fontSize: 22
     }
   };
@@ -190,7 +207,7 @@ export class AppComponent {
         id: 'y-axis-1',
         type: 'linear',
         position: 'left',
-        ticks: {min: -10, max: 80}
+        ticks: {min: 0, max: 80}
       }],
       xAxes: [{
         display: true,
@@ -213,7 +230,64 @@ export class AppComponent {
     },
     title: {
       display: true,
-      text: 'Auxilliary Data',
+      text: 'Auxiliary Data',
+      fontSize: 22
+    }
+  };
+
+  // Alcohol concentration chart config
+  chartOptionsConcentrations = {
+    responsive: true,
+    animation: false,
+    cubicInterpolationMode: 'monotone',
+    downsample: {
+      enabled: true,
+      threshold: 50,
+      preferOriginalData: false,
+    },
+    elements: {
+      line: {
+        fill: false,
+      },
+      point: {
+        radius: 0
+      }
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        scaleLabel: {
+          display: true,
+          fontSize: 22,
+          labelString: 'Concentration (%)'
+        },
+        id: 'y-axis-1',
+        type: 'linear',
+        position: 'left',
+        ticks: {min: 0, max: 100}
+      }],
+      xAxes: [{
+        display: true,
+        scaleLabel: {
+          display: true,
+          fontSize: 22,
+          labelString: 'Run Time'
+        },
+        ticks: {
+          maxTicksLimit: 30,
+        }
+      }]
+    },
+    gridlines: {
+      drawBorder: true
+    },
+    legend: {
+      display: true,
+      position: 'top'
+    },
+    title: {
+      display: true,
+      text: 'Alcohol Concentrations',
       fontSize: 22
     }
   };
@@ -226,6 +300,10 @@ export class AppComponent {
     this.dataSeriesSecondary[0].data.push(this.currentTemps[2]);
     this.dataSeriesSecondary[1].data.push(this.currentTemps[3]);
     this.dataSeriesSecondary[2].data.push(this.currentTemps[4]);
+    this.dataSeriesConcentration[0].data.push(this.vapConc);
+    this.dataSeriesConcentration[1].data.push(this.liquidConc);
+    console.log(`Vapour concentration: ${this.vapConc}`);
+    console.log(`Liquid concentration: ${this.liquidConc}`);
     this.chart.chart.update();
   }
 
@@ -246,7 +324,7 @@ export class AppComponent {
     this.D_gain = data[11];
     this.Qdot = this.flowRate / 60 * 4.18 * (this.currentTemps[0] - this.currentTemps[1]);
     this.deltaT = this.currentTemps[0] - this.currentTemps[1];
-    this.liquidConc = data[12];
+    this.liquidConc = this.liquidConc * 0.7 + parseFloat(data[12]) * 0.3;
     this.vapConc = data[13];
   }
 
@@ -338,7 +416,7 @@ export class AppComponent {
   }
 
   swapCharts() {
-    this.mainChart = !this.mainChart;
+    this.activeChart = (this.activeChart + 1) % 3;
   }
 }
 
