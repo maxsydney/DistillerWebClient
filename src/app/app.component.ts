@@ -5,6 +5,7 @@ import { BaseChartDirective } from 'ng2-charts';
 // import { Chart } from 'chartjs-plugin-downsample';
 import { TuneControllerComponent } from './tune-controller';
 import { splitMatchedQueriesDsl } from '@angular/core/src/view/util';
+import { ChartService } from './chart-service.service';
 
 enum chartType {
   mainChart,
@@ -38,53 +39,20 @@ export class AppComponent {
   OTA_IP: string;
   vapConc = 0;
   liquidConc = 0;
+  dataSeriesMainChart: any;
+  dataSeriesSecondary: any;
+  dataSeriesConcentration: any;
+  mainChartConfig: any;
+  secondaryChartConfig: any;
+  alcoholChartConfig: any;
 
-  dataSeriesMainChart = [
-    {
-      data:  [],
-      label: 'Distiller outflow temp'
-    },
-    {
-      data: [],
-      label: 'Setpoint'
-    },
-    {
-      data: [],
-      label: 'Radiator outflow temp'
-    }
-  ];
-
-  dataSeriesSecondary = [
-    {
-      data:  [],
-      label: 'Product in'
-    },
-    {
-      data: [],
-      label: 'Product out'
-    },
-    {
-      data: [],
-      label: 'Boiler'
-    }
-  ];
-
-  dataSeriesConcentration = [
-    {
-      data:  [],
-      label: 'Vapour Concentration'
-    },
-    {
-      data: [],
-      label: 'Boiler Concentration'
-    }
-  ];
   chartData = [];
   chartLabels = [];
   measuredTime = '';
 
-  constructor(private socketService: SocketService) {
-    // this.socketService.createSocket('ws://pissbotServer:8080/ws')
+  constructor(private socketService: SocketService,
+              private chartConfig: ChartService) {
+    this.importChartData();
     this.socketService.createSocket('ws://192.168.1.201:80/ws')
       .subscribe(data => {
         try {
@@ -121,176 +89,14 @@ export class AppComponent {
       });
   }
 
-  // Main chart config
-  chartOptionsMain = {
-    responsive: true,
-    animation: false,
-    cubicInterpolationMode: 'monotone',
-    downsample: {
-      enabled: true,
-      threshold: 50,
-      preferOriginalData: false,
-    },
-    elements: {
-      line: {
-        fill: false,
-      },
-      point: {
-        radius: 0
-      }
-    },
-    scales: {
-      yAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          fontSize: 22,
-          labelString: 'Temperature (°C)'
-        },
-        id: 'y-axis-1',
-        type: 'linear',
-        position: 'left',
-        ticks: {min: 10, max: 80}
-      }],
-      xAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          fontSize: 22,
-          labelString: 'Run Time'
-        },
-        ticks: {
-          maxTicksLimit: 30,
-        }
-      }]
-    },
-    gridlines: {
-      drawBorder: true
-    },
-    legend: {
-      display: true,
-      position: 'top'
-    },
-    title: {
-      display: true,
-      text: 'Main Process',
-      fontSize: 22
-    }
-  };
-
-  // Secondary chart config
-  chartOptionsSecondary = {
-    responsive: true,
-    animation: false,
-    cubicInterpolationMode: 'monotone',
-    downsample: {
-      enabled: true,
-      threshold: 50,
-      preferOriginalData: false,
-    },
-    elements: {
-      line: {
-        fill: false,
-      },
-      point: {
-        radius: 0
-      }
-    },
-    scales: {
-      yAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          fontSize: 22,
-          labelString: 'Temperature (°C)'
-        },
-        id: 'y-axis-1',
-        type: 'linear',
-        position: 'left',
-        ticks: {min: 0, max: 80}
-      }],
-      xAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          fontSize: 22,
-          labelString: 'Run Time'
-        },
-        ticks: {
-          maxTicksLimit: 30,
-        }
-      }]
-    },
-    gridlines: {
-      drawBorder: true
-    },
-    legend: {
-      display: true,
-      position: 'top'
-    },
-    title: {
-      display: true,
-      text: 'Auxiliary Data',
-      fontSize: 22
-    }
-  };
-
-  // Alcohol concentration chart config
-  chartOptionsConcentrations = {
-    responsive: true,
-    animation: false,
-    cubicInterpolationMode: 'monotone',
-    downsample: {
-      enabled: true,
-      threshold: 50,
-      preferOriginalData: false,
-    },
-    elements: {
-      line: {
-        fill: false,
-      },
-      point: {
-        radius: 0
-      }
-    },
-    scales: {
-      yAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          fontSize: 22,
-          labelString: 'Concentration (%)'
-        },
-        id: 'y-axis-1',
-        type: 'linear',
-        position: 'left',
-        ticks: {min: 0, max: 100}
-      }],
-      xAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          fontSize: 22,
-          labelString: 'Run Time'
-        },
-        ticks: {
-          maxTicksLimit: 30,
-        }
-      }]
-    },
-    gridlines: {
-      drawBorder: true
-    },
-    legend: {
-      display: true,
-      position: 'top'
-    },
-    title: {
-      display: true,
-      text: 'Alcohol Concentrations',
-      fontSize: 22
-    }
-  };
+  importChartData() {
+    this.dataSeriesMainChart = this.chartConfig.dataSeriesMainChart;
+    this.dataSeriesSecondary = this.chartConfig.dataSeriesSecondary;
+    this.dataSeriesConcentration = this.chartConfig.dataSeriesConcentration;
+    this.mainChartConfig = this.chartConfig.chartOptionsMain;
+    this.secondaryChartConfig = this.chartConfig.chartOptionsSecondary;
+    this.alcoholChartConfig = this.chartConfig.chartOptionsConcentrations;
+  }
 
   updateChart() {
     this.chartLabels.push(this.measuredTime);
