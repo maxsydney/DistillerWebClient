@@ -74,7 +74,7 @@ export class ChartService {
         id: 'y-axis-1',
         type: 'linear',
         position: 'left',
-        ticks: {min: 10, max: 80}
+        ticks: {min: 0, max: 100}
       }],
       xAxes: [{
         display: true,
@@ -131,7 +131,7 @@ export class ChartService {
         id: 'y-axis-1',
         type: 'linear',
         position: 'left',
-        ticks: {min: 0, max: 80}
+        ticks: {min: 0, max: 100}
       }],
       xAxes: [{
         display: true,

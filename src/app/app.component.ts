@@ -21,7 +21,7 @@ enum chartType {
 
 export class AppComponent {
   @ViewChild(BaseChartDirective)
-  public chart: BaseChartDirective; // Now you can reference your chart via `this.chart`
+  public chart: BaseChartDirective;
   currentTemps = [0, 0, 0, 0, 0];
   setpoint: number;
   flowRate: number;
@@ -34,6 +34,7 @@ export class AppComponent {
   flush = false;
   filter = false;
   element1 = false;
+  prodCondensor = false;
   Qdot: number;
   activeChart = chartType.mainChart;
   OTA_IP: string;
@@ -190,6 +191,12 @@ export class AppComponent {
   elementControlLowPower(status) {
     this.element1 = status;
     const message = `CMD&element1:${status}\n`;
+    this.socketService.sendMessage(message);
+  }
+
+  controlProductCondensor(status) {
+    this.prodCondensor = status;
+    const message = `CMD&prod:${status}\n`;
     this.socketService.sendMessage(message);
   }
 
