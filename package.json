@@ -31,7 +31,7 @@
     "chartjs-plugin-downsample": "^1.1.0",
     "core-js": "^3.6.4",
     "jquery": "^3.4.1",
-    "ng2-charts": "^2.3.0",
+    "ng2-charts": "^2.0.0",
     "ngx-ui-switch": "^8.3.0",
     "npm": "^6.2.0",
     "nyc": "^15.0.0",
@@ -58,6 +58,6 @@
     "protractor": "^5.4.3",
     "ts-node": "~8.6.2",
     "tslint": "~6.0.0",
-    "typescript": "3.7.5"
+    "typescript": "^3.5.3"
   }
 }

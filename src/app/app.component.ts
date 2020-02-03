@@ -4,7 +4,7 @@ import { Chart } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 // import { Chart } from 'chartjs-plugin-downsample';
 import { TuneControllerComponent } from './tune-controller';
-import { splitMatchedQueriesDsl } from '@angular/core/src/view/util';
+// import { splitMatchedQueriesDsl } from '@angular/core';
 import { ChartService } from './chart-service.service';
 
 enum chartType {
@@ -20,7 +20,7 @@ enum chartType {
 })
 
 export class AppComponent {
-  @ViewChild(BaseChartDirective)
+  @ViewChild(BaseChartDirective, {static: false})
   public chart: BaseChartDirective;
   currentTemps = [0, 0, 0, 0, 0];
   setpoint: number;
@@ -57,33 +57,34 @@ export class AppComponent {
     this.socketService.createSocket('ws://192.168.1.201:80/ws')
       .subscribe(data => {
         try {
-          data = JSON.parse(data);
+          let dataFrame = JSON.parse(data);
           let len: number;
-          if (!Array.isArray(data)) {
-            // If initial connection, server sends whole array of data
-            len = data['T1'].length;
-            for (let i = 1; i < len; i++) {
-              // IIR filter on temperature data for smoothing plotting
-              const T1 = data['T1'][i - 1] * 0.75 + data['T1'][i] * 0.25;
-              const T2 = data['T2'][i - 1] * 0.75 + data['T2'][i] * 0.25;
-              data['T1'][i] = T1;
-              data['T2'][i] = T2;
+          // if (!Array.isArray(data)) {
+          //   // If initial connection, server sends whole array of data
+          //   len = data['T1'].length;
+          //   // for (let i = 1; i < len; i++) {
+          //   //   // IIR filter on temperature data for smoothing plotting
+          //   //   const T1 = data['T1'][i - 1] * 0.75 + data['T1'][i] * 0.25;
+          //   //   const T2 = data['T2'][i - 1] * 0.75 + data['T2'][i] * 0.25;
+          //   //   data['T1'][i] = T1;
+          //   //   data['T2'][i] = T2;
 
-              // Push data to chart series
-              this.dataSeriesMainChart[0].data.push(T1);
-              this.dataSeriesMainChart[2].data.push(T2);
-              this.dataSeriesMainChart[1].data.push(data['setpoint'][i]);
-              const time = this.msToHMS(data['time'][i]);
-              this.chartLabels.push(this.FormatTimeString(time[0], time[1], time[2]));
-            }
-            // Set current temp variables so filter continues to run without break
-            this.currentTemps[0] = data['T1'][len - 1];
-            this.currentTemps[1] = data['T2'][len - 1];
-          } else {
+          //   //   // Push data to chart series
+          //   //   this.dataSeriesMainChart[0].data.push(T1);
+          //   //   this.dataSeriesMainChart[2].data.push(T2);
+          //   //   this.dataSeriesMainChart[1].data.push(data['setpoint'][i]);
+          //   //   const time = this.msToHMS(data['time'][i]);
+          //   //   this.chartLabels.push(this.FormatTimeString(time[0], time[1], time[2]));
+          //   // }
+          //   // Set current temp variables so filter continues to run without break
+          //   this.currentTemps[0] = data['T1'][len - 1];
+          //   this.currentTemps[1] = data['T2'][len - 1];
+          // } else {
             // If already connected, server sends one sample of data as [temp, setpoint, time]
-            this.updateCurrentVals(data);
+            console.log(`Updating: ${dataFrame}`);
+            this.updateCurrentVals(dataFrame);
             this.updateChart();
-          }
+          // }
         } catch (err) {
           console.log(`Failed string ${data}`);
         }
@@ -121,7 +122,7 @@ export class AppComponent {
     this.currentTemps[2] = this.currentTemps[2] * 0.75 + parseFloat(data[2]) * 0.25;
     this.currentTemps[3] = this.currentTemps[3] * 0.75 + parseFloat(data[3]) * 0.25;
     this.currentTemps[4] = this.currentTemps[4] * 0.75 + parseFloat(data[4]) * 0.25;
-    this.setpoint = data[5];
+    this.setpoint = data.setpoint;
     const time = this.msToHMS(data[6]);
     this.measuredTime = this.FormatTimeString(time[0], time[1], time[2]);
     this.flowRate = data[7];

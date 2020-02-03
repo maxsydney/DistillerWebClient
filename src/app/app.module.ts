@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { SocketService } from './socket.service';
-import { ChartsModule } from 'ng2-charts/ng2-charts';
+import { ChartsModule } from 'ng2-charts/';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { TuneControllerComponent } from './tune-controller';
@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     BrowserModule,
     ChartsModule,
-    NgbModule.forRoot(),
+    NgbModule,
     FormsModule
   ],
   providers: [SocketService],
