@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { ChartDataSets, ChartOptions } from 'chart.js';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChartService {
-  dataSeriesMainChart = [
+  dataSeriesMainChart: ChartDataSets[] = [
     {
       data:  [],
       label: 'Distiller outflow temp'
@@ -19,7 +20,7 @@ export class ChartService {
     }
   ];
 
-  dataSeriesSecondary = [
+  dataSeriesSecondary: ChartDataSets[] = [
     {
       data:  [],
       label: 'Product in'
@@ -34,7 +35,7 @@ export class ChartService {
     }
   ];
 
-  dataSeriesConcentration = [
+  dataSeriesConcentration: ChartDataSets[] = [
     {
       data:  [],
       label: 'Vapour Concentration'
@@ -46,7 +47,7 @@ export class ChartService {
   ];
 
   // Main chart config
-  chartOptionsMain = {
+  chartOptionsMainProcess = {
     responsive: true,
     animation: false,
     cubicInterpolationMode: 'monotone',
@@ -103,7 +104,7 @@ export class ChartService {
   };
 
   // Secondary chart config
-  chartOptionsSecondary = {
+  chartOptionsAuxiliary = {
     responsive: true,
     animation: false,
     cubicInterpolationMode: 'monotone',

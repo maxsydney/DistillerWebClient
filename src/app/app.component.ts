@@ -2,9 +2,7 @@ import { Component, OnInit, AfterViewInit, ViewChild} from '@angular/core';
 import { SocketService } from './socket.service';
 import { Chart } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-// import { Chart } from 'chartjs-plugin-downsample';
 import { TuneControllerComponent } from './tune-controller';
-// import { splitMatchedQueriesDsl } from '@angular/core';
 import { ChartService } from './chart-service.service';
 
 enum chartType {
@@ -44,7 +42,7 @@ export class AppComponent {
   dataSeriesSecondary: any;
   dataSeriesConcentration: any;
   mainChartConfig: any;
-  secondaryChartConfig: any;
+  auxiliaryChartConfig: any;
   alcoholChartConfig: any;
 
   chartData = [];
@@ -83,7 +81,7 @@ export class AppComponent {
           //   // If already connected, server sends one sample of data as [temp, setpoint, time]
           //   console.log(`Updating: ${dataFrame}`);
             this.updateData(dataFrame);
-          //   this.updateChart();
+            this.updateChart();
           // }
         } catch (err) {
           console.log(`Failed string ${err}`);
@@ -95,23 +93,21 @@ export class AppComponent {
     this.dataSeriesMainChart = this.chartConfig.dataSeriesMainChart;
     this.dataSeriesSecondary = this.chartConfig.dataSeriesSecondary;
     this.dataSeriesConcentration = this.chartConfig.dataSeriesConcentration;
-    this.mainChartConfig = this.chartConfig.chartOptionsMain;
-    this.secondaryChartConfig = this.chartConfig.chartOptionsSecondary;
+    this.mainChartConfig = this.chartConfig.chartOptionsMainProcess;
+    this.auxiliaryChartConfig = this.chartConfig.chartOptionsAuxiliary;
     this.alcoholChartConfig = this.chartConfig.chartOptionsConcentrations;
   }
 
   updateChart() {
     this.chartLabels.push(this.measuredTime);
-    this.dataSeriesMainChart[0].data.push(this.currentTemps[0]);
-    this.dataSeriesMainChart[1].data.push(this.setpoint);
-    this.dataSeriesMainChart[2].data.push(this.currentTemps[1]);
-    this.dataSeriesSecondary[0].data.push(this.currentTemps[2]);
-    this.dataSeriesSecondary[1].data.push(this.currentTemps[3]);
-    this.dataSeriesSecondary[2].data.push(this.currentTemps[4]);
-    this.dataSeriesConcentration[0].data.push(this.vapConc);
-    this.dataSeriesConcentration[1].data.push(this.liquidConc);
-    console.log(`Vapour concentration: ${this.vapConc}`);
-    console.log(`Liquid concentration: ${this.liquidConc}`);
+    this.dataSeriesMainChart.headTemperature.data.push(this.currentTemps[0]);
+    this.dataSeriesMainChart.setpoint.data.push(this.setpoint);
+    this.dataSeriesMainChart.radiatorTep.data.push(this.currentTemps[1]);
+    // this.dataSeriesSecondary[0].data.push(this.currentTemps[2]);
+    // this.dataSeriesSecondary[1].data.push(this.currentTemps[3]);
+    // this.dataSeriesSecondary[2].data.push(this.currentTemps[4]);
+    // this.dataSeriesConcentration[0].data.push(this.vapConc);
+    // this.dataSeriesConcentration[1].data.push(this.liquidConc);
     this.chart.chart.update();
   }
 

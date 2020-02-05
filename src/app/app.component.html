@@ -23,7 +23,6 @@
                     *ngIf="activeChart == 0"
                     baseChart
                     [chartType]="'line'"
-                    [data]="chartData"
                     [datasets]="dataSeriesMainChart"
                     [labels]="chartLabels"
                     [options]="mainChartConfig"
@@ -33,17 +32,15 @@
                     *ngIf="activeChart == 1"
                     baseChart
                     [chartType]="'line'"
-                    [data]="chartData"
                     [datasets]="dataSeriesSecondary"
                     [labels]="chartLabels"
-                    [options]="secondaryChartConfig"
+                    [options]="auxiliaryChartConfig"
                     [legend]="true">
                 </canvas>
                 <canvas
                     *ngIf="activeChart == 2"
                     baseChart
                     [chartType]="'line'"
-                    [data]="chartData"
                     [datasets]="dataSeriesConcentration"
                     [labels]="chartLabels"
                     [options]="alcoholChartConfig"
