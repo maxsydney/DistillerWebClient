@@ -103,7 +103,6 @@ export class ChartService {
     }
   };
 
-  // Secondary chart config
   chartOptionsAuxiliary = {
     responsive: true,
     animation: false,
@@ -160,7 +159,6 @@ export class ChartService {
     }
   };
 
-  // Alcohol concentration chart config
   chartOptionsConcentrations = {
     responsive: true,
     animation: false,
