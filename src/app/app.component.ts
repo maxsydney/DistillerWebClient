@@ -57,36 +57,36 @@ export class AppComponent {
     this.socketService.createSocket('ws://192.168.1.201:80/ws')
       .subscribe(data => {
         try {
-          let dataFrame = JSON.parse(data);
-          let len: number;
-          // if (!Array.isArray(data)) {
-          //   // If initial connection, server sends whole array of data
-          //   len = data['T1'].length;
-          //   // for (let i = 1; i < len; i++) {
-          //   //   // IIR filter on temperature data for smoothing plotting
-          //   //   const T1 = data['T1'][i - 1] * 0.75 + data['T1'][i] * 0.25;
-          //   //   const T2 = data['T2'][i - 1] * 0.75 + data['T2'][i] * 0.25;
-          //   //   data['T1'][i] = T1;
-          //   //   data['T2'][i] = T2;
+          const dataFrame = JSON.parse(data);
+          // let len: number;
+          // // if (!Array.isArray(data)) {
+          // //   // If initial connection, server sends whole array of data
+          // //   len = data['T1'].length;
+          // //   // for (let i = 1; i < len; i++) {
+          // //   //   // IIR filter on temperature data for smoothing plotting
+          // //   //   const T1 = data['T1'][i - 1] * 0.75 + data['T1'][i] * 0.25;
+          // //   //   const T2 = data['T2'][i - 1] * 0.75 + data['T2'][i] * 0.25;
+          // //   //   data['T1'][i] = T1;
+          // //   //   data['T2'][i] = T2;
 
-          //   //   // Push data to chart series
-          //   //   this.dataSeriesMainChart[0].data.push(T1);
-          //   //   this.dataSeriesMainChart[2].data.push(T2);
-          //   //   this.dataSeriesMainChart[1].data.push(data['setpoint'][i]);
-          //   //   const time = this.msToHMS(data['time'][i]);
-          //   //   this.chartLabels.push(this.FormatTimeString(time[0], time[1], time[2]));
-          //   // }
-          //   // Set current temp variables so filter continues to run without break
-          //   this.currentTemps[0] = data['T1'][len - 1];
-          //   this.currentTemps[1] = data['T2'][len - 1];
-          // } else {
-            // If already connected, server sends one sample of data as [temp, setpoint, time]
-            console.log(`Updating: ${dataFrame}`);
-            this.updateCurrentVals(dataFrame);
-            this.updateChart();
+          // //   //   // Push data to chart series
+          // //   //   this.dataSeriesMainChart[0].data.push(T1);
+          // //   //   this.dataSeriesMainChart[2].data.push(T2);
+          // //   //   this.dataSeriesMainChart[1].data.push(data['setpoint'][i]);
+          // //   //   const time = this.msToHMS(data['time'][i]);
+          // //   //   this.chartLabels.push(this.FormatTimeString(time[0], time[1], time[2]));
+          // //   // }
+          // //   // Set current temp variables so filter continues to run without break
+          // //   this.currentTemps[0] = data['T1'][len - 1];
+          // //   this.currentTemps[1] = data['T2'][len - 1];
+          // // } else {
+          //   // If already connected, server sends one sample of data as [temp, setpoint, time]
+          //   console.log(`Updating: ${dataFrame}`);
+            this.updateData(dataFrame);
+          //   this.updateChart();
           // }
         } catch (err) {
-          console.log(`Failed string ${data}`);
+          console.log(`Failed string ${err}`);
         }
       });
   }
@@ -115,25 +115,25 @@ export class AppComponent {
     this.chart.chart.update();
   }
 
-  updateCurrentVals(data) {
+  updateData(data) {
     console.log(data);
-    this.currentTemps[0] = this.currentTemps[0] * 0.75 + parseFloat(data[0]) * 0.25;
-    this.currentTemps[1] = this.currentTemps[1] * 0.75 + parseFloat(data[1]) * 0.25;
-    this.currentTemps[2] = this.currentTemps[2] * 0.75 + parseFloat(data[2]) * 0.25;
-    this.currentTemps[3] = this.currentTemps[3] * 0.75 + parseFloat(data[3]) * 0.25;
-    this.currentTemps[4] = this.currentTemps[4] * 0.75 + parseFloat(data[4]) * 0.25;
+
+    this.currentTemps[0] = this.currentTemps[0] * 0.75 + data.T_vapour * 0.25;
+    this.currentTemps[1] = this.currentTemps[1] * 0.75 + data.T_refluxInflow * 0.25;
+    this.currentTemps[2] = this.currentTemps[2] * 0.75 + data.T_productInflow * 0.25;
+    this.currentTemps[3] = this.currentTemps[3] * 0.75 + data.T_radiator * 0.25;
+    this.currentTemps[4] = this.currentTemps[4] * 0.75 + data.T_boiler * 0.25;
     this.setpoint = data.setpoint;
-    const time = this.msToHMS(data[6]);
+    const time = this.msToHMS(data.uptime);
     this.measuredTime = this.FormatTimeString(time[0], time[1], time[2]);
-    this.flowRate = data[7];
-    this.elementStatus = data[8];
-    this.P_gain = data[9];
-    this.I_gain = data[10];
-    this.D_gain = data[11];
+    this.flowRate = data.flowrate;
+    this.P_gain = data.P_gain;
+    this.I_gain = data.I_gain;
+    this.D_gain = data.D_gain;
     this.Qdot = this.flowRate / 60 * 4.18 * (this.currentTemps[0] - this.currentTemps[1]);
     this.deltaT = this.currentTemps[0] - this.currentTemps[1];
-    this.liquidConc = this.liquidConc * 0.7 + parseFloat(data[12]) * 0.3;
-    this.vapConc = data[13];
+    this.liquidConc = this.liquidConc * 0.7 + data.boilerConc * 0.3;
+    this.vapConc = data.vapourConc;
   }
 
   msToHMS(seconds) {
