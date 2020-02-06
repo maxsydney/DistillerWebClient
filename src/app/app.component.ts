@@ -58,6 +58,12 @@ export class AppComponent {
       .subscribe(data => {
         try {
           const dataFrame = JSON.parse(data);
+          if (dataFrame.type === 'data') {
+            this.updateData(dataFrame);
+            this.updateChart();
+          } else if (dataFrame.type === 'status') {
+            this.updateStatus(dataFrame);
+          }
           // let len: number;
           // // if (!Array.isArray(data)) {
           // //   // If initial connection, server sends whole array of data
@@ -82,8 +88,6 @@ export class AppComponent {
           // // } else {
           //   // If already connected, server sends one sample of data as [temp, setpoint, time]
           //   console.log(`Updating: ${dataFrame}`);
-            this.updateData(dataFrame);
-          //   this.updateChart();
           // }
         } catch (err) {
           console.log(`Failed string ${err}`);
@@ -116,8 +120,6 @@ export class AppComponent {
   }
 
   updateData(data) {
-    console.log(data);
-
     this.currentTemps[0] = this.currentTemps[0] * 0.75 + data.T_vapour * 0.25;
     this.currentTemps[1] = this.currentTemps[1] * 0.75 + data.T_refluxInflow * 0.25;
     this.currentTemps[2] = this.currentTemps[2] * 0.75 + data.T_productInflow * 0.25;
@@ -134,6 +136,13 @@ export class AppComponent {
     this.deltaT = this.currentTemps[0] - this.currentTemps[1];
     this.liquidConc = this.liquidConc * 0.7 + data.boilerConc * 0.3;
     this.vapConc = data.vapourConc;
+  }
+
+  updateStatus(data) {
+    this.fanState = data.fanState;
+    this.flush = data.flush;
+    this.element1 = data.element1State;
+    this.prodCondensor = data.prodCondensorManual;
   }
 
   msToHMS(seconds) {
