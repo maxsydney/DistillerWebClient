@@ -30,7 +30,6 @@ export class AppComponent {
   D_gain = 0;
   fanState = false;
   flush = false;
-  filter = false;
   element1 = false;
   prodCondensor = false;
   Qdot: number;
@@ -38,20 +37,12 @@ export class AppComponent {
   OTA_IP: string;
   vapConc = 0;
   liquidConc = 0;
-  dataSeriesMainChart: any;
-  dataSeriesSecondary: any;
-  dataSeriesConcentration: any;
-  mainChartConfig: any;
-  auxiliaryChartConfig: any;
-  alcoholChartConfig: any;
 
-  chartData = [];
   chartLabels = [];
   measuredTime = '';
 
   constructor(private socketService: SocketService,
-              private chartConfig: ChartService) {
-    this.importChartData();
+              public chartConfig: ChartService) {
     this.socketService.createSocket('ws://192.168.1.201:80/ws')
       .subscribe(data => {
         try {
@@ -86,11 +77,6 @@ export class AppComponent {
           // // } else {
           //   // If already connected, server sends one sample of data as [temp, setpoint, time]
           //   console.log(`Updating: ${dataFrame}`);
-<<<<<<< HEAD
-            this.updateData(dataFrame);
-            this.updateChart();
-=======
->>>>>>> addJSON
           // }
         } catch (err) {
           console.log(`Failed string ${err}`);
@@ -98,25 +84,16 @@ export class AppComponent {
       });
   }
 
-  importChartData() {
-    this.dataSeriesMainChart = this.chartConfig.dataSeriesMainChart;
-    this.dataSeriesSecondary = this.chartConfig.dataSeriesSecondary;
-    this.dataSeriesConcentration = this.chartConfig.dataSeriesConcentration;
-    this.mainChartConfig = this.chartConfig.chartOptionsMainProcess;
-    this.auxiliaryChartConfig = this.chartConfig.chartOptionsAuxiliary;
-    this.alcoholChartConfig = this.chartConfig.chartOptionsConcentrations;
-  }
-
   updateChart() {
     this.chartLabels.push(this.measuredTime);
-    this.dataSeriesMainChart.headTemperature.data.push(this.currentTemps[0]);
-    this.dataSeriesMainChart.setpoint.data.push(this.setpoint);
-    this.dataSeriesMainChart.radiatorTep.data.push(this.currentTemps[1]);
-    // this.dataSeriesSecondary[0].data.push(this.currentTemps[2]);
-    // this.dataSeriesSecondary[1].data.push(this.currentTemps[3]);
-    // this.dataSeriesSecondary[2].data.push(this.currentTemps[4]);
-    // this.dataSeriesConcentration[0].data.push(this.vapConc);
-    // this.dataSeriesConcentration[1].data.push(this.liquidConc);
+    this.chartConfig.dataSeriesMainChart[0].data.push(this.currentTemps[0]);
+    this.chartConfig.dataSeriesMainChart[1].data.push(this.setpoint);
+    this.chartConfig.dataSeriesMainChart[2].data.push(this.currentTemps[1]);
+    this.chartConfig.dataSeriesSecondary[0].data.push(this.currentTemps[2]);
+    this.chartConfig.dataSeriesSecondary[1].data.push(this.currentTemps[3]);
+    this.chartConfig.dataSeriesSecondary[2].data.push(this.currentTemps[4]);
+    this.chartConfig.dataSeriesConcentration[0].data.push(this.vapConc);
+    this.chartConfig.dataSeriesConcentration[1].data.push(this.liquidConc);
     this.chart.chart.update();
   }
 
@@ -217,19 +194,8 @@ export class AppComponent {
     this.socketService.sendMessage(message);
   }
 
-  filterTempSensors(status) {
-    this.filter = status;
-    const message = `CMD&filterT:${status}\n`;
-    this.socketService.sendMessage(message);
-  }
-
   swapTempSensors() {
     const message = 'CMD&swapTempSensors:1\n';
-    this.socketService.sendMessage(message);
-  }
-
-  refreshScreen() {
-    const message = 'PICMD&refreshScreen\n';
     this.socketService.sendMessage(message);
   }
 

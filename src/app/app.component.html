@@ -23,27 +23,27 @@
                     *ngIf="activeChart == 0"
                     baseChart
                     [chartType]="'line'"
-                    [datasets]="dataSeriesMainChart"
+                    [datasets]="chartConfig.dataSeriesMainChart"
                     [labels]="chartLabels"
-                    [options]="mainChartConfig"
+                    [options]="chartConfig.chartOptionsMainProcess"
                     [legend]="true">
                 </canvas>
                 <canvas
                     *ngIf="activeChart == 1"
                     baseChart
                     [chartType]="'line'"
-                    [datasets]="dataSeriesSecondary"
+                    [datasets]="chartConfig.dataSeriesSecondary"
                     [labels]="chartLabels"
-                    [options]="auxiliaryChartConfig"
+                    [options]="chartConfig.chartOptionsAuxiliary"
                     [legend]="true">
                 </canvas>
                 <canvas
                     *ngIf="activeChart == 2"
                     baseChart
                     [chartType]="'line'"
-                    [datasets]="dataSeriesConcentration"
+                    [datasets]="chartConfig.dataSeriesConcentration"
                     [labels]="chartLabels"
-                    [options]="alcoholChartConfig"
+                    [options]="chartConfig.chartOptionsConcentrations"
                     [legend]="true">
                 </canvas>
               </div>
@@ -120,28 +120,11 @@
                 </div>
                 <div class="row top-buffer">
                   <div class="col-sm-8">
-                      <h6> Refresh screen </h6>
-                    </div>
-                    <div class="col-sm-2">
-                        <button (click)="refreshScreen()" type="button" class="btn btn-success btn-sm"> Refresh </button>
-                    </div>
-                </div>
-                <div class="row top-buffer">
-                  <div class="col-sm-8">
                     <h6> Flush system </h6>
                   </div>
                   <div class="col-sm-2">
                     <button *ngIf="!flush" (click)="flushSystem(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
                     <button *ngIf="flush" (click)="flushSystem(0)" type="button" class="btn btn-success btn-sm"> On </button>
-                  </div>
-                </div>
-                <div class="row top-buffer">
-                  <div class="col-sm-8">
-                    <h6> Filter </h6>
-                  </div>
-                  <div class="col-sm-2">
-                    <button *ngIf="!filter" (click)="filterTempSensors(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
-                    <button *ngIf="filter" (click)="filterTempSensors(0)" type="button" class="btn btn-success btn-sm"> On </button>
                   </div>
                 </div>
                 <div class="row top-buffer">
