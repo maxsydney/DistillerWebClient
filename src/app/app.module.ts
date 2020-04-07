@@ -6,11 +6,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import { TuneControllerComponent } from './tune-controller';
 import { FormsModule } from '@angular/forms';
+import { AssignSensorsComponent } from './assign-sensors/assign-sensors.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TuneControllerComponent
+    TuneControllerComponent,
+    AssignSensorsComponent
   ],
   imports: [
     BrowserModule,

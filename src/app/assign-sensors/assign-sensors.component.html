@@ -1,0 +1,38 @@
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Assign temp sensors</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-sm-6">
+        <div ngbDropdown class="d-inline-block">
+          <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Select sensor</button>
+          <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+            <button ngbDropdownItem *ngFor="let sensor of availableSensors"> {{sensor}} </button>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div ngbDropdown class="d-inline-block">
+            <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Assign to</button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+              <button ngbDropdownItem>Column head</button>
+              <button ngbDropdownItem>Boiler</button>
+              <button ngbDropdownItem>Reflux out</button>
+              <button ngbDropdownItem>Product out</button>
+              <button ngbDropdownItem>Radiator out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="sendParams()">Select</button>
+  </div>
+</ng-template>
+<button class="btn btn-outline-primary" (click)="open(content)">Assign sensors</button>
+
+<hr>

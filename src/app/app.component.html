@@ -69,6 +69,7 @@
                 <div class="col-sm-5"> <h6> {{ setpoint | number:'.0-0'}} °C </h6> </div>
               </div>
               <app-tune-controller (messageEvent)="receiveControllerParams($event)"></app-tune-controller>
+              <app-assign-sensors (messageEvent)="receiveControllerParams($event)"></app-assign-sensors>
             </div>
 
             <div class="container-fluid">
