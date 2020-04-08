@@ -26,6 +26,7 @@ export class AssignSensorsComponent implements OnInit {
               private socketService: SocketService) { }
 
     open(content: any) {
+      this.runTask();
       this.modalReference = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
       this.conn = this.socketService.connect('ws://192.168.1.202:80/ws');
       this.subscription = this.conn.subscribe(
@@ -35,6 +36,10 @@ export class AssignSensorsComponent implements OnInit {
       );
 
       this.modalReference. result.then(() => { }, () => { this.subscription.unsubscribe()});
+    }
+
+    runTask() {
+      this.socketService.sendMessage('TASK&');
     }
 
   ngOnInit() {
