@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { WebSocketSubject } from 'rxjs/webSocket';
+import { Observable, Subject} from 'rxjs';
 import { SocketService } from '../socket.service';
 
 @Component({
@@ -10,6 +12,8 @@ import { SocketService } from '../socket.service';
 export class AssignSensorsComponent implements OnInit {
 
   modalReference: NgbModalRef;
+  private conn: Observable<JSON>;
+  subscription: any;
   location = 'Assign to';
 
   availableSensors = [
@@ -23,10 +27,14 @@ export class AssignSensorsComponent implements OnInit {
 
     open(content: any) {
       this.modalReference = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
-      this.socketService.createSocket("ws://192.168.1.201:80/ws")
-        .subscribe(data => {
-          console.log(data);
-        });
+      this.conn = this.socketService.connect('ws://192.168.1.202:80/ws');
+      this.subscription = this.conn.subscribe(
+        msg => {
+          console.log(msg);
+        }
+      );
+
+      this.modalReference. result.then(() => { }, () => { this.subscription.unsubscribe()});
     }
 
   ngOnInit() {

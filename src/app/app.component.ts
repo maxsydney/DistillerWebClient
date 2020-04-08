@@ -43,43 +43,13 @@ export class AppComponent {
 
   constructor(private socketService: SocketService,
               public chartConfig: ChartService) {
-    this.socketService.createSocket('ws://192.168.1.201:80/ws')
-      .subscribe(data => {
-        try {
-          const dataFrame = JSON.parse(data);
-          if (dataFrame.type === 'data') {
-            this.updateData(dataFrame);
-            this.updateChart();
-          } else if (dataFrame.type === 'status') {
-            this.updateStatus(dataFrame);
-          }
-          // let len: number;
-          // // if (!Array.isArray(data)) {
-          // //   // If initial connection, server sends whole array of data
-          // //   len = data['T1'].length;
-          // //   // for (let i = 1; i < len; i++) {
-          // //   //   // IIR filter on temperature data for smoothing plotting
-          // //   //   const T1 = data['T1'][i - 1] * 0.75 + data['T1'][i] * 0.25;
-          // //   //   const T2 = data['T2'][i - 1] * 0.75 + data['T2'][i] * 0.25;
-          // //   //   data['T1'][i] = T1;
-          // //   //   data['T2'][i] = T2;
-
-          // //   //   // Push data to chart series
-          // //   //   this.dataSeriesMainChart[0].data.push(T1);
-          // //   //   this.dataSeriesMainChart[2].data.push(T2);
-          // //   //   this.dataSeriesMainChart[1].data.push(data['setpoint'][i]);
-          // //   //   const time = this.msToHMS(data['time'][i]);
-          // //   //   this.chartLabels.push(this.FormatTimeString(time[0], time[1], time[2]));
-          // //   // }
-          // //   // Set current temp variables so filter continues to run without break
-          // //   this.currentTemps[0] = data['T1'][len - 1];
-          // //   this.currentTemps[1] = data['T2'][len - 1];
-          // // } else {
-          //   // If already connected, server sends one sample of data as [temp, setpoint, time]
-          //   console.log(`Updating: ${dataFrame}`);
-          // }
-        } catch (err) {
-          console.log(`Failed string ${err}`);
+    this.socketService.connect('ws://192.168.1.202:80/ws')
+      .subscribe(dataFrame => {
+        if (dataFrame['type'] === 'data') {
+          this.updateData(dataFrame);
+          this.updateChart();
+        } else if (dataFrame['type'] === 'status') {
+          this.updateStatus(dataFrame);
         }
       });
   }
