@@ -44,12 +44,12 @@ export class AppComponent {
   constructor(private socketService: SocketService,
               public chartConfig: ChartService) {
     this.socketService.connect('ws://192.168.1.202:80/ws')
-      .subscribe(dataFrame => {
-        if (dataFrame['type'] === 'data') {
-          this.updateData(dataFrame);
+      .subscribe(data => {
+        if (data.type === 'data') {
+          this.updateData(data);
           this.updateChart();
-        } else if (dataFrame['type'] === 'status') {
-          this.updateStatus(dataFrame);
+        } else if (data['type'] === 'status') {
+          this.updateStatus(data);
         }
       });
   }
@@ -120,24 +120,26 @@ export class AppComponent {
   }
 
   receiveControllerParams($event) {
-    let message: string = $event;
-    console.log(message);
-    const dataArray = message.split(',');
-    if (dataArray[0] === '-1') {
-      dataArray[0] = this.P_gain.toString();
+    const PIDmsg: object = $event;
+    console.log(PIDmsg);
+
+    console.log(PIDmsg.setpoint);
+
+    if (PIDmsg.P_gain === -1) {
+      PIDmsg.P_gain = this.P_gain;
     }
-    if (dataArray[1] === '-1') {
-      dataArray[1] = this.I_gain.toString();
+    if (PIDmsg.I_gain === -1) {
+      PIDmsg.I_gain  = this.I_gain;
     }
-    if (dataArray[2] === '-1') {
-      dataArray[2] = this.D_gain.toString();
+    if (PIDmsg.D_gain === -1) {
+      PIDmsg.D_gain = this.D_gain;
     }
-    if (dataArray[3] === '-1') {
-      dataArray[3] = this.setpoint.toString();
+    if (PIDmsg.setpoint === -1) {
+      PIDmsg.setpoint = this.setpoint;
     }
 
-    message = `INFO&setpoint:${dataArray[3]},P:${dataArray[0]},I:${dataArray[1]},D:${dataArray[2]}\n`;
-    this.socketService.sendMessage(message);
+    this.socketService.sendMessage(JSON.stringify(PIDmsg));
+    console.log(JSON.stringify(PIDmsg));
   }
 
   fanControl(status) {

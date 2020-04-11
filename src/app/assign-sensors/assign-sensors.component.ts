@@ -12,7 +12,7 @@ import { SocketService } from '../socket.service';
 export class AssignSensorsComponent implements OnInit {
 
   modalReference: NgbModalRef;
-  private conn: Observable<JSON>;
+  private conn: Observable<string>;
   subscription: any;
   location = 'Assign to';
 
@@ -39,7 +39,13 @@ export class AssignSensorsComponent implements OnInit {
     }
 
     runTask() {
-      this.socketService.sendMessage('TASK&');
+      const msg = {
+        type: 'CMD',
+        arg: 'ASSIGN'
+      };
+
+      this.socketService.sendMessage(JSON.stringify(msg).replace(/\\/g, ''));
+      console.log(JSON.stringify(msg).replace(/\\/g, ''));
     }
 
   ngOnInit() {
