@@ -5,11 +5,25 @@ export class ControllerParamsMsg {
   type = 'INFO';
   subtype = 'ctrlParams';
   data = new ControllerParams;
+
+  update(params: ControllerParams): void {
+    this.data = params;
+  }
 }
 
-// Define controller settings message. Sent from browser to Pissbo
+// Define controller settings message. Sent from browser to Pissbot
 export class ControllerSettingsMsg {
   type = 'INFO';
   subtype = 'ctrlSettings';
   data = new ControllerSettings;
+
+  update(settings: ControllerSettings): void {
+    this.data = settings;
+  }
+}
+
+export class OTACommand {
+  type = 'CMD';
+  subtype = 'OTA';
+  IP = '';
 }

@@ -113,29 +113,11 @@
                 </div>
                 <div class="row top-buffer">
                   <div class="col-sm-8">
-                    <h6>Swap temp sensors</h6>
-                  </div>
-                  <div class="col-sm-2">
-                    <button (click)="swapTempSensors()" type="button" class="btn btn-success btn-sm"> Swap </button>
-                  </div>
-                </div>
-                <div class="row top-buffer">
-                  <div class="col-sm-8">
                     <h6> Flush system </h6>
                   </div>
                   <div class="col-sm-2">
                     <button *ngIf="!ctrlSettings.flush" (click)="flushSystem(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
                     <button *ngIf="ctrlSettings.flush" (click)="flushSystem(0)" type="button" class="btn btn-success btn-sm"> On </button>
-                  </div>
-                </div>
-                <div class="row top-buffer">
-                  <div class="col-sm-8">
-                      <h6> Switch charts </h6>
-                  </div>
-                  <div class="col-sm-2">
-                        <button *ngIf="activeChart == 0" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Main Chart </button>
-                        <button *ngIf="activeChart == 1" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Auxiliary Chart </button>
-                        <button *ngIf="activeChart == 2" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Alcohol Chart </button>
                   </div>
                 </div>
                 <div class="row top-buffer">
@@ -154,6 +136,16 @@
                   <div class="col-sm-2">
                     <button *ngIf="!ctrlSettings.prodCondensor" (click)="controlProductCondensor(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
                     <button *ngIf="ctrlSettings.prodCondensor" (click)="controlProductCondensor(0)" type="button" class="btn btn-success btn-sm"> On </button>
+                  </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
+                      <h6> Switch charts </h6>
+                  </div>
+                  <div class="col-sm-2">
+                        <button *ngIf="activeChart == 0" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Main Chart </button>
+                        <button *ngIf="activeChart == 1" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Auxiliary Chart </button>
+                        <button *ngIf="activeChart == 2" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Alcohol Chart </button>
                   </div>
                 </div>
                 <div class="row top-buffer">

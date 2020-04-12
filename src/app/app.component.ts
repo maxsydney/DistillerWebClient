@@ -4,7 +4,7 @@ import { Chart } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { TuneControllerComponent } from './tune-controller';
 import { ChartService } from './chart-service.service';
-import { ControllerParamsMsg } from './comm-types';
+import { ControllerParamsMsg, ControllerSettingsMsg, OTACommand } from './comm-types';
 import { ControllerParams, ControllerSettings, SystemState } from './data-types';
 
 enum chartType {
@@ -73,43 +73,42 @@ export class AppComponent {
       PIDmsg.data.setpoint = this.ctrlParams.setpoint;
     }
 
-    // this.socketService.sendMessage(JSON.stringify(PIDmsg));
+    this.socketService.sendMessage(JSON.stringify(PIDmsg));
     console.log(JSON.stringify(PIDmsg));
   }
 
   fanControl(status) {
     this.ctrlSettings.fanState = status;
-    const message = `CMD&fanState:${status}\n`;
-    this.socketService.sendMessage(message);
+    const msg = new ControllerSettingsMsg;
+    msg.update(this.ctrlSettings);
+    this.socketService.sendMessage(JSON.stringify(msg));
   }
 
   elementControlLowPower(status) {
     this.ctrlSettings.elementLow = status;
-    const message = `CMD&element1:${status}\n`;
-    this.socketService.sendMessage(message);
+    const msg = new ControllerSettingsMsg;
+    msg.update(this.ctrlSettings);
+    this.socketService.sendMessage(JSON.stringify(msg));
   }
 
   controlProductCondensor(status) {
     this.ctrlSettings.prodCondensor = status;
-    const message = `CMD&prod:${status}\n`;
-    this.socketService.sendMessage(message);
+    const msg = new ControllerSettingsMsg;
+    msg.update(this.ctrlSettings);
+    this.socketService.sendMessage(JSON.stringify(msg));
   }
 
   flushSystem(status) {
     this.ctrlSettings.flush = status;
-    const message = `CMD&flush:${status}\n`;
-    this.socketService.sendMessage(message);
-  }
-
-  swapTempSensors() {
-    const message = 'CMD&swapTempSensors:1\n';
-    this.socketService.sendMessage(message);
+    const msg = new ControllerSettingsMsg;
+    msg.update(this.ctrlSettings);
+    this.socketService.sendMessage(JSON.stringify(msg));
   }
 
   runOTA() {
-    const message = `CMD&OTA:${this.OTA_IP}\n`;
-    console.log(message);
-    this.socketService.sendMessage(message);
+    const OTA = new OTACommand;
+    OTA.IP = this.OTA_IP;
+    this.socketService.sendMessage(JSON.stringify(OTA));
   }
 
   swapCharts() {
