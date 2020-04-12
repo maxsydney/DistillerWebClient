@@ -4,6 +4,8 @@ import { Chart } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { TuneControllerComponent } from './tune-controller';
 import { ChartService } from './chart-service.service';
+import { ControllerParamsMsg } from './comm-types';
+import { ControllerParams, ControllerSettings, SystemState } from './data-types';
 
 enum chartType {
   mainChart,
@@ -20,148 +22,81 @@ enum chartType {
 export class AppComponent {
   @ViewChild(BaseChartDirective, {static: false})
   public chart: BaseChartDirective;
-  currentTemps = [0, 0, 0, 0, 0];
-  setpoint: number;
-  flowRate: number;
-  deltaT: number;
-  elementStatus: number;
-  P_gain = 0;
-  I_gain = 0;
-  D_gain = 0;
-  fanState = false;
-  flush = false;
-  element1 = false;
-  prodCondensor = false;
-  Qdot: number;
+  ctrlParams = new ControllerParams;
+  ctrlSettings = new ControllerSettings;
+  state = new SystemState;
   activeChart = chartType.mainChart;
   OTA_IP: string;
-  vapConc = 0;
-  liquidConc = 0;
 
   chartLabels = [];
-  measuredTime = '';
 
   constructor(private socketService: SocketService,
               public chartConfig: ChartService) {
     this.socketService.connect('ws://192.168.1.202:80/ws')
       .subscribe(data => {
         if (data.type === 'data') {
-          this.updateData(data);
+          this.state.update(data);
+          this.ctrlParams.update(data);
           this.updateChart();
         } else if (data['type'] === 'status') {
-          this.updateStatus(data);
+          this.ctrlSettings.update(data);
         }
       });
   }
 
   updateChart() {
-    this.chartLabels.push(this.measuredTime);
-    this.chartConfig.dataSeriesMainChart[0].data.push(this.currentTemps[0]);
-    this.chartConfig.dataSeriesMainChart[1].data.push(this.setpoint);
-    this.chartConfig.dataSeriesMainChart[2].data.push(this.currentTemps[1]);
-    this.chartConfig.dataSeriesSecondary[0].data.push(this.currentTemps[2]);
-    this.chartConfig.dataSeriesSecondary[1].data.push(this.currentTemps[3]);
-    this.chartConfig.dataSeriesSecondary[2].data.push(this.currentTemps[4]);
-    this.chartConfig.dataSeriesConcentration[0].data.push(this.vapConc);
-    this.chartConfig.dataSeriesConcentration[1].data.push(this.liquidConc);
+    this.chartLabels.push(this.state.getTimeStr());
+    this.chartConfig.dataSeriesMainChart[0].data.push(this.state.T_head);
+    this.chartConfig.dataSeriesMainChart[1].data.push(this.ctrlParams.setpoint);
+    this.chartConfig.dataSeriesMainChart[2].data.push(this.state.T_reflux);
+    this.chartConfig.dataSeriesSecondary[0].data.push(this.state.T_prod);
+    this.chartConfig.dataSeriesSecondary[1].data.push(this.state.T_radiator);
+    this.chartConfig.dataSeriesSecondary[2].data.push(this.state.T_boiler);
+    this.chartConfig.dataSeriesConcentration[0].data.push(this.state.vapConc);
+    this.chartConfig.dataSeriesConcentration[1].data.push(this.state.boilerConc);
     this.chart.chart.update();
   }
 
-  updateData(data) {
-    this.currentTemps[0] = this.currentTemps[0] * 0.75 + data.T_vapour * 0.25;
-    this.currentTemps[1] = this.currentTemps[1] * 0.75 + data.T_refluxInflow * 0.25;
-    this.currentTemps[2] = this.currentTemps[2] * 0.75 + data.T_productInflow * 0.25;
-    this.currentTemps[3] = this.currentTemps[3] * 0.75 + data.T_radiator * 0.25;
-    this.currentTemps[4] = this.currentTemps[4] * 0.75 + data.T_boiler * 0.25;
-    this.setpoint = data.setpoint;
-    const time = this.msToHMS(data.uptime);
-    this.measuredTime = this.FormatTimeString(time[0], time[1], time[2]);
-    this.flowRate = data.flowrate;
-    this.P_gain = data.P_gain;
-    this.I_gain = data.I_gain;
-    this.D_gain = data.D_gain;
-    this.Qdot = this.flowRate / 60 * 4.18 * (this.currentTemps[0] - this.currentTemps[1]);
-    this.deltaT = this.currentTemps[0] - this.currentTemps[1];
-    this.liquidConc = this.liquidConc * 0.7 + data.boilerConc * 0.3;
-    this.vapConc = data.vapourConc;
-  }
+  receiveControllerParamsMsg($event) {
+    const PIDmsg: ControllerParamsMsg = $event;
 
-  updateStatus(data) {
-    this.fanState = data.fanState;
-    this.flush = data.flush;
-    this.element1 = data.element1State;
-    this.prodCondensor = data.prodCondensorManual;
-  }
-
-  msToHMS(seconds) {
-    // 1- Convert to seconds:
-    // let seconds = ms / 1000;
-    // 2- Extract hours:
-    const hours = Math.floor(seconds / 3600); // 3,600 seconds in 1 hour
-    seconds = seconds % 3600; // seconds remaining after extracting hours
-    // 3- Extract minutes:
-    const minutes = Math.floor(seconds / 60 ); // 60 seconds in 1 minute
-    // 4- Keep only seconds not extracted to minutes:
-    seconds = Math.floor(seconds % 60);
-    // return(hours + ':' + minutes + ':' + seconds);
-    return [hours, minutes, seconds];
-  }
-
-  FormatNumberLength(num, length) {
-    let r = '' + num;
-    while (r.length < length) {
-        r = '0' + r;
+    if (PIDmsg.data.P_gain === -1) {
+      PIDmsg.data.P_gain = this.ctrlParams.P_gain;
     }
-    return r;
-  }
-
-  FormatTimeString(hours, mins, seconds) {
-    return `${this.FormatNumberLength(hours, 2)}:${this.FormatNumberLength(mins, 2)}:${this.FormatNumberLength(seconds, 2)}`;
-  }
-
-  receiveControllerParams($event) {
-    const PIDmsg: object = $event;
-    console.log(PIDmsg);
-
-    console.log(PIDmsg.setpoint);
-
-    if (PIDmsg.P_gain === -1) {
-      PIDmsg.P_gain = this.P_gain;
+    if (PIDmsg.data.I_gain === -1) {
+      PIDmsg.data.I_gain  = this.ctrlParams.I_gain;
     }
-    if (PIDmsg.I_gain === -1) {
-      PIDmsg.I_gain  = this.I_gain;
+    if (PIDmsg.data.D_gain === -1) {
+      PIDmsg.data.D_gain = this.ctrlParams.D_gain;
     }
-    if (PIDmsg.D_gain === -1) {
-      PIDmsg.D_gain = this.D_gain;
-    }
-    if (PIDmsg.setpoint === -1) {
-      PIDmsg.setpoint = this.setpoint;
+    if (PIDmsg.data.setpoint === -1) {
+      PIDmsg.data.setpoint = this.ctrlParams.setpoint;
     }
 
-    this.socketService.sendMessage(JSON.stringify(PIDmsg));
+    // this.socketService.sendMessage(JSON.stringify(PIDmsg));
     console.log(JSON.stringify(PIDmsg));
   }
 
   fanControl(status) {
-    this.fanState = status;
+    this.ctrlSettings.fanState = status;
     const message = `CMD&fanState:${status}\n`;
     this.socketService.sendMessage(message);
   }
 
   elementControlLowPower(status) {
-    this.element1 = status;
+    this.ctrlSettings.elementLow = status;
     const message = `CMD&element1:${status}\n`;
     this.socketService.sendMessage(message);
   }
 
   controlProductCondensor(status) {
-    this.prodCondensor = status;
+    this.ctrlSettings.prodCondensor = status;
     const message = `CMD&prod:${status}\n`;
     this.socketService.sendMessage(message);
   }
 
   flushSystem(status) {
-    this.flush = status;
+    this.ctrlSettings.flush = status;
     const message = `CMD&flush:${status}\n`;
     this.socketService.sendMessage(message);
   }
