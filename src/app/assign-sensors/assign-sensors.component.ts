@@ -3,6 +3,7 @@ import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-boo
 import { WebSocketSubject } from 'rxjs/webSocket';
 import { Observable, Subject} from 'rxjs';
 import { SocketService } from '../socket.service';
+import { SensorAssignCommand } from '../comm-types';
 
 @Component({
   selector: 'app-assign-sensors',
@@ -26,26 +27,46 @@ export class AssignSensorsComponent implements OnInit {
               private socketService: SocketService) { }
 
     open(content: any) {
-      this.runTask();
+      this.startSensorAssignTask();
       this.modalReference = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
       this.conn = this.socketService.connect('ws://192.168.1.202:80/ws');
       this.subscription = this.conn.subscribe(
         msg => {
-          console.log(msg);
+          if (msg['type'] == 'sensorID') {
+            this.processSensorIDs(msg);
+          }
         }
       );
 
-      this.modalReference. result.then(() => { }, () => { this.subscription.unsubscribe()});
+      this.modalReference. result.then(() => { }, () => {
+        this.stopSensorAssignTask();
+        this.subscription.unsubscribe();
+      });
     }
 
-    runTask() {
-      const msg = {
-        type: 'CMD',
-        arg: 'ASSIGN'
-      };
+    startSensorAssignTask(): void {
+      const msg = new SensorAssignCommand();
+      this.socketService.sendMessage(JSON.stringify(msg));
+    }
 
-      this.socketService.sendMessage(JSON.stringify(msg).replace(/\\/g, ''));
-      console.log(JSON.stringify(msg).replace(/\\/g, ''));
+    stopSensorAssignTask(): void {
+      const msg = new SensorAssignCommand;
+      msg.start = 0;
+      this.socketService.sendMessage(JSON.stringify(msg));
+    }
+
+    processSensorIDs(data: JSON): void {
+      const IDstrings = [];
+      for (const sensorID of data['sensors']) {
+        IDstrings.push(this.toHexString(sensorID));
+      }
+      this.availableSensors = IDstrings;
+    }
+
+    toHexString(byteArray) {
+      return byteArray.reduce((output, elem) =>
+        (output + ('0' + elem.toString(16)).slice(-2)),
+        '');
     }
 
   ngOnInit() {

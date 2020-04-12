@@ -27,3 +27,15 @@ export class OTACommand {
   subtype = 'OTA';
   IP = '';
 }
+
+export class SensorAssignCommand {
+  public type: string;
+  public subtype: string;
+  public start: number;
+
+  constructor() {
+    this.type = 'CMD';
+    this.subtype = 'ASSIGN';
+    this.start = 1;
+  }
+}
