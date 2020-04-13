@@ -3,7 +3,8 @@ import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-boo
 import { WebSocketSubject } from 'rxjs/webSocket';
 import { Observable, Subject} from 'rxjs';
 import { SocketService } from '../socket.service';
-import { SensorAssignCommand } from '../comm-types';
+import { SensorAssignCommand, SensorAssignMsg} from '../comm-types';
+import { TempSensor } from '../data-types';
 
 @Component({
   selector: 'app-assign-sensors',
@@ -15,12 +16,16 @@ export class AssignSensorsComponent implements OnInit {
   modalReference: NgbModalRef;
   private conn: Observable<string>;
   subscription: any;
-  location = 'Assign to';
-
-  availableSensors = [
-    'temp sensor 1',
-    'temp sensor 2',
-    'temp sensor 3'
+  taskStr: string;
+  selectStr: string;
+  selectedSensor = new TempSensor;
+  availableSensors = [];
+  tasks = [
+    'Head',
+    'Reflux out',
+    'Product out',
+    'Radiator out',
+    'Boiler'
   ];
 
   constructor(private modalService: NgbModal,
@@ -32,7 +37,7 @@ export class AssignSensorsComponent implements OnInit {
       this.conn = this.socketService.connect('ws://192.168.1.202:80/ws');
       this.subscription = this.conn.subscribe(
         msg => {
-          if (msg['type'] == 'sensorID') {
+          if (msg['type'] === 'sensorID') {
             this.processSensorIDs(msg);
           }
         }
@@ -45,6 +50,10 @@ export class AssignSensorsComponent implements OnInit {
     }
 
     startSensorAssignTask(): void {
+      this.taskStr = 'Assign to';
+      this.selectStr = 'Select sensor';
+      this.selectedSensor.addr = [];
+      this.selectedSensor.task = -1;
       const msg = new SensorAssignCommand();
       this.socketService.sendMessage(JSON.stringify(msg));
     }
@@ -56,17 +65,32 @@ export class AssignSensorsComponent implements OnInit {
     }
 
     processSensorIDs(data: JSON): void {
-      const IDstrings = [];
-      for (const sensorID of data['sensors']) {
-        IDstrings.push(this.toHexString(sensorID));
-      }
-      this.availableSensors = IDstrings;
+      this.availableSensors = data['sensors'];
     }
 
     toHexString(byteArray) {
       return byteArray.reduce((output, elem) =>
         (output + ('0' + elem.toString(16)).slice(-2)),
         '');
+    }
+
+    selectSensor(addr: Array<number>): void {
+      this.selectedSensor.addr = addr;
+      this.selectStr = this.toHexString(addr);
+    }
+
+    selectTask(i: number): void {
+      console.log(`Selected task is: ${this.tasks[i]}`);
+      this.taskStr = this.tasks[i];
+      this.selectedSensor.task = i;
+    }
+
+    sendAssignSensorMsg(): void {
+      const msg = new SensorAssignMsg;
+      msg.update(this.selectedSensor);
+      this.socketService.sendMessage(JSON.stringify(msg));
+      this.stopSensorAssignTask();
+      this.modalReference.close();
     }
 
   ngOnInit() {

@@ -84,3 +84,13 @@ export class SystemState {
     return (1 - alpha) * oldVal + alpha * newVal;
   }
 }
+
+export class TempSensor {
+  addr: Array<number>;
+  task: number;
+
+  constructor() {
+    this.addr = [];
+    this.task = -1;
+  }
+}

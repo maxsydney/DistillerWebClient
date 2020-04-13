@@ -9,20 +9,20 @@
     <div class="row">
       <div class="col-sm-6">
         <div ngbDropdown class="d-inline-block">
-          <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Select sensor</button>
+          <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle> {{ selectStr }} </button>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-            <button ngbDropdownItem *ngFor="let sensor of availableSensors"> {{sensor}} </button>
+            <div *ngFor="let sensor of availableSensors">
+              <button ngbDropdownItem on-click="selectSensor(sensor)"> {{toHexString(sensor)}} </button>
+            </div>
           </div>
         </div>
-        <div class="col-sm-6">
-          <div ngbDropdown class="d-inline-block">
-            <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Assign to</button>
-            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-              <button ngbDropdownItem>Column head</button>
-              <button ngbDropdownItem>Boiler</button>
-              <button ngbDropdownItem>Reflux out</button>
-              <button ngbDropdownItem>Product out</button>
-              <button ngbDropdownItem>Radiator out</button>
+      </div>
+      <div class="col-sm-6">
+        <div ngbDropdown class="d-inline-block">
+          <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle> {{ taskStr }} </button>
+          <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+            <div *ngFor="let task of tasks; let i = index" [attr.data-index]="i">
+              <button ngbDropdownItem on-click="selectTask(i)"> {{ task }} </button>
             </div>
           </div>
         </div>
@@ -30,7 +30,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-dark" (click)="sendParams()">Select</button>
+    <button type="button" class="btn btn-outline-dark" (click)="sendAssignSensorMsg()">Select</button>
   </div>
 </ng-template>
 <button class="btn btn-outline-primary" (click)="open(content)">Assign sensors</button>
