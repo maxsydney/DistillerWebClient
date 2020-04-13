@@ -6,9 +6,9 @@ import { Observable, Subject} from 'rxjs';
 export class SocketService {
 
   sock: WebSocket;
-  public socket: WebSocketSubject<string>;
+  private socket: WebSocketSubject<any>;
 
-  connect(url: string): Observable<string> {
+  connect(url: string): Observable<any> {
     if (!this.socket) {
       console.log('Connecting to socket');
       this.socket = new WebSocketSubject(url);
@@ -17,7 +17,7 @@ export class SocketService {
     return this.socket;
   }
 
-  sendMessage(msg: string): void {
+  sendMessage(msg: any): void {
     this.socket.next(msg);
     console.log(msg);
   }

@@ -64,7 +64,7 @@ export class AssignSensorsComponent implements OnInit {
       this.socketService.sendMessage(JSON.stringify(msg));
     }
 
-    processSensorIDs(data: JSON): void {
+    processSensorIDs(data: any): void {
       this.availableSensors = data['sensors'];
     }
 
