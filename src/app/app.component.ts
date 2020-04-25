@@ -35,6 +35,7 @@ export class AppComponent {
     this.socketService.connect('ws://192.168.1.202:80/ws')
       .subscribe(data => {
         if (data.type === 'data') {
+          console.log(data);
           this.state.update(data);
           this.ctrlParams.update(data);
           this.updateChart();
