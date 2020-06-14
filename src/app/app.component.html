@@ -70,7 +70,7 @@
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> LPF Cutoff: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ ctrlParams.setpoint | number:'.0-0'}} °C </h6> </div>
+                <div class="col-sm-5"> <h6> {{ ctrlParams.LPFCutoff | number:'.0-0'}} Hz </h6> </div>
               </div>
               <app-tune-controller (messageEvent)="receiveControllerParamsMsg($event)"></app-tune-controller>
               <app-assign-sensors (messageEvent)="receiveControllerParamsMsg($event)"></app-assign-sensors>
