@@ -4,12 +4,14 @@ export class ControllerParams {
   P_gain = 0.0;
   I_gain = 0.0;
   D_gain = 0.0;
+  LPFCutoff = 0.0;
 
   update(data: JSON): void {
     this.setpoint = data['setpoint'];
     this.P_gain = data['P_gain'];
     this.I_gain = data['I_gain'];
     this.D_gain = data['D_gain'];
+    this.LPFCutoff = data['LPFCutoff'];
   }
 }
 

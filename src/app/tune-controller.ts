@@ -12,6 +12,7 @@ export class TuneControllerComponent {
   I_gain: string;
   D_gain: string;
   setpoint: string;
+  LPFCutoff: string;
   modalReference: NgbModalRef;
   @Output() messageEvent = new EventEmitter<ControllerParamsMsg>();
 
@@ -52,6 +53,12 @@ export class TuneControllerComponent {
         PIDmsg.data.setpoint = parseFloat(this.setpoint);
       }
 
+      if (isNaN(parseFloat(this.LPFCutoff))) {
+        PIDmsg.data.LPFCutoff = -1;
+      } else {
+        PIDmsg.data.LPFCutoff = parseFloat(this.LPFCutoff);
+      }
+
       this.messageEvent.emit(PIDmsg);
 
       // Set fields back to empty
@@ -59,6 +66,7 @@ export class TuneControllerComponent {
       this.I_gain = '';
       this.D_gain = '';
       this.setpoint = '';
+      this.LPFCutoff = '';
 
       this.modalReference.close();
     }
