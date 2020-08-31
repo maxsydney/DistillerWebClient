@@ -10,7 +10,7 @@ export class SocketService {
 
   connect(url: string): Observable<any> {
     if (!this.socket) {
-      console.log('Connecting to socket');
+      console.log('Established connection');
       this.socket = new WebSocketSubject(url);
     }
 

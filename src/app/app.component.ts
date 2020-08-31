@@ -34,13 +34,15 @@ export class AppComponent {
               public chartConfig: ChartService) {
     this.socketService.connect('ws://192.168.1.202:80/ws')
       .subscribe(data => {
+        console.log(data);
         if (data.type === 'data') {
-          console.log(data);
           this.state.update(data);
           this.ctrlParams.update(data);
           this.updateChart();
         } else if (data['type'] === 'status') {
           this.ctrlSettings.update(data);
+        } else if (data['type'] == 'log') {
+          console.log(data['log']);
         }
       });
   }
