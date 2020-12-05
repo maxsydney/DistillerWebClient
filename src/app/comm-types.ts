@@ -1,20 +1,18 @@
-import { ControllerParams, ControllerSettings, TempSensor } from './data-types';
+import { ControllerTuning, ControllerSettings, TempSensor } from './data-types';
 
-// Define controller parameters message. Sent from browser to Pissbot
-export class ControllerParamsMsg {
-  type = 'INFO';
-  subtype = 'ctrlParams';
-  data = new ControllerParams;
+// Define controller tuning message. Sent from browser to Pissbot
+export class ControllerTuningMsg {
+  type = 'ControlTuning';
+  data = new ControllerTuning;
 
-  update(params: ControllerParams): void {
+  update(params: ControllerTuning): void {
     this.data = params;
   }
 }
 
 // Define controller settings message. Sent from browser to Pissbot
 export class ControllerSettingsMsg {
-  type = 'INFO';
-  subtype = 'ctrlSettings';
+  type = 'ControlSettings';
   data = new ControllerSettings;
 
   update(settings: ControllerSettings): void {

@@ -6,10 +6,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav nav-fill w-100">
-          <li class="nav-item">Head temp: {{ state.T_head | number:'2.2-2'}} °C</li>
-          <li class="nav-item">Radiator temp: {{ state.T_radiator | number:'2.2-2'}} °C</li>
-          <li class="nav-item">Setpoint: {{ ctrlParams.setpoint | number:'2.2-2'}} °C</li>
-          <li class="nav-item">Run time: {{ state.getTimeStr() }} </li>
+          <li class="nav-item">Head temp: {{ temperatures.T_head | number:'2.2-2'}} °C</li>
+          <li class="nav-item">Boiler temp: {{ temperatures.T_boiler | number:'2.2-2'}} °C</li>
+          <li class="nav-item">Setpoint: {{ ctrlTuning.Setpoint | number:'2.2-2'}} °C</li>
+          <li class="nav-item">Run time: {{ temperatures.getTimeStr() }} </li>
         </ul>
     </div>
 </nav>
@@ -54,25 +54,25 @@
               <h2> Controller Settings</h2>
               <div class="row">
                 <div class="col-sm-6"> <h6> P gain: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ ctrlParams.P_gain | number}} </h6> </div>
+                <div class="col-sm-5"> <h6> {{ ctrlTuning.PGain | number}} </h6> </div>
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> I gain: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ ctrlParams.I_gain | number}} </h6> </div>
+                <div class="col-sm-5"> <h6> {{ ctrlTuning.IGain | number}} </h6> </div>
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> D gain: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ ctrlParams.D_gain | number}} </h6> </div>
+                <div class="col-sm-5"> <h6> {{ ctrlTuning.DGain | number}} </h6> </div>
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> Setpoint: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ ctrlParams.setpoint | number:'.0-0'}} °C </h6> </div>
+                <div class="col-sm-5"> <h6> {{ ctrlTuning.Setpoint | number:'.0-0'}} °C </h6> </div>
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> LPF Cutoff: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ ctrlParams.LPFCutoff | number:'.0-0'}} Hz </h6> </div>
+                <div class="col-sm-5"> <h6> {{ ctrlTuning.LPFCutoff | number:'.0-0'}} Hz </h6> </div>
               </div>
-              <app-tune-controller (messageEvent)="receiveControllerParamsMsg($event)"></app-tune-controller>
+              <app-tune-controller [ctrlTuning]=ctrlTuning (messageEvent)="receiveControllerParamsMsg($event)"></app-tune-controller>
               <app-assign-sensors (messageEvent)="receiveControllerParamsMsg($event)"></app-assign-sensors>
             </div>
 
@@ -80,27 +80,27 @@
               <h2> System Info </h2>
               <div class="row">
                 <div class="col-sm-6"> <h6> ΔT: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ state.delta_T | number:'2.2-2'}} °C </h6> </div>
+                <!-- <div class="col-sm-5"> <h6> {{ state.delta_T | number:'2.2-2'}} °C </h6> </div> -->
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> Flow rate: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ state.flowRate | number:'1.2-2'}} L/min </h6> </div>
+                <!-- <div class="col-sm-5"> <h6> {{ state.flowRate | number:'1.2-2'}} L/min </h6> </div> -->
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> Setpoint: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ ctrlParams.setpoint | number:'2.2-2'}} °C </h6> </div>
+                <!-- <div class="col-sm-5"> <h6> {{ ctrlParams.setpoint | number:'2.2-2'}} °C </h6> </div> -->
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> Heat flow rate: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ state.Q_dot | number:'1.2-2' }} kW </h6> </div>
+                <!-- <div class="col-sm-5"> <h6> {{ state.Q_dot | number:'1.2-2' }} kW </h6> </div> -->
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> Vapour: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ state.vapConc | number:'1.2-2' }} % </h6> </div>
+                <div class="col-sm-5"> <h6> {{ secondaryState.vapConc | number:'1.2-2' }} % </h6> </div>
               </div>
               <div class="row">
                 <div class="col-sm-6"> <h6> Boiler: </h6> </div>
-                <div class="col-sm-5"> <h6> {{ state.boilerConc | number:'1.2-2' }} % </h6> </div>
+                <div class="col-sm-5"> <h6> {{ secondaryState.boilerConc | number:'1.2-2' }} % </h6> </div>
               </div>
             </div>
 
@@ -117,15 +117,6 @@
                 </div>
                 <div class="row top-buffer">
                   <div class="col-sm-8">
-                    <h6> Flush system </h6>
-                  </div>
-                  <div class="col-sm-2">
-                    <button *ngIf="!ctrlSettings.flush" (click)="flushSystem(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
-                    <button *ngIf="ctrlSettings.flush" (click)="flushSystem(0)" type="button" class="btn btn-success btn-sm"> On </button>
-                  </div>
-                </div>
-                <div class="row top-buffer">
-                  <div class="col-sm-8">
                     <h6> Element </h6>
                   </div>
                   <div class="col-sm-2">
@@ -135,11 +126,20 @@
                 </div>
                 <div class="row top-buffer">
                   <div class="col-sm-8">
-                    <h6> Prod Condensor </h6>
+                    <h6> Reflux Pump </h6>
                   </div>
                   <div class="col-sm-2">
-                    <button *ngIf="!ctrlSettings.prodCondensor" (click)="controlProductCondensor(1)" type="button" class="btn btn-danger btn-sm"> Off </button>
-                    <button *ngIf="ctrlSettings.prodCondensor" (click)="controlProductCondensor(0)" type="button" class="btn btn-success btn-sm"> On </button>
+                    <button *ngIf="!ctrlSettings.refluxPump" (click)="controlRefluxCondensor(1)" type="button" class="btn btn-danger btn-sm"> Auto </button>
+                    <button *ngIf="ctrlSettings.refluxPump" (click)="controlRefluxCondensor(0)" type="button" class="btn btn-success btn-sm"> On </button>
+                  </div>
+                </div>
+                <div class="row top-buffer">
+                  <div class="col-sm-8">
+                    <h6> Prod Pump </h6>
+                  </div>
+                  <div class="col-sm-2">
+                    <button *ngIf="!ctrlSettings.prodPump" (click)="controlProductCondensor(1)" type="button" class="btn btn-danger btn-sm"> Auto </button>
+                    <button *ngIf="ctrlSettings.prodPump" (click)="controlProductCondensor(0)" type="button" class="btn btn-success btn-sm"> On </button>
                   </div>
                 </div>
                 <div class="row top-buffer">

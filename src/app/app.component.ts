@@ -4,8 +4,8 @@ import { Chart } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { TuneControllerComponent } from './tune-controller';
 import { ChartService } from './chart-service.service';
-import { ControllerParamsMsg, ControllerSettingsMsg, OTACommand } from './comm-types';
-import { ControllerParams, ControllerSettings, SystemState } from './data-types';
+import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand } from './comm-types';
+import { ControllerTuning, ControllerSettings, SystemTemperatures, SystemSecondaryState } from './data-types';
 
 enum chartType {
   mainChart,
@@ -22,9 +22,10 @@ enum chartType {
 export class AppComponent {
   @ViewChild(BaseChartDirective, {static: false})
   public chart: BaseChartDirective;
-  ctrlParams = new ControllerParams;
+  ctrlTuning = new ControllerTuning;
   ctrlSettings = new ControllerSettings;
-  state = new SystemState;
+  temperatures = new SystemTemperatures;
+  secondaryState = new SystemSecondaryState
   activeChart = chartType.mainChart;
   OTA_IP: string;
 
@@ -32,80 +33,77 @@ export class AppComponent {
 
   constructor(private socketService: SocketService,
               public chartConfig: ChartService) {
-    this.socketService.connect('ws://192.168.1.202:80/ws')
+    this.socketService.connect('ws://192.168.1.86:80/ws')
       .subscribe(data => {
         console.log(data);
-        if (data.type === 'data') {
-          this.state.update(data);
-          this.ctrlParams.update(data);
-          this.updateChart();
-        } else if (data['type'] === 'status') {
-          this.ctrlSettings.update(data);
-        } else if (data['type'] == 'log') {
-          console.log(data['log']);
+        switch(data.MessageType)
+        {
+          case "Temperature":
+            this.temperatures.update(data);
+            break;
+
+          case "ControlTuning":
+            this.ctrlTuning.update(data);
+            break
+
+          case "ControlSettings":
+            this.ctrlSettings.update(data);
+            break;
+          
+          case "Log":
+            console.log(data['log']);
+            break;
         }
+        this.updateChart();
       });
   }
 
   updateChart() {
-    this.chartLabels.push(this.state.getTimeStr());
-    this.chartConfig.dataSeriesMainChart[0].data.push(this.state.T_head);
-    this.chartConfig.dataSeriesMainChart[1].data.push(this.ctrlParams.setpoint);
-    this.chartConfig.dataSeriesMainChart[2].data.push(this.state.T_reflux);
-    this.chartConfig.dataSeriesSecondary[0].data.push(this.state.T_prod);
-    this.chartConfig.dataSeriesSecondary[1].data.push(this.state.T_radiator);
-    this.chartConfig.dataSeriesSecondary[2].data.push(this.state.T_boiler);
-    this.chartConfig.dataSeriesConcentration[0].data.push(this.state.vapConc);
-    this.chartConfig.dataSeriesConcentration[1].data.push(this.state.boilerConc);
+    this.chartLabels.push(this.temperatures.getTimeStr());
+    this.chartConfig.dataSeriesMainChart[0].data.push(this.temperatures.T_head);
+    this.chartConfig.dataSeriesMainChart[1].data.push(this.ctrlTuning.Setpoint);
+    this.chartConfig.dataSeriesMainChart[2].data.push(this.temperatures.T_boiler);
+    this.chartConfig.dataSeriesSecondary[0].data.push(this.temperatures.T_prod);
+    this.chartConfig.dataSeriesSecondary[1].data.push(this.temperatures.T_radiator);
+    this.chartConfig.dataSeriesSecondary[2].data.push(this.temperatures.T_reflux);
+    this.chartConfig.dataSeriesConcentration[0].data.push(this.secondaryState.vapConc);
+    this.chartConfig.dataSeriesConcentration[1].data.push(this.secondaryState.boilerConc);
     this.chart.chart.update();
   }
 
   receiveControllerParamsMsg($event) {
-    const PIDmsg: ControllerParamsMsg = $event;
+    const PIDmsg: ControllerTuningMsg = $event;
 
-    if (PIDmsg.data.P_gain === -1) {
-      PIDmsg.data.P_gain = this.ctrlParams.P_gain;
-    }
-    if (PIDmsg.data.I_gain === -1) {
-      PIDmsg.data.I_gain  = this.ctrlParams.I_gain;
-    }
-    if (PIDmsg.data.D_gain === -1) {
-      PIDmsg.data.D_gain = this.ctrlParams.D_gain;
-    }
-    if (PIDmsg.data.setpoint === -1) {
-      PIDmsg.data.setpoint = this.ctrlParams.setpoint;
-    }
-
-    this.socketService.sendMessage(JSON.stringify(PIDmsg));
-    console.log(JSON.stringify(PIDmsg));
+    this.socketService.sendMessage(PIDmsg);
+    console.log(PIDmsg);
   }
 
   fanControl(status) {
     this.ctrlSettings.fanState = status;
     const msg = new ControllerSettingsMsg;
     msg.update(this.ctrlSettings);
-    this.socketService.sendMessage(JSON.stringify(msg));
+    this.socketService.sendMessage(msg);
   }
 
   elementControlLowPower(status) {
     this.ctrlSettings.elementLow = status;
     const msg = new ControllerSettingsMsg;
     msg.update(this.ctrlSettings);
-    this.socketService.sendMessage(JSON.stringify(msg));
+    this.socketService.sendMessage(msg);
   }
 
   controlProductCondensor(status) {
-    this.ctrlSettings.prodCondensor = status;
+    this.ctrlSettings.prodPump = status;
     const msg = new ControllerSettingsMsg;
     msg.update(this.ctrlSettings);
-    this.socketService.sendMessage(JSON.stringify(msg));
+    this.socketService.sendMessage(msg);
   }
 
-  flushSystem(status) {
-    this.ctrlSettings.flush = status;
+  controlRefluxCondensor(status) {
+    this.ctrlSettings.refluxPump = status;
     const msg = new ControllerSettingsMsg;
     msg.update(this.ctrlSettings);
-    this.socketService.sendMessage(JSON.stringify(msg));
+    this.socketService.sendMessage(msg);
   }
 
   runOTA() {

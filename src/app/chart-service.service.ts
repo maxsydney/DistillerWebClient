@@ -8,7 +8,7 @@ export class ChartService {
   dataSeriesMainChart: ChartDataSets[] = [
     {
       data:  [],
-      label: 'Distiller outflow temp'
+      label: 'Head Temp'
     },
     {
       data: [],
@@ -16,7 +16,7 @@ export class ChartService {
     },
     {
       data: [],
-      label: 'Radiator outflow temp'
+      label: 'Boiler Temp'
     }
   ];
 
