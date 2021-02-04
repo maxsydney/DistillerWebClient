@@ -33,13 +33,14 @@ export class AppComponent {
 
   constructor(private socketService: SocketService,
               public chartConfig: ChartService) {
-    this.socketService.connect('ws://192.168.1.86:80/ws')
+    this.socketService.connect('ws://192.168.1.201:80/ws')
       .subscribe(data => {
         console.log(data);
         switch(data.MessageType)
         {
           case "Temperature":
             this.temperatures.update(data);
+            this.updateChart();
             break;
 
           case "ControlTuning":
@@ -54,7 +55,6 @@ export class AppComponent {
             console.log(data['log']);
             break;
         }
-        this.updateChart();
       });
   }
 
@@ -104,6 +104,17 @@ export class AppComponent {
     const msg = new ControllerSettingsMsg;
     msg.update(this.ctrlSettings);
     this.socketService.sendMessage(msg);
+  }
+
+  convertFlowRateVolToMass(vDot) {
+    // Convert flowrate from l/min to kg/s
+    // Note: Assumes 1L = 1kg
+    return vDot / 60.0;
+  }
+
+  computeQDot(mDot, deltaT) {
+    // Compute heat flowrate
+    return deltaT * mDot;
   }
 
   runOTA() {

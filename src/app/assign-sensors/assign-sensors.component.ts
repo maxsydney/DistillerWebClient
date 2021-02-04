@@ -20,6 +20,7 @@ export class AssignSensorsComponent implements OnInit {
   selectStr: string;
   selectedSensor = new TempSensor;
   availableSensors = [];
+  intervalID;
   tasks = [
     'Head',
     'Reflux out',
@@ -35,6 +36,8 @@ export class AssignSensorsComponent implements OnInit {
       this.startSensorAssignTask();
       this.modalReference = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
       this.conn = this.socketService.connect('ws://192.168.1.202:80/ws');
+      this.intervalID = setInterval(this.requestAvailableSensors.bind(this), 2000);
+      
       this.subscription = this.conn.subscribe(
         msg => {
           if (msg['type'] === 'sensorID') {
@@ -44,7 +47,7 @@ export class AssignSensorsComponent implements OnInit {
       );
 
       this.modalReference. result.then(() => { }, () => {
-        this.stopSensorAssignTask();
+        clearInterval(this.intervalID);
         this.subscription.unsubscribe();
       });
     }
@@ -54,14 +57,12 @@ export class AssignSensorsComponent implements OnInit {
       this.selectStr = 'Select sensor';
       this.selectedSensor.addr = [];
       this.selectedSensor.task = -1;
-      const msg = new SensorAssignCommand();
-      this.socketService.sendMessage(JSON.stringify(msg));
+      this.requestAvailableSensors();
     }
 
-    stopSensorAssignTask(): void {
-      const msg = new SensorAssignCommand;
-      msg.start = 0;
-      this.socketService.sendMessage(JSON.stringify(msg));
+    requestAvailableSensors(): void {
+      const msg = new SensorAssignCommand();
+      this.socketService.sendMessage(msg);
     }
 
     processSensorIDs(data: any): void {
@@ -88,12 +89,12 @@ export class AssignSensorsComponent implements OnInit {
     sendAssignSensorMsg(): void {
       const msg = new SensorAssignMsg;
       msg.update(this.selectedSensor);
-      this.socketService.sendMessage(JSON.stringify(msg));
-      this.stopSensorAssignTask();
+      this.socketService.sendMessage(msg);
+      clearInterval(this.intervalID);
       this.modalReference.close();
     }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
 
+    }
 }

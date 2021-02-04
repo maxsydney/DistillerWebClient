@@ -26,8 +26,8 @@ export class SensorAssignMsg {
   data: TempSensor;
 
   constructor() {
-    this.type = 'INFO';
-    this.subtype = 'ASSIGN';
+    this.type = 'Command';
+    this.subtype = 'AssignSensor';
     this.data = new TempSensor;
   }
 
@@ -48,8 +48,8 @@ export class SensorAssignCommand {
   public start: number;
 
   constructor() {
-    this.type = 'CMD';
-    this.subtype = 'ASSIGN';
+    this.type = 'Command';
+    this.subtype = 'BroadcastDevices';
     this.start = 1;
   }
 }
