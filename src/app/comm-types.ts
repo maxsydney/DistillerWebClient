@@ -1,4 +1,4 @@
-import { ControllerTuning, ControllerSettings, TempSensor } from './data-types';
+import { ControllerTuning, ControllerSettings, TempSensor, ControllerPeripheralState } from './data-types';
 
 // Define controller tuning message. Sent from browser to Pissbot
 export class ControllerTuningMsg {
@@ -17,6 +17,15 @@ export class ControllerSettingsMsg {
 
   update(settings: ControllerSettings): void {
     this.data = settings;
+  }
+}
+
+export class ControllerPeripheralStateMsg {
+  type = 'PeripheralState';
+  data = new ControllerPeripheralState;
+
+  update(state: ControllerPeripheralState) {
+    this.data = state;
   }
 }
 

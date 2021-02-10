@@ -4,8 +4,8 @@ import { Chart } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 import { TuneControllerComponent } from './tune-controller';
 import { ChartService } from './chart-service.service';
-import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand } from './comm-types';
-import { ControllerTuning, ControllerSettings, SystemTemperatures, SystemSecondaryState } from './data-types';
+import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg } from './comm-types';
+import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState } from './data-types';
 
 enum chartType {
   mainChart,
@@ -24,8 +24,10 @@ export class AppComponent {
   public chart: BaseChartDirective;
   ctrlTuning = new ControllerTuning;
   ctrlSettings = new ControllerSettings;
+  ctrlPeripheralState = new ControllerPeripheralState;
   temperatures = new SystemTemperatures;
-  secondaryState = new SystemSecondaryState
+  flowrates = new FlowrateData;
+  concentrations = new ConcentrationData;
   activeChart = chartType.mainChart;
   OTA_IP: string;
 
@@ -38,19 +40,22 @@ export class AppComponent {
         console.log(data);
         switch(data.MessageType)
         {
-          case "Temperature":
+          case "Temperature Data":
             this.temperatures.update(data);
             this.updateChart();
             break;
-
-          case "ControlTuning":
+          case "Controller tuning":
             this.ctrlTuning.update(data);
             break
-
           case "ControlSettings":
             this.ctrlSettings.update(data);
             break;
-          
+          case "Controller command":
+            this.ctrlPeripheralState.update(data);
+            break;
+          case "Flowrate Data":
+            this.flowrates.update(data);
+            break;
           case "Log":
             console.log(data['log']);
             break;
@@ -66,8 +71,8 @@ export class AppComponent {
     this.chartConfig.dataSeriesSecondary[0].data.push(this.temperatures.T_prod);
     this.chartConfig.dataSeriesSecondary[1].data.push(this.temperatures.T_radiator);
     this.chartConfig.dataSeriesSecondary[2].data.push(this.temperatures.T_reflux);
-    this.chartConfig.dataSeriesConcentration[0].data.push(this.secondaryState.vapConc);
-    this.chartConfig.dataSeriesConcentration[1].data.push(this.secondaryState.boilerConc);
+    // this.chartConfig.dataSeriesConcentration[0].data.push(this.flowrates.vapConc);
+    // this.chartConfig.dataSeriesConcentration[1].data.push(this.flowrates.boilerConc);
     this.chart.chart.update();
   }
 
@@ -79,16 +84,23 @@ export class AppComponent {
   }
 
   fanControl(status) {
-    this.ctrlSettings.fanState = status;
-    const msg = new ControllerSettingsMsg;
-    msg.update(this.ctrlSettings);
+    this.ctrlPeripheralState.fanState = status;
+    const msg = new ControllerPeripheralStateMsg;
+    msg.update(this.ctrlPeripheralState);
     this.socketService.sendMessage(msg);
   }
 
   elementControlLowPower(status) {
-    this.ctrlSettings.elementLow = status;
-    const msg = new ControllerSettingsMsg;
-    msg.update(this.ctrlSettings);
+    this.ctrlPeripheralState.LPElement = status;
+    const msg = new ControllerPeripheralStateMsg;
+    msg.update(this.ctrlPeripheralState);
+    this.socketService.sendMessage(msg);
+  }
+
+  elementControlHighPower(status) {
+    this.ctrlPeripheralState.HPElement = status;
+    const msg = new ControllerPeripheralStateMsg;
+    msg.update(this.ctrlPeripheralState);
     this.socketService.sendMessage(msg);
   }
 

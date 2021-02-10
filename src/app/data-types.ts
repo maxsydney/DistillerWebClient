@@ -17,18 +17,30 @@ export class ControllerTuning {
 
 // Define controller settings ADT.
 export class ControllerSettings {
-  fanState = 0;
-  elementLow = 0;
-  elementHigh = 0;
   prodPump = 0;
   refluxPump = 0;
 
   update(data: JSON): void {
-    this.fanState = data['FanState'];;
-    this.elementLow = data['ElementLow'];
-    this.elementHigh = data['ElementHigh'];
     this.prodPump = data['ProdPump'];
     this.refluxPump = data['RefluxPump'];
+  }
+}
+
+export class ControllerPeripheralState {
+  fanState: number;
+  LPElement: number;
+  HPElement: number;
+
+  constructor() {
+    this.fanState = 0;
+    this.LPElement = 0;
+    this.HPElement = 0;
+  }
+
+  update(data: JSON): void {
+    this.fanState = data['fanState'];
+    this.LPElement = data['LPElement'];
+    this.HPElement = data['HPElement']
   }
 }
 
@@ -47,7 +59,7 @@ export class SystemTemperatures {
     this.T_prod = this.filter(data['ProdTemp'], this.T_prod, 0.25);
     this.T_radiator = this.filter(data['RadiatorTemp'], this.T_radiator, 0.25);
     this.T_boiler = this.filter(data['BoilerTemp'], this.T_boiler, 0.25);
-    this.uptime = data['uptime'] / 1e6;
+    this.uptime = data['Uptime'] / 1e6;
   }
 
   getTimeStr(): string {
@@ -78,35 +90,27 @@ export class SystemTemperatures {
   }
 }
 
-export class SystemSecondaryState {
-  flowRate = 0.0;
-  boilerConc = 0.0;
-  vapConc = 0.0;
+export class FlowrateData {
+  refluxFlowrate = 0.0;
+  productFlowrate = 0.0;
   uptime = 0;
 
   update(data: JSON): void {
     this.uptime = data['uptime'];
-    this.flowRate = data['flowrate'];
-    this.boilerConc = data['boilerConc'];
-    this.vapConc = data['vapourConc'];
+    this.refluxFlowrate = data['refluxFlowrate'];
+    this.productFlowrate = data['productFlowrate'];
   }
+}
 
-  getTimeStr(): string {
-    let seconds = this.uptime;
-    const hours = Math.floor(seconds / 3600);
-    seconds = seconds % 3600;
-    const mins = Math.floor(seconds / 60);
-    seconds = Math.floor(seconds % 60);
+export class ConcentrationData {
+  vapourConcentration = 0.0;
+  boilerConcentration = 0.0;
+  uptime = 0.0;
 
-    return `${this.FormatNumberLength(hours, 2)}:${this.FormatNumberLength(mins, 2)}:${this.FormatNumberLength(seconds, 2)}`;
-  }
-
-  FormatNumberLength(num: number, length: number): string {
-    let r = '' + num;
-    while (r.length < length) {
-        r = '0' + r;
-    }
-    return r;
+  update(data: JSON): void {
+    this.uptime = data['uptime'];
+    this.vapourConcentration = data['vapourConcentration'];
+    this.boilerConcentration = data['boilerConcentration'];
   }
 }
 

@@ -93,10 +93,18 @@
           </div>
           <div class="row">
             <div class="col-sm-6">
-              <h6> Flow rate: </h6>
+              <h6> Reflux flowrate: </h6>
             </div>
             <div class="col-sm-5">
-              <h6> {{ secondaryState.flowRate | number:'1.2-2'}} L/min </h6>
+              <h6> {{ flowrates.refluxFlowrate | number:'1.2-2'}} L/S </h6>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <h6> Product flowrate: </h6>
+            </div>
+            <div class="col-sm-5">
+              <h6> {{ flowrates.productFlowrate | number:'1.2-2'}} L/S </h6>
             </div>
           </div>
           <div class="row">
@@ -105,7 +113,7 @@
             </div>
             <div class="col-sm-5">
               <h6>
-                {{ convertFlowRateVolToMass(secondaryState.flowRate) * (temperatures.T_head - temperatures.T_radiator ) | number:'1.2-2' }}
+                {{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.T_head - temperatures.T_radiator ) | number:'1.2-2' }}
                 kW </h6>
             </div>
           </div>
@@ -114,7 +122,7 @@
               <h6> Vapour: </h6>
             </div>
             <div class="col-sm-5">
-              <h6> {{ secondaryState.vapConc | number:'1.2-2' }} % </h6>
+              <h6> {{ concentrations.vapourConcentration | number:'1.2-2' }} % </h6>
             </div>
           </div>
           <div class="row">
@@ -122,7 +130,7 @@
               <h6> Boiler: </h6>
             </div>
             <div class="col-sm-5">
-              <h6> {{ secondaryState.boilerConc | number:'1.2-2' }} % </h6>
+              <h6> {{ concentrations.boilerConcentration | number:'1.2-2' }} % </h6>
             </div>
           </div>
         </div>
@@ -134,20 +142,31 @@
               <h6>Fan</h6>
             </div>
             <div class="col-sm-2">
-              <button *ngIf="!ctrlSettings.fanState" (click)="fanControl(1)" type="button"
+              <button *ngIf="!ctrlPeripheralState.fanState" (click)="fanControl(1)" type="button"
                 class="btn btn-danger btn-sm"> Off</button>
-              <button *ngIf="ctrlSettings.fanState" (click)="fanControl(0)" type="button"
+              <button *ngIf="ctrlPeripheralState.fanState" (click)="fanControl(0)" type="button"
                 class="btn btn-success btn-sm"> On </button>
             </div>
           </div>
           <div class="row top-buffer">
             <div class="col-sm-8">
-              <h6> Element </h6>
+              <h6> 2.4kw Element </h6>
             </div>
             <div class="col-sm-2">
-              <button *ngIf="!ctrlSettings.elementLow" (click)="elementControlLowPower(1)" type="button"
+              <button *ngIf="!ctrlPeripheralState.LPElement" (click)="elementControlLowPower(1)" type="button"
                 class="btn btn-danger btn-sm"> Off </button>
-              <button *ngIf="ctrlSettings.elementLow" (click)="elementControlLowPower(0)" type="button"
+              <button *ngIf="ctrlPeripheralState.LPElement" (click)="elementControlLowPower(0)" type="button"
+                class="btn btn-success btn-sm"> On </button>
+            </div>
+          </div>
+          <div class="row top-buffer">
+            <div class="col-sm-8">
+              <h6> 3kw Element </h6>
+            </div>
+            <div class="col-sm-2">
+              <button *ngIf="!ctrlPeripheralState.HPElement" (click)="elementControlHighPower(1)" type="button"
+                class="btn btn-danger btn-sm"> Off </button>
+              <button *ngIf="ctrlPeripheralState.HPElement" (click)="elementControlHighPower(0)" type="button"
                 class="btn btn-success btn-sm"> On </button>
             </div>
           </div>
