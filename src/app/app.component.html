@@ -1,139 +1,166 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-  <a class="navbar-brand" href="#">Pissbot V2.0</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-    aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-    <ul class="navbar-nav nav-fill w-100">
-      <li class="nav-item">Head temp: {{ temperatures.T_head | number:'2.2-2'}} °C</li>
-      <li class="nav-item">Boiler temp: {{ temperatures.T_boiler | number:'2.2-2'}} °C</li>
-      <li class="nav-item">Setpoint: {{ ctrlTuning.Setpoint | number:'2.2-2'}} °C</li>
-      <li class="nav-item">Run time: {{ temperatures.getTimeStr() }} </li>
-    </ul>
-  </div>
+<nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Pissbot</a>
+  <ul class="navbar-nav nav-fill w-100">
+    <li class="nav-item">Head temp: {{ temperatures.T_head | number:'2.2-2'}} °C</li>
+  </ul>
+  <ul class="navbar-nav nav-fill w-100">
+    <li class="nav-item">Boiler temp: {{ temperatures.T_boiler | number:'2.2-2'}} °C</li>
+  </ul>
+  <ul class="navbar-nav nav-fill w-100">
+    <li class="nav-item">Setpoint: {{ ctrlTuning.Setpoint | number:'2.2-2'}} °C</li>
+  </ul>
+  <ul class="navbar-nav nav-fill w-100">
+    <li class="nav-item">Run time: {{ temperatures.getTimeStr() }} </li>
+  </ul>
 </nav>
 
-<div class="jumbotron top-border bg-grey">
-  <div class="paddingDiv container-fluid">
-    <div class="row">
-      <div class="col-md-10 mycontent-left">
-        <div class="">
-          <canvas *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
-            [labels]="chartLabels" [options]="chartConfig.chartOptionsMainProcess" [legend]="true">
-          </canvas>
-          <canvas *ngIf="activeChart == 1" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesSecondary"
-            [labels]="chartLabels" [options]="chartConfig.chartOptionsAuxiliary" [legend]="true">
-          </canvas>
-          <canvas *ngIf="activeChart == 2" baseChart [chartType]="'line'"
-            [datasets]="chartConfig.dataSeriesConcentration" [labels]="chartLabels"
-            [options]="chartConfig.chartOptionsConcentrations" [legend]="true">
-          </canvas>
-        </div>
-      </div>
+<div class="container-fluid pt-5">
+  <div class="row">
+    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+      <table class="table-borderless">
+        <thead>
+          <tr>
+            <th scope="col">
+              <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
+                Controller Settings 
+              </h5>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody class="">
+          <tr>
+            <td>P Gain</td>
+            <td class="text-right">{{ ctrlTuning.PGain | number}}</td>
+          </tr>
+          <tr>
+            <td>I Gain</td>
+            <td class="text-right">{{ ctrlTuning.IGain | number}}</td>
+          </tr>
+          <tr>
+            <td>D Gain</td>
+            <td class="text-right">{{ ctrlTuning.DGain | number}}</td>
+          </tr>
+          <tr>
+            <td>Setpoint</td>
+            <td class="text-right">{{ ctrlTuning.Setpoint | number:'.0-0'}} °C</td>
+          </tr>
+          <tr>
+            <td>LPF Cutoff</td>
+            <td class="text-right">{{ ctrlTuning.LPFCutoff | number:'.0-0'}} Hz</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table-borderless">
+        <thead>
+          <tr>
+            <th scope="col">
+              <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
+                System State 
+              </h5>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody class="">
+          <tr>
+            <td>ΔT</td>
+            <td class="text-right">{{ temperatures.T_head - temperatures.T_radiator | number:'2.2-2'}} °C</td>
+          </tr>
+          <tr>
+            <td>Reflux Flowrate</td>
+            <td class="text-right">{{ flowrates.refluxFlowrate | number:'1.2-2'}} kg/s </td>
+          </tr>
+          <tr>
+            <td>Product Flowrate</td>
+            <td class="text-right">{{ flowrates.productFlowrate | number:'1.2-2'}} kg/s </td>
+          </tr>
+          <tr>
+            <td>Reflux Qdot</td>
+            <td class="text-right">{{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.T_head - temperatures.T_radiator ) | number:'1.2-2' }} kW </td>
+          </tr>
+          <tr>
+            <td>Vapour</td>
+            <td class="text-right">{{ concentrations.vapourConcentration | number:'1.2-2' }} % </td>
+          </tr>
+          <tr>
+            <td>Boiler</td>
+            <td class="text-right">{{ concentrations.boilerConcentration | number:'1.2-2' }} %</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table-borderless">
+        <thead>
+          <tr>
+            <th scope="col">
+              <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
+                Commands 
+              </h5>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody class="">
+          <tr>
+            <td>Fan</td>
+            <td class="text-right">
+              <button *ngIf="!ctrlPeripheralState.fanState" (click)="fanControl(1)" type="button"
+                class="btn btn-danger btn-sm"> Off</button>
+              <button *ngIf="ctrlPeripheralState.fanState" (click)="fanControl(0)" type="button"
+                class="btn btn-success btn-sm"> On </button>
+            </td>
+          </tr>
+          <tr>
+            <td>2.4 kw Element</td>
+            <td class="text-right">
+              <button *ngIf="!ctrlPeripheralState.LPElement" (click)="elementControlLowPower(1)" type="button"
+                class="btn btn-danger btn-sm"> Off </button>
+              <button *ngIf="ctrlPeripheralState.LPElement" (click)="elementControlLowPower(0)" type="button"
+                class="btn btn-success btn-sm"> On </button>
+            </td>
+          </tr>
+          <tr>
+            <td>3.0 kw Element</td>
+            <td class="text-right">
+              <button *ngIf="!ctrlPeripheralState.HPElement" (click)="elementControlHighPower(1)" type="button"
+                class="btn btn-danger btn-sm"> Off </button>
+              <button *ngIf="ctrlPeripheralState.HPElement" (click)="elementControlHighPower(0)" type="button"
+                class="btn btn-success btn-sm"> On </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+          <!--
+          <li class="nav-link">
+            <app-tune-controller [ctrlTuning]=ctrlTuning (messageEvent)="receiveControllerParamsMsg($event)">
+            </app-tune-controller>
+          </li>
+          <li class="nav-link">
+            <app-assign-sensors (messageEvent)="receiveControllerParamsMsg($event)"></app-assign-sensors>
+          </li>
+        </div> -->
+    </nav>
 
-      <div class="col-md-2 sidebar navbar-dark">
-        <div class="container-fluid">
-          <h2> Controller Settings</h2>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> P gain: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ ctrlTuning.PGain | number}} </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> I gain: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ ctrlTuning.IGain | number}} </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> D gain: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ ctrlTuning.DGain | number}} </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> Setpoint: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ ctrlTuning.Setpoint | number:'.0-0'}} °C </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> LPF Cutoff: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ ctrlTuning.LPFCutoff | number:'.0-0'}} Hz </h6>
-            </div>
-          </div>
-          <app-tune-controller [ctrlTuning]=ctrlTuning (messageEvent)="receiveControllerParamsMsg($event)">
-          </app-tune-controller>
-          <app-assign-sensors (messageEvent)="receiveControllerParamsMsg($event)"></app-assign-sensors>
-        </div>
 
-        <div class="container-fluid">
-          <h2> System Info </h2>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> ΔT: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ temperatures.T_head - temperatures.T_radiator | number:'2.2-2'}} °C </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> Reflux flowrate: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ flowrates.refluxFlowrate | number:'1.2-2'}} L/S </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> Product flowrate: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ flowrates.productFlowrate | number:'1.2-2'}} L/S </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> Heat flow rate: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6>
-                {{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.T_head - temperatures.T_radiator ) | number:'1.2-2' }}
-                kW </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> Vapour: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ concentrations.vapourConcentration | number:'1.2-2' }} % </h6>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-sm-6">
-              <h6> Boiler: </h6>
-            </div>
-            <div class="col-sm-5">
-              <h6> {{ concentrations.boilerConcentration | number:'1.2-2' }} % </h6>
-            </div>
-          </div>
-        </div>
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-4">
+  <div class="container-fluid">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <canvas *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
+        [labels]="chartLabels" [options]="chartConfig.chartOptionsMainProcess" [legend]="true">
+      </canvas>
+      <canvas *ngIf="activeChart == 1" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesSecondary"
+        [labels]="chartLabels" [options]="chartConfig.chartOptionsAuxiliary" [legend]="true">
+      </canvas>
+      <canvas *ngIf="activeChart == 2" baseChart [chartType]="'line'"
+        [datasets]="chartConfig.dataSeriesConcentration" [labels]="chartLabels"
+        [options]="chartConfig.chartOptionsConcentrations" [legend]="true">
+      </canvas>
+    </div>
+  </div>
+</main>
+  
+      <!--  <div class="container-fluid">
+        
 
         <div class="container-fluid">
           <h2> Commands </h2>
@@ -224,5 +251,4 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
+  -->
