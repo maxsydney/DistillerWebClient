@@ -8,7 +8,7 @@ export class ChartService {
   dataSeriesMainChart: ChartDataSets[] = [
     {
       data:  [],
-      label: 'Head Temp'
+      label: 'Head'
     },
     {
       data: [],
@@ -16,23 +16,24 @@ export class ChartService {
     },
     {
       data: [],
-      label: 'Boiler Temp'
+      label: 'Boiler'
+    },
+    {
+      data:  [],
+      label: 'Product Out'
+    },
+    {
+      data: [],
+      label: 'Radiator'
+    },
+    {
+      data: [],
+      label: 'Reflux out'
     }
   ];
 
   dataSeriesSecondary: ChartDataSets[] = [
-    {
-      data:  [],
-      label: 'Product in'
-    },
-    {
-      data: [],
-      label: 'Product out'
-    },
-    {
-      data: [],
-      label: 'Boiler'
-    }
+
   ];
 
   dataSeriesConcentration: ChartDataSets[] = [
@@ -99,62 +100,6 @@ export class ChartService {
     title: {
       display: true,
       text: 'Main Process',
-      fontSize: 22
-    }
-  };
-
-  chartOptionsAuxiliary = {
-    responsive: true,
-    animation: false,
-    cubicInterpolationMode: 'monotone',
-    downsample: {
-      enabled: true,
-      threshold: 50,
-      preferOriginalData: false,
-    },
-    elements: {
-      line: {
-        fill: false,
-      },
-      point: {
-        radius: 0
-      }
-    },
-    scales: {
-      yAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          fontSize: 22,
-          labelString: 'Temperature (°C)'
-        },
-        id: 'y-axis-1',
-        type: 'linear',
-        position: 'left',
-        ticks: {min: 0, max: 100}
-      }],
-      xAxes: [{
-        display: true,
-        scaleLabel: {
-          display: true,
-          fontSize: 22,
-          labelString: 'Run Time'
-        },
-        ticks: {
-          maxTicksLimit: 30,
-        }
-      }]
-    },
-    gridlines: {
-      drawBorder: true
-    },
-    legend: {
-      display: true,
-      position: 'top'
-    },
-    title: {
-      display: true,
-      text: 'Auxiliary Data',
       fontSize: 22
     }
   };

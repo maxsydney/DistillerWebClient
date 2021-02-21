@@ -17,15 +17,15 @@
 <div class="container-fluid pt-5">
   <div class="row">
     <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-      <table class="table-borderless">
+      <table class="table-borderless w-100">
         <thead>
           <tr>
-            <th scope="col">
+            <th scope="col" style="width: 70%">
               <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
-                Controller Settings 
+                Settings 
               </h5>
             </th>
-            <th scope="col"></th>
+            <th scope="col" style="width: 30%"></th>
           </tr>
         </thead>
         <tbody class="">
@@ -51,15 +51,15 @@
           </tr>
         </tbody>
       </table>
-      <table class="table-borderless">
+      <table class="table-borderless w-100">
         <thead>
           <tr>
-            <th scope="col">
+            <th scope="col" style="width: 70%">
               <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
                 System State 
               </h5>
             </th>
-            <th scope="col"></th>
+            <th scope="col"  style="width: 30%"></th>
           </tr>
         </thead>
         <tbody class="">
@@ -89,15 +89,15 @@
           </tr>
         </tbody>
       </table>
-      <table class="table-borderless">
+      <table class="table-borderless w-100">
         <thead>
           <tr>
-            <th scope="col">
+            <th scope="col" style="width: 50%">
               <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
                 Commands 
               </h5>
             </th>
-            <th scope="col"></th>
+            <th scope="col" style="width: 50%"></th>
           </tr>
         </thead>
         <tbody class="">
@@ -105,31 +105,68 @@
             <td>Fan</td>
             <td class="text-right">
               <button *ngIf="!ctrlPeripheralState.fanState" (click)="fanControl(1)" type="button"
-                class="btn btn-danger btn-sm"> Off</button>
+                class="btn btn-danger btn-sm custom-button w-100"> Off</button>
               <button *ngIf="ctrlPeripheralState.fanState" (click)="fanControl(0)" type="button"
-                class="btn btn-success btn-sm"> On </button>
+                class="btn btn-success btn-sm custom-button w-100"> On </button>
             </td>
           </tr>
           <tr>
             <td>2.4 kw Element</td>
             <td class="text-right">
-              <button *ngIf="!ctrlPeripheralState.LPElement" (click)="elementControlLowPower(1)" type="button"
-                class="btn btn-danger btn-sm"> Off </button>
-              <button *ngIf="ctrlPeripheralState.LPElement" (click)="elementControlLowPower(0)" type="button"
-                class="btn btn-success btn-sm"> On </button>
+              <button *ngIf="ctrlPeripheralState.LPElement == 0" (click)="elementControlLowPower(0.25)" type="button"
+                class="btn btn-danger btn-sm custom-button w-100"> Off </button>
+              <button *ngIf="ctrlPeripheralState.LPElement != 0" (click)="elementControlLowPower(0.25)" type="button"
+                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.LPElement * 100 }} % </button>
             </td>
           </tr>
           <tr>
             <td>3.0 kw Element</td>
             <td class="text-right">
-              <button *ngIf="!ctrlPeripheralState.HPElement" (click)="elementControlHighPower(1)" type="button"
-                class="btn btn-danger btn-sm"> Off </button>
-              <button *ngIf="ctrlPeripheralState.HPElement" (click)="elementControlHighPower(0)" type="button"
-                class="btn btn-success btn-sm"> On </button>
+              <button *ngIf="ctrlPeripheralState.HPElement == 0" (click)="elementControlHighPower(0.25)" type="button"
+                class="btn btn-danger btn-sm custom-button w-100"> Off </button>
+              <button *ngIf="ctrlPeripheralState.HPElement != 0" (click)="elementControlHighPower(0.25)" type="button"
+                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.HPElement * 100 }} % </button>
+            </td>
+          </tr>
+          <tr>
+            <td>Reflux Pump</td>
+            <td class="text-right">
+              <button *ngIf="!ctrlSettings.refluxPump" (click)="controlRefluxCondensor(1)" type="button"
+                class="btn btn-success btn-sm custom-button w-100"> Auto </button>
+              <button *ngIf="ctrlSettings.refluxPump" (click)="controlRefluxCondensor(0)" type="button"
+                class="btn btn-warning btn-sm custom-button w-100"> Manual </button>
+            </td>
+          </tr>
+          <tr>
+            <td>Product Pump</td>
+            <td class="text-right">
+              <button *ngIf="!ctrlSettings.prodPump" (click)="controlProductCondensor(1)" type="button"
+                class="btn btn-success btn-sm w-100"> Auto </button>
+              <button *ngIf="ctrlSettings.prodPump" (click)="controlProductCondensor(0)" type="button"
+                class="btn btn-warning btn-sm w-100"> Manual </button>
+            </td>
+          </tr>
+          <tr>
+            <td>Switch Charts</td>
+            <td class="text-right">
+              <button *ngIf="activeChart == 0" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100"> Temperatures </button>
+              <button *ngIf="activeChart == 1" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100">
+                Concentration </button>
             </td>
           </tr>
         </tbody>
       </table>
+      <div class="d-flex justify-content-between w-100 pt-2">
+        <div class="btn-group">
+          <div class="p-6 mr-1">
+            <app-tune-controller [ctrlTuning]=ctrlTuning (messageEvent)="receiveControllerParamsMsg($event)">
+            </app-tune-controller>
+          </div>
+          <div class="p-6">
+            <app-assign-sensors (messageEvent)="receiveControllerParamsMsg($event)"></app-assign-sensors>
+          </div>
+        </div> 
+      </div>
           <!--
           <li class="nav-link">
             <app-tune-controller [ctrlTuning]=ctrlTuning (messageEvent)="receiveControllerParamsMsg($event)">
@@ -141,17 +178,13 @@
         </div> -->
     </nav>
 
-
-<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-4">
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10">
   <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <canvas *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+      <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
         [labels]="chartLabels" [options]="chartConfig.chartOptionsMainProcess" [legend]="true">
       </canvas>
-      <canvas *ngIf="activeChart == 1" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesSecondary"
-        [labels]="chartLabels" [options]="chartConfig.chartOptionsAuxiliary" [legend]="true">
-      </canvas>
-      <canvas *ngIf="activeChart == 2" baseChart [chartType]="'line'"
+      <canvas *ngIf="activeChart == 1" baseChart [chartType]="'line'"
         [datasets]="chartConfig.dataSeriesConcentration" [labels]="chartLabels"
         [options]="chartConfig.chartOptionsConcentrations" [legend]="true">
       </canvas>

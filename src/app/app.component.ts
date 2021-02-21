@@ -42,7 +42,7 @@ export class AppComponent {
         {
           case "Temperature Data":
             this.temperatures.update(data);
-            this.updateChart();
+            this.updateTemperatureChart();
             break;
           case "Controller tuning":
             this.ctrlTuning.update(data);
@@ -63,14 +63,14 @@ export class AppComponent {
       });
   }
 
-  updateChart() {
+  updateTemperatureChart() {
     this.chartLabels.push(this.temperatures.getTimeStr());
     this.chartConfig.dataSeriesMainChart[0].data.push(this.temperatures.T_head);
     this.chartConfig.dataSeriesMainChart[1].data.push(this.ctrlTuning.Setpoint);
     this.chartConfig.dataSeriesMainChart[2].data.push(this.temperatures.T_boiler);
-    this.chartConfig.dataSeriesSecondary[0].data.push(this.temperatures.T_prod);
-    this.chartConfig.dataSeriesSecondary[1].data.push(this.temperatures.T_radiator);
-    this.chartConfig.dataSeriesSecondary[2].data.push(this.temperatures.T_reflux);
+    this.chartConfig.dataSeriesMainChart[3].data.push(this.temperatures.T_prod);
+    this.chartConfig.dataSeriesMainChart[4].data.push(this.temperatures.T_radiator);
+    this.chartConfig.dataSeriesMainChart[5].data.push(this.temperatures.T_reflux);
     // this.chartConfig.dataSeriesConcentration[0].data.push(this.flowrates.vapConc);
     // this.chartConfig.dataSeriesConcentration[1].data.push(this.flowrates.boilerConc);
     this.chart.chart.update();
@@ -84,23 +84,32 @@ export class AppComponent {
   }
 
   fanControl(status) {
-    this.ctrlPeripheralState.fanState = status;
+    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
+    updatedState.fanState = status;
     const msg = new ControllerPeripheralStateMsg;
-    msg.update(this.ctrlPeripheralState);
+    msg.update(updatedState);
     this.socketService.sendMessage(msg);
   }
 
-  elementControlLowPower(status) {
-    this.ctrlPeripheralState.LPElement = status;
+  elementControlLowPower(increment) {
+    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
+    updatedState.LPElement += increment;
+    if (updatedState.LPElement > 1.0) {
+      updatedState.LPElement= 0.0;
+    }
     const msg = new ControllerPeripheralStateMsg;
-    msg.update(this.ctrlPeripheralState);
+    msg.update(updatedState);
     this.socketService.sendMessage(msg);
   }
 
-  elementControlHighPower(status) {
-    this.ctrlPeripheralState.HPElement = status;
+  elementControlHighPower(increment) {
+    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
+    updatedState.HPElement += increment;
+    if (updatedState.HPElement > 1.0) {
+      updatedState.HPElement = 0.0;
+    }
     const msg = new ControllerPeripheralStateMsg;
-    msg.update(this.ctrlPeripheralState);
+    msg.update(updatedState);
     this.socketService.sendMessage(msg);
   }
 
@@ -136,7 +145,7 @@ export class AppComponent {
   }
 
   swapCharts() {
-    this.activeChart = (this.activeChart + 1) % 3;
+    this.activeChart = (this.activeChart + 1) % 2;
   }
 }
 
