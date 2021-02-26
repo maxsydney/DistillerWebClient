@@ -1,11 +1,13 @@
-import { Component, OnInit, AfterViewInit, ViewChild} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild} from '@angular/core'; // TODO: Consider removing unsused
 import { SocketService } from './socket.service';
-import { Chart } from 'chart.js';
+import { Chart } from 'chart.js';   // TODO: Consider removing
 import { BaseChartDirective } from 'ng2-charts';
-import { TuneControllerComponent } from './tune-controller';
+import { TuneControllerComponent } from './tune-controller';    // TODO: Consider removing
 import { ChartService } from './chart-service.service';
 import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg } from './comm-types';
-import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState } from './data-types';
+import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState} from './data-types';
+import { PumpMode } from './data-types';
+ 
 
 enum chartType {
   mainChart,
@@ -47,7 +49,7 @@ export class AppComponent {
           case "Controller tuning":
             this.ctrlTuning.update(data);
             break
-          case "ControlSettings":
+          case "Controller settings":
             this.ctrlSettings.update(data);
             break;
           case "Controller command":
@@ -56,11 +58,17 @@ export class AppComponent {
           case "Flowrate Data":
             this.flowrates.update(data);
             break;
+          case "Concentration Data":
+            this.concentrations.update(data);
           case "Log":
             console.log(data['log']);
             break;
         }
       });
+  }
+
+  public get PumpMode(): typeof PumpMode {
+    return PumpMode; 
   }
 
   updateTemperatureChart() {
@@ -113,17 +121,27 @@ export class AppComponent {
     this.socketService.sendMessage(msg);
   }
 
-  controlProductCondensor(status) {
-    this.ctrlSettings.prodPump = status;
+  controlProductCondensor() {
+    var updatedState = JSON.parse(JSON.stringify(this.ctrlSettings));
+    const status = (updatedState.productPumpMode + 1) % 3;
+    updatedState.productPumpMode = status;
+    if (status == PumpMode.ManualControl) {
+      updatedState.productPumpSpeedManual = 1024;
+    }
     const msg = new ControllerSettingsMsg;
-    msg.update(this.ctrlSettings);
+    msg.update(updatedState);
     this.socketService.sendMessage(msg);
   }
 
-  controlRefluxCondensor(status) {
-    this.ctrlSettings.refluxPump = status;
+  controlRefluxCondensor() {
+    var updatedState = JSON.parse(JSON.stringify(this.ctrlSettings));
+    const status = (updatedState.refluxPumpMode + 1) % 3;
+    updatedState.refluxPumpMode = status;
+    if (status == PumpMode.ManualControl) {
+      updatedState.refluxPumpSpeedManual = 1024;
+    }
     const msg = new ControllerSettingsMsg;
-    msg.update(this.ctrlSettings);
+    msg.update(updatedState);
     this.socketService.sendMessage(msg);
   }
 

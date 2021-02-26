@@ -1,3 +1,9 @@
+export enum PumpMode {
+  Off,
+  ActiveControl,
+  ManualControl
+}
+
 // Define controller parameters ADT.
 export class ControllerTuning {
   Setpoint = 0.0;
@@ -17,12 +23,23 @@ export class ControllerTuning {
 
 // Define controller settings ADT.
 export class ControllerSettings {
-  prodPump = 0;
-  refluxPump = 0;
+  refluxPumpMode: PumpMode;
+  productPumpMode: PumpMode;
+  refluxPumpSpeedManual: number;
+  productPumpSpeedManual: number;
+
+  constructor() {
+    this.refluxPumpMode = PumpMode.Off;
+    this.productPumpMode = PumpMode.Off;
+    this.refluxPumpSpeedManual = 0;
+    this.productPumpSpeedManual = 0;
+  }
 
   update(data: JSON): void {
-    this.prodPump = data['ProdPump'];
-    this.refluxPump = data['RefluxPump'];
+    this.refluxPumpMode = data['refluxPumpMode'];
+    this.productPumpMode = data['productPumpMode'];
+    this.refluxPumpSpeedManual = data['refluxPumpSpeedManual']
+    this.productPumpSpeedManual = data['productPumpSpeedManual']
   }
 }
 
@@ -105,12 +122,10 @@ export class FlowrateData {
 export class ConcentrationData {
   vapourConcentration = 0.0;
   boilerConcentration = 0.0;
-  uptime = 0.0;
 
   update(data: JSON): void {
-    this.uptime = data['uptime'];
-    this.vapourConcentration = data['vapourConcentration'];
-    this.boilerConcentration = data['boilerConcentration'];
+    this.vapourConcentration = data['vapourConc'];
+    this.boilerConcentration = data['boilerConc'];
   }
 }
 

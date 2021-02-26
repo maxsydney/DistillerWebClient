@@ -131,18 +131,22 @@
           <tr>
             <td>Reflux Pump</td>
             <td class="text-right">
-              <button *ngIf="!ctrlSettings.refluxPump" (click)="controlRefluxCondensor(1)" type="button"
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.Off" (click)="controlRefluxCondensor()" type="button"
+                class="btn btn-danger btn-sm custom-button w-100"> Off </button>
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.ActiveControl" (click)="controlRefluxCondensor()" type="button"
                 class="btn btn-success btn-sm custom-button w-100"> Auto </button>
-              <button *ngIf="ctrlSettings.refluxPump" (click)="controlRefluxCondensor(0)" type="button"
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.ManualControl" (click)="controlRefluxCondensor()" type="button"
                 class="btn btn-warning btn-sm custom-button w-100"> Manual </button>
             </td>
           </tr>
           <tr>
             <td>Product Pump</td>
             <td class="text-right">
-              <button *ngIf="!ctrlSettings.prodPump" (click)="controlProductCondensor(1)" type="button"
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.Off" (click)="controlProductCondensor()" type="button"
+                class="btn btn-danger btn-sm w-100"> Off </button>
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.ActiveControl" (click)="controlProductCondensor()" type="button"
                 class="btn btn-success btn-sm w-100"> Auto </button>
-              <button *ngIf="ctrlSettings.prodPump" (click)="controlProductCondensor(0)" type="button"
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.ManualControl" (click)="controlProductCondensor()" type="button"
                 class="btn btn-warning btn-sm w-100"> Manual </button>
             </td>
           </tr>
