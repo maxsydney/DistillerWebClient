@@ -156,6 +156,8 @@
               <button *ngIf="activeChart == 0" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100"> Temperatures </button>
               <button *ngIf="activeChart == 1" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100">
                 Concentration </button>
+              <button *ngIf="activeChart == 2" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100">
+                  Control State </button>
             </td>
           </tr>
         </tbody>
@@ -191,6 +193,10 @@
       <canvas *ngIf="activeChart == 1" baseChart [chartType]="'line'"
         [datasets]="chartConfig.dataSeriesConcentration" [labels]="chartLabels"
         [options]="chartConfig.chartOptionsConcentrations" [legend]="true">
+      </canvas>
+      <canvas *ngIf="activeChart == 2" baseChart [chartType]="'line'"
+        [datasets]="chartConfig.dataSeriesControllerState" [labels]="chartLabelsCtrlState"
+        [options]="chartConfig.chartOptionsControllerState" [legend]="true">
       </canvas>
     </div>
   </div>

@@ -4,8 +4,8 @@ import { Chart } from 'chart.js';   // TODO: Consider removing
 import { BaseChartDirective } from 'ng2-charts';
 import { TuneControllerComponent } from './tune-controller';    // TODO: Consider removing
 import { ChartService } from './chart-service.service';
-import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg } from './comm-types';
-import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState} from './data-types';
+import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg, ControllerStateMsg} from './comm-types';
+import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState, ControllerState} from './data-types';
 import { PumpMode } from './data-types';
  
 
@@ -27,6 +27,7 @@ export class AppComponent {
   ctrlTuning = new ControllerTuning;
   ctrlSettings = new ControllerSettings;
   ctrlPeripheralState = new ControllerPeripheralState;
+  ctrlState = new ControllerState;
   temperatures = new SystemTemperatures;
   flowrates = new FlowrateData;
   concentrations = new ConcentrationData;
@@ -34,6 +35,7 @@ export class AppComponent {
   OTA_IP: string;
 
   chartLabels = [];
+  chartLabelsCtrlState = [];
 
   constructor(private socketService: SocketService,
               public chartConfig: ChartService) {
@@ -60,6 +62,11 @@ export class AppComponent {
             break;
           case "Concentration Data":
             this.concentrations.update(data);
+            break;
+          case "Controller State":
+            this.ctrlState.update(data);
+            this.updateControllerStateChart();
+            break;
           case "Log":
             console.log(data['log']);
             break;
@@ -82,6 +89,15 @@ export class AppComponent {
     // this.chartConfig.dataSeriesConcentration[0].data.push(this.flowrates.vapConc);
     // this.chartConfig.dataSeriesConcentration[1].data.push(this.flowrates.boilerConc);
     this.chart.chart.update();
+  }
+
+  updateControllerStateChart() {
+    this.chartLabelsCtrlState.push(this.ctrlState.getTimeStr());
+    this.chartConfig.dataSeriesControllerState[0].data.push(this.ctrlState.proportionalOutput);
+    this.chartConfig.dataSeriesControllerState[1].data.push(this.ctrlState.integralOutput);
+    this.chartConfig.dataSeriesControllerState[2].data.push(this.ctrlState.derivativeOutout);
+    this.chartConfig.dataSeriesControllerState[3].data.push(this.ctrlState.totalOutput);
+    // this.chart.chart.update();
   }
 
   receiveControllerParamsMsg($event) {
@@ -163,7 +179,7 @@ export class AppComponent {
   }
 
   swapCharts() {
-    this.activeChart = (this.activeChart + 1) % 2;
+    this.activeChart = (this.activeChart + 1) % 3;
   }
 }
 

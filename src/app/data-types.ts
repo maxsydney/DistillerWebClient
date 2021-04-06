@@ -61,6 +61,48 @@ export class ControllerPeripheralState {
   }
 }
 
+export class ControllerState {
+  proportionalOutput: number;
+  integralOutput: number;
+  derivativeOutout: number;
+  totalOutput: number;
+  uptime: number;
+
+  constructor() {
+    this.proportionalOutput = 0;
+    this.integralOutput = 0;
+    this.derivativeOutout = 0;
+    this.totalOutput = 0;
+    this.uptime = 0
+  }
+
+  update(data: JSON): void {
+    this.proportionalOutput = data['PropOutput'];
+    this.integralOutput = data['IntegralOutput'];
+    this.derivativeOutout = data['DerivOutput'];
+    this.totalOutput = data['TotalOutput'];
+    this.uptime = data['Uptime'] * 1e-6;
+  }
+
+  getTimeStr(): string {
+    let seconds = this.uptime;
+    const hours = Math.floor(seconds / 3600);
+    seconds = seconds % 3600;
+    const mins = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+
+    return `${this.FormatNumberLength(hours, 2)}:${this.FormatNumberLength(mins, 2)}:${this.FormatNumberLength(seconds, 2)}`;
+  }
+
+  FormatNumberLength(num: number, length: number): string {
+    let r = '' + num;
+    while (r.length < length) {
+        r = '0' + r;
+    }
+    return r;
+  }
+}
+
 export class SystemTemperatures {
   T_head = 0.0;
   T_reflux = 0.0;

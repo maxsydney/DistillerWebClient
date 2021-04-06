@@ -32,8 +32,23 @@ export class ChartService {
     }
   ];
 
-  dataSeriesSecondary: ChartDataSets[] = [
-
+  dataSeriesControllerState: ChartDataSets[] = [
+    {
+      data:  [],
+      label: 'Proportional Output'
+    },
+    {
+      data: [],
+      label: 'Integral Output'
+    },
+    {
+      data: [],
+      label: 'Derivative Output'
+    },
+    {
+      data:  [],
+      label: 'Total Output'
+    }
   ];
 
   dataSeriesConcentration: ChartDataSets[] = [
@@ -156,6 +171,57 @@ export class ChartService {
     title: {
       display: true,
       text: 'Alcohol Concentrations',
+      fontSize: 22
+    }
+  };
+
+  // Main chart config
+  chartOptionsControllerState = {
+    responsive: true,
+    animation: false,
+    cubicInterpolationMode: 'monotone',
+    elements: {
+      line: {
+        fill: false,
+      },
+      point: {
+        radius: 0
+      }
+    },
+    scales: {
+      yAxes: [{
+        display: true,
+        scaleLabel: {
+          display: true,
+          fontSize: 22,
+          labelString: 'Output'
+        },
+        id: 'y-axis-1',
+        type: 'linear',
+        position: 'left'
+      }],
+      xAxes: [{
+        display: true,
+        scaleLabel: {
+          display: true,
+          fontSize: 22,
+          labelString: 'Run Time'
+        },
+        ticks: {
+          maxTicksLimit: 30,
+        }
+      }]
+    },
+    gridlines: {
+      drawBorder: true
+    },
+    legend: {
+      display: true,
+      position: 'top'
+    },
+    title: {
+      display: true,
+      text: 'Controller State',
       fontSize: 22
     }
   };
