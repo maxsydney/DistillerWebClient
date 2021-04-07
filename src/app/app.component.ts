@@ -1,13 +1,11 @@
-import { Component, OnInit, AfterViewInit, ViewChild} from '@angular/core'; // TODO: Consider removing unsused
+import { Component, ViewChild} from '@angular/core';
 import { SocketService } from './socket.service';
-import { Chart } from 'chart.js';   // TODO: Consider removing
+import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg} from './comm-types';
 import { BaseChartDirective } from 'ng2-charts';
-import { TuneControllerComponent } from './tune-controller';    // TODO: Consider removing
 import { ChartService } from './chart-service.service';
-import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg, ControllerStateMsg} from './comm-types';
 import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState, ControllerState} from './data-types';
 import { PumpMode } from './data-types';
- 
+import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 
 enum chartType {
   mainChart,
@@ -38,6 +36,7 @@ export class AppComponent {
   chartLabelsCtrlState = [];
 
   constructor(private socketService: SocketService,
+              public tempChart: TemperatureChartComponent,
               public chartConfig: ChartService) {
     this.socketService.connect('ws://192.168.1.201:80/ws')
       .subscribe(data => {
@@ -79,24 +78,25 @@ export class AppComponent {
   }
 
   updateTemperatureChart() {
-    this.chartLabels.push(this.temperatures.getTimeStr());
-    this.chartConfig.dataSeriesMainChart[0].data.push(this.temperatures.T_head);
-    this.chartConfig.dataSeriesMainChart[1].data.push(this.ctrlTuning.Setpoint);
-    this.chartConfig.dataSeriesMainChart[2].data.push(this.temperatures.T_boiler);
-    this.chartConfig.dataSeriesMainChart[3].data.push(this.temperatures.T_prod);
-    this.chartConfig.dataSeriesMainChart[4].data.push(this.temperatures.T_radiator);
-    this.chartConfig.dataSeriesMainChart[5].data.push(this.temperatures.T_reflux);
+    // this.tempChart.labels.push(this.temperatures.getTimeStr());
+    // this.tempChart.datasets[0].data.push(this.temperatures.T_head);
+    // this.tempChart.datasets[1].data.push(this.ctrlTuning.Setpoint);
+    // this.tempChart.datasets[2].data.push(this.temperatures.T_boiler);
+    // this.tempChart.datasets[3].data.push(this.temperatures.T_prod);
+    // this.tempChart.datasets[4].data.push(this.temperatures.T_radiator);
+    // this.tempChart.datasets[5].data.push(this.temperatures.T_reflux);
     // this.chartConfig.dataSeriesConcentration[0].data.push(this.flowrates.vapConc);
     // this.chartConfig.dataSeriesConcentration[1].data.push(this.flowrates.boilerConc);
-    this.chart.chart.update();
+    console.log(this.chart);
+    console.log(this.tempChart.chart);
   }
 
   updateControllerStateChart() {
-    this.chartLabelsCtrlState.push(this.ctrlState.getTimeStr());
-    this.chartConfig.dataSeriesControllerState[0].data.push(this.ctrlState.proportionalOutput);
-    this.chartConfig.dataSeriesControllerState[1].data.push(this.ctrlState.integralOutput);
-    this.chartConfig.dataSeriesControllerState[2].data.push(this.ctrlState.derivativeOutout);
-    this.chartConfig.dataSeriesControllerState[3].data.push(this.ctrlState.totalOutput);
+    // this.chartLabelsCtrlState.push(this.ctrlState.getTimeStr());
+    // this.chartConfig.dataSeriesControllerState[0].data.push(this.ctrlState.proportionalOutput);
+    // this.chartConfig.dataSeriesControllerState[1].data.push(this.ctrlState.integralOutput);
+    // this.chartConfig.dataSeriesControllerState[2].data.push(this.ctrlState.derivativeOutout);
+    // this.chartConfig.dataSeriesControllerState[3].data.push(this.ctrlState.totalOutput);
   }
 
   receiveControllerParamsMsg($event) {

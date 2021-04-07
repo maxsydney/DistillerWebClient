@@ -173,21 +173,20 @@
           </div>
         </div> 
       </div>
-          <!--
-          <li class="nav-link">
-            <app-tune-controller [ctrlTuning]=ctrlTuning (messageEvent)="receiveControllerParamsMsg($event)">
-            </app-tune-controller>
-          </li>
-          <li class="nav-link">
-            <app-assign-sensors (messageEvent)="receiveControllerParamsMsg($event)"></app-assign-sensors>
-          </li>
-        </div> -->
     </nav>
 
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10">
   <div class="container-fluid">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-      <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
+    <div class="w-100 pb-2 mb-3 border-bottom">
+      <app-temperature-chart></app-temperature-chart>
+      <!-- <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
+      [labels]="chartLabels" [options]="chartConfig.chartOptionsMainProcess" [legend]="true">
+      </canvas> -->
+    </div>
+  </div>
+</main>
+
+      <!-- <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
         [labels]="chartLabels" [options]="chartConfig.chartOptionsMainProcess" [legend]="true">
       </canvas>
       <canvas *ngIf="activeChart == 1" baseChart [chartType]="'line'"
@@ -197,101 +196,4 @@
       <canvas *ngIf="activeChart == 2" baseChart [chartType]="'line'"
         [datasets]="chartConfig.dataSeriesControllerState" [labels]="chartLabelsCtrlState"
         [options]="chartConfig.chartOptionsControllerState" [legend]="true">
-      </canvas>
-    </div>
-  </div>
-</main>
-  
-      <!--  <div class="container-fluid">
-        
-
-        <div class="container-fluid">
-          <h2> Commands </h2>
-          <div class="row">
-            <div class="col-sm-8">
-              <h6>Fan</h6>
-            </div>
-            <div class="col-sm-2">
-              <button *ngIf="!ctrlPeripheralState.fanState" (click)="fanControl(1)" type="button"
-                class="btn btn-danger btn-sm"> Off</button>
-              <button *ngIf="ctrlPeripheralState.fanState" (click)="fanControl(0)" type="button"
-                class="btn btn-success btn-sm"> On </button>
-            </div>
-          </div>
-          <div class="row top-buffer">
-            <div class="col-sm-8">
-              <h6> 2.4kw Element </h6>
-            </div>
-            <div class="col-sm-2">
-              <button *ngIf="!ctrlPeripheralState.LPElement" (click)="elementControlLowPower(1)" type="button"
-                class="btn btn-danger btn-sm"> Off </button>
-              <button *ngIf="ctrlPeripheralState.LPElement" (click)="elementControlLowPower(0)" type="button"
-                class="btn btn-success btn-sm"> On </button>
-            </div>
-          </div>
-          <div class="row top-buffer">
-            <div class="col-sm-8">
-              <h6> 3kw Element </h6>
-            </div>
-            <div class="col-sm-2">
-              <button *ngIf="!ctrlPeripheralState.HPElement" (click)="elementControlHighPower(1)" type="button"
-                class="btn btn-danger btn-sm"> Off </button>
-              <button *ngIf="ctrlPeripheralState.HPElement" (click)="elementControlHighPower(0)" type="button"
-                class="btn btn-success btn-sm"> On </button>
-            </div>
-          </div>
-          <div class="row top-buffer">
-            <div class="col-sm-8">
-              <h6> Reflux Pump </h6>
-            </div>
-            <div class="col-sm-2">
-              <button *ngIf="!ctrlSettings.refluxPump" (click)="controlRefluxCondensor(1)" type="button"
-                class="btn btn-danger btn-sm"> Auto </button>
-              <button *ngIf="ctrlSettings.refluxPump" (click)="controlRefluxCondensor(0)" type="button"
-                class="btn btn-success btn-sm"> On </button>
-            </div>
-          </div>
-          <div class="row top-buffer">
-            <div class="col-sm-8">
-              <h6> Prod Pump </h6>
-            </div>
-            <div class="col-sm-2">
-              <button *ngIf="!ctrlSettings.prodPump" (click)="controlProductCondensor(1)" type="button"
-                class="btn btn-danger btn-sm"> Auto </button>
-              <button *ngIf="ctrlSettings.prodPump" (click)="controlProductCondensor(0)" type="button"
-                class="btn btn-success btn-sm"> On </button>
-            </div>
-          </div>
-          <div class="row top-buffer">
-            <div class="col-sm-8">
-              <h6> Switch charts </h6>
-            </div>
-            <div class="col-sm-2">
-              <button *ngIf="activeChart == 0" (click)="swapCharts()" type="button" class="btn btn-success btn-sm"> Main
-                Chart </button>
-              <button *ngIf="activeChart == 1" (click)="swapCharts()" type="button" class="btn btn-success btn-sm">
-                Auxiliary Chart </button>
-              <button *ngIf="activeChart == 2" (click)="swapCharts()" type="button" class="btn btn-success btn-sm">
-                Alcohol Chart </button>
-            </div>
-          </div>
-          <div class="row top-buffer">
-            <div class="col-sm-8">
-              <h6> Update software </h6>
-            </div>
-            <div class="col-sm-2">
-              <button (click)="runOTA()" type="button" class="btn btn-success btn-sm"> Update </button>
-            </div>
-          </div>
-          <div class="row top-buffer">
-            <div class="col-sm-12">
-              <div class="md-form">
-                <input mdbInput type="text" name="text" [(ngModel)]="OTA_IP" id="form1" class="form-control"
-                  placeholder="Enter OTA IP">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  -->
+      </canvas> -->

@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { TuneControllerComponent } from './tune-controller';
 import { FormsModule } from '@angular/forms';
 import { AssignSensorsComponent } from './assign-sensors/assign-sensors.component';
+import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TuneControllerComponent,
-    AssignSensorsComponent
+    AssignSensorsComponent,
+    TemperatureChartComponent
   ],
   imports: [
     BrowserModule,
@@ -20,7 +22,7 @@ import { AssignSensorsComponent } from './assign-sensors/assign-sensors.componen
     NgbModule,
     FormsModule
   ],
-  providers: [SocketService],
+  providers: [SocketService, TemperatureChartComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
