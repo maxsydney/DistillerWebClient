@@ -97,7 +97,6 @@ export class AppComponent {
     this.chartConfig.dataSeriesControllerState[1].data.push(this.ctrlState.integralOutput);
     this.chartConfig.dataSeriesControllerState[2].data.push(this.ctrlState.derivativeOutout);
     this.chartConfig.dataSeriesControllerState[3].data.push(this.ctrlState.totalOutput);
-    // this.chart.chart.update();
   }
 
   receiveControllerParamsMsg($event) {
