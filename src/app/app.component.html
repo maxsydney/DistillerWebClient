@@ -179,12 +179,14 @@
   <div class="container-fluid">
     <div class="w-100 pb-2 mb-3 border-bottom">
       <app-temperature-chart></app-temperature-chart>
-      <!-- <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
-      [labels]="chartLabels" [options]="chartConfig.chartOptionsMainProcess" [legend]="true">
+      <!-- <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="tempChart.datasets"
+      [labels]="tempChart.labels" [options]="tempChart.options" [legend]="true">
       </canvas> -->
     </div>
   </div>
 </main>
+
+
 
       <!-- <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
         [labels]="chartLabels" [options]="chartConfig.chartOptionsMainProcess" [legend]="true">

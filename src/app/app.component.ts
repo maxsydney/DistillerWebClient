@@ -20,8 +20,9 @@ enum chartType {
 })
 
 export class AppComponent {
-  @ViewChild(BaseChartDirective, {static: false})
-  public chart: BaseChartDirective;
+  @ViewChild(TemperatureChartComponent)
+  public tempChart: TemperatureChartComponent;
+
   ctrlTuning = new ControllerTuning;
   ctrlSettings = new ControllerSettings;
   ctrlPeripheralState = new ControllerPeripheralState;
@@ -36,16 +37,14 @@ export class AppComponent {
   chartLabelsCtrlState = [];
 
   constructor(private socketService: SocketService,
-              public tempChart: TemperatureChartComponent,
               public chartConfig: ChartService) {
     this.socketService.connect('ws://192.168.1.201:80/ws')
       .subscribe(data => {
-        console.log(data);
         switch(data.MessageType)
         {
           case "Temperature Data":
             this.temperatures.update(data);
-            this.updateTemperatureChart();
+            this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
             break;
           case "Controller tuning":
             this.ctrlTuning.update(data);
@@ -75,20 +74,6 @@ export class AppComponent {
 
   public get PumpMode(): typeof PumpMode {
     return PumpMode; 
-  }
-
-  updateTemperatureChart() {
-    // this.tempChart.labels.push(this.temperatures.getTimeStr());
-    // this.tempChart.datasets[0].data.push(this.temperatures.T_head);
-    // this.tempChart.datasets[1].data.push(this.ctrlTuning.Setpoint);
-    // this.tempChart.datasets[2].data.push(this.temperatures.T_boiler);
-    // this.tempChart.datasets[3].data.push(this.temperatures.T_prod);
-    // this.tempChart.datasets[4].data.push(this.temperatures.T_radiator);
-    // this.tempChart.datasets[5].data.push(this.temperatures.T_reflux);
-    // this.chartConfig.dataSeriesConcentration[0].data.push(this.flowrates.vapConc);
-    // this.chartConfig.dataSeriesConcentration[1].data.push(this.flowrates.boilerConc);
-    console.log(this.chart);
-    console.log(this.tempChart.chart);
   }
 
   updateControllerStateChart() {

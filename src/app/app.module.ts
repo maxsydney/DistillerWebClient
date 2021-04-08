@@ -22,7 +22,7 @@ import { TemperatureChartComponent } from './temperature-chart/temperature-chart
     NgbModule,
     FormsModule
   ],
-  providers: [SocketService, TemperatureChartComponent],
+  providers: [SocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,25 +1,19 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Injectable } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Label, Color } from 'ng2-charts';
-
-@Injectable({
-  providedIn: 'root'
-})
+import { SystemTemperatures } from "../data-types"
 
 @Component({
   selector: 'app-temperature-chart',
   templateUrl: './temperature-chart.component.html',
   styleUrls: ['./temperature-chart.component.css']
 })
-export class TemperatureChartComponent implements OnInit {
-
-  test() {
-    console.log(this.chart.chart);
-  }
+export class TemperatureChartComponent {
+  @ViewChild(BaseChartDirective, {static: false})
+  public chart: BaseChartDirective;
 
   datasets: ChartDataSets[] = [
-    { data: [65, 59, 80, 81, 56, 55, 40], label: 'Head' },
+    { data: [], label: 'Head' },
     { data: [], label: 'Setpoint' },
     { data: [], label: 'Boiler' },
     { data: [], label: 'Product Out' },
@@ -27,10 +21,17 @@ export class TemperatureChartComponent implements OnInit {
     { data: [], label: 'Reflux out' }
   ];
 
-  labels: Label = ["1", "2", "3", "4", "5", "6"];
+  labels: Label[] = [];
 
   options: ChartOptions = {
     responsive: true,
+    animation: {
+      duration: 0,
+    },
+    elements: {
+      line: { fill: false },
+      point: { radius: 0 }
+    },
     scales: {
       yAxes: [{
         display: true,
@@ -54,23 +55,20 @@ export class TemperatureChartComponent implements OnInit {
       fontSize: 22
     }
   };
-
-  chartColours: Color[] = [
-    {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,255,0,0.28)',
-    },
-  ];
-
+  chartColours: Color[] = [];
   legend = true;
   plugins = [];
   chartType: ChartType = 'line';
 
-  @ViewChild(BaseChartDirective, { static: true }) chart: BaseChartDirective;
+  update(temperatures: SystemTemperatures, setpoint: number): void {
+    this.datasets[0].data.push(temperatures.T_head);
+    this.datasets[1].data.push(setpoint);
+    this.datasets[2].data.push(temperatures.T_boiler)
+    this.datasets[3].data.push(temperatures.T_prod)
+    this.datasets[4].data.push(temperatures.T_radiator)
+    this.datasets[5].data.push(temperatures.T_reflux)
+    this.labels.push(temperatures.getTimeStr());
 
-  constructor() { }
-
-  ngOnInit(): void {
+    this.chart.chart.update();
   }
-
 }
