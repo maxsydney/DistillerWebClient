@@ -6,6 +6,7 @@ import { ChartService } from './chart-service.service';
 import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState, ControllerState} from './data-types';
 import { PumpMode } from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
+import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 
 enum chartType {
   mainChart,
@@ -20,8 +21,8 @@ enum chartType {
 })
 
 export class AppComponent {
-  @ViewChild(TemperatureChartComponent)
-  public tempChart: TemperatureChartComponent;
+  @ViewChild(TemperatureChartComponent) public tempChart: TemperatureChartComponent;
+  @ViewChild(ControllerStateChartComponent) public ctrlStateChart: ControllerStateChartComponent;
 
   ctrlTuning = new ControllerTuning;
   ctrlSettings = new ControllerSettings;
@@ -63,7 +64,7 @@ export class AppComponent {
             break;
           case "Controller State":
             this.ctrlState.update(data);
-            this.updateControllerStateChart();
+            this.ctrlStateChart.update(this.ctrlState);
             break;
           case "Log":
             console.log(data['log']);
@@ -74,14 +75,6 @@ export class AppComponent {
 
   public get PumpMode(): typeof PumpMode {
     return PumpMode; 
-  }
-
-  updateControllerStateChart() {
-    // this.chartLabelsCtrlState.push(this.ctrlState.getTimeStr());
-    // this.chartConfig.dataSeriesControllerState[0].data.push(this.ctrlState.proportionalOutput);
-    // this.chartConfig.dataSeriesControllerState[1].data.push(this.ctrlState.integralOutput);
-    // this.chartConfig.dataSeriesControllerState[2].data.push(this.ctrlState.derivativeOutout);
-    // this.chartConfig.dataSeriesControllerState[3].data.push(this.ctrlState.totalOutput);
   }
 
   receiveControllerParamsMsg($event) {
@@ -163,7 +156,7 @@ export class AppComponent {
   }
 
   swapCharts() {
-    this.activeChart = (this.activeChart + 1) % 3;
+    this.activeChart = (this.activeChart + 1) % 2;
   }
 }
 

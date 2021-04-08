@@ -154,10 +154,7 @@
             <td>Switch Charts</td>
             <td class="text-right">
               <button *ngIf="activeChart == 0" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100"> Temperatures </button>
-              <button *ngIf="activeChart == 1" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100">
-                Concentration </button>
-              <button *ngIf="activeChart == 2" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100">
-                  Control State </button>
+              <button *ngIf="activeChart == 1" (click)="swapCharts()" type="button" class="btn btn-success btn-sm w-100"> Control State </button>
             </td>
           </tr>
         </tbody>
@@ -178,24 +175,8 @@
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10">
   <div class="container-fluid">
     <div class="w-100 pb-2 mb-3 border-bottom">
-      <app-temperature-chart></app-temperature-chart>
-      <!-- <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="tempChart.datasets"
-      [labels]="tempChart.labels" [options]="tempChart.options" [legend]="true">
-      </canvas> -->
+      <app-temperature-chart [hidden]="activeChart!=0"></app-temperature-chart>
+      <app-controller-state-chart [hidden]="activeChart!=1"></app-controller-state-chart>
     </div>
   </div>
 </main>
-
-
-
-      <!-- <canvas class="w-100" *ngIf="activeChart == 0" baseChart [chartType]="'line'" [datasets]="chartConfig.dataSeriesMainChart"
-        [labels]="chartLabels" [options]="chartConfig.chartOptionsMainProcess" [legend]="true">
-      </canvas>
-      <canvas *ngIf="activeChart == 1" baseChart [chartType]="'line'"
-        [datasets]="chartConfig.dataSeriesConcentration" [labels]="chartLabels"
-        [options]="chartConfig.chartOptionsConcentrations" [legend]="true">
-      </canvas>
-      <canvas *ngIf="activeChart == 2" baseChart [chartType]="'line'"
-        [datasets]="chartConfig.dataSeriesControllerState" [labels]="chartLabelsCtrlState"
-        [options]="chartConfig.chartOptionsControllerState" [legend]="true">
-      </canvas> -->

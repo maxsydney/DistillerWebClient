@@ -8,13 +8,15 @@ import { TuneControllerComponent } from './tune-controller';
 import { FormsModule } from '@angular/forms';
 import { AssignSensorsComponent } from './assign-sensors/assign-sensors.component';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component';
+import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TuneControllerComponent,
     AssignSensorsComponent,
-    TemperatureChartComponent
+    TemperatureChartComponent,
+    ControllerStateChartComponent
   ],
   imports: [
     BrowserModule,
