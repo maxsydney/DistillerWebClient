@@ -1,8 +1,6 @@
 import { Component, ViewChild} from '@angular/core';
 import { SocketService } from './socket.service';
 import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg} from './comm-types';
-import { BaseChartDirective } from 'ng2-charts';
-import { ChartService } from './chart-service.service';
 import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState, ControllerState} from './data-types';
 import { PumpMode } from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
@@ -37,47 +35,56 @@ export class AppComponent {
   chartLabels = [];
   chartLabelsCtrlState = [];
 
-  constructor(private socketService: SocketService,
-              public chartConfig: ChartService) {
+  constructor(private socketService: SocketService) {
     this.socketService.connect('ws://192.168.1.201:80/ws')
       .subscribe(
         msg => {
           console.log(msg);
-          switch(msg.MessageType)
-          {
-            case "Temperature Data":
-              this.temperatures.update(msg);
-              this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
-              break;
-            case "Controller tuning":
-              this.ctrlTuning.update(msg);
-              break
-            case "Controller settings":
-              this.ctrlSettings.update(msg);
-              break;
-            case "Controller command":
-              this.ctrlPeripheralState.update(msg);
-              break;
-            case "Flowrate Data":
-              this.flowrates.update(msg);
-              break;
-            case "Concentration Data":
-              this.concentrations.update(msg);
-              break;
-            case "Controller State":
-              this.ctrlState.update(msg);
-              this.ctrlStateChart.update(this.ctrlState);
-              break;
-            case "Log":
-              console.log(msg['log']);
-              break;
-          }
-      },
-      // err => console.log(err), 
-      // // Called if WebSocket API signals some kind of error    
-      // () => console.log('complete') 
-      // // Called when connection is closed (for whatever reason)  
+          this.handleMessage(msg);
+        },
+        err => {
+          console.log('Websocket error detected');
+          console.log(err);
+        },  
+        () => {
+          console.log('complete');
+        }
     );
+  }
+
+  //
+  // Process incoming data packets
+  //
+  handleMessage(msg: any): void {
+    switch(msg.MessageType)
+    {
+      case "Temperature Data":
+        this.temperatures.update(msg);
+        this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
+        break;
+      case "Controller tuning":
+        this.ctrlTuning.update(msg);
+        break
+      case "Controller settings":
+        this.ctrlSettings.update(msg);
+        break;
+      case "Controller command":
+        this.ctrlPeripheralState.update(msg);
+        break;
+      case "Flowrate Data":
+        this.flowrates.update(msg);
+        break;
+      case "Concentration Data":
+        this.concentrations.update(msg);
+        break;
+      case "Controller State":
+        this.ctrlState.update(msg);
+        this.ctrlStateChart.update(this.ctrlState);
+        break;
+      case "Log":
+        console.log(msg['log']);
+        break;
+    }
   }
 
   public get PumpMode(): typeof PumpMode {

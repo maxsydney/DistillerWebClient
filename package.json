@@ -31,6 +31,7 @@
     "babel": "^6.23.0",
     "bootstrap": "^4.6.0",
     "chart.js": "^2.9.4",
+    "chartjs-plugin-colorschemes": "^0.4.0",
     "chartjs-plugin-downsample": "^1.1.0",
     "core-js": "^3.10.0",
     "jquery": "^3.6.0",

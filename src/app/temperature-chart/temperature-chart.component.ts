@@ -55,7 +55,14 @@ export class TemperatureChartComponent {
       fontSize: 22
     }
   };
-  chartColours: Color[] = [];
+  chartColours: Color[] = [
+    { borderColor: "#E69F00" },
+    { borderColor: "#56B4E9" },
+    { borderColor: "#009E73" },
+    { borderColor: "#0072B2" },
+    { borderColor: "#D55E00" },
+    { borderColor: "#CC79A7" }
+  ];
   legend = true;
   plugins = [];
   chartType: ChartType = 'line';

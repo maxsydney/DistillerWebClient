@@ -52,7 +52,21 @@ export class ControllerStateChartComponent {
       fontSize: 22
     }
   };
-  chartColours: Color[] = [];
+  // chartColours: Color[] = [
+  //   { borderColor: "#E69F00" },
+  //   { borderColor: "#56B4E9" },
+  //   { borderColor: "#009E73" },
+  //   { borderColor: "#0072B2" }
+  // ];
+
+  chartColours: Color[] = [
+    { borderColor: "#17becf" },
+    { borderColor: "#bcbd22" },
+    { borderColor: "#7f7f7f" },
+    { borderColor: "#e377c2" },
+    { borderColor: "#8c564b" },
+    { borderColor: "#9467bd" }
+  ];
   legend = true;
   plugins = [];
   chartType: ChartType = 'line';
