@@ -11,6 +11,7 @@ import { ControllerState } from "../data-types"
 export class ControllerStateChartComponent {
   @ViewChild(BaseChartDirective, {static: false})
   public chart: BaseChartDirective;
+  chartWidth: number = 3000;    // About 10 minutes of data
 
   datasets: ChartDataSets[] = [
     { data: [], label: 'Proportional Output' },
@@ -65,10 +66,22 @@ export class ControllerStateChartComponent {
   chartType: ChartType = 'line';
 
   update(ctrlState: ControllerState): void {
+    // Shift data out of buffer when full
+    let dataset: ChartDataSets;
+    for (dataset of this.datasets){
+      if (dataset.data.length >= this.chartWidth) {
+        dataset.data.shift();
+      }
+    }
+    if (this.labels.length >= this.chartWidth) {
+      this.labels.shift();
+    }
+
+    // Now update
     this.datasets[0].data.push(ctrlState.proportionalOutput);
     this.datasets[1].data.push(ctrlState.integralOutput);
-    this.datasets[2].data.push(ctrlState.derivativeOutout)
-    this.datasets[3].data.push(ctrlState.totalOutput)
+    this.datasets[2].data.push(ctrlState.derivativeOutout);
+    this.datasets[3].data.push(ctrlState.totalOutput);
     this.labels.push(ctrlState.getTimeStr());
 
     this.chart.chart.update();

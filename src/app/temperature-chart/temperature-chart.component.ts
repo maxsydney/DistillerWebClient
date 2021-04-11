@@ -11,6 +11,7 @@ import { SystemTemperatures } from "../data-types"
 export class TemperatureChartComponent {
   @ViewChild(BaseChartDirective, {static: false})
   public chart: BaseChartDirective;
+  chartWidth: number = 3000;    // About 10 minutes of data
 
   datasets: ChartDataSets[] = [
     { data: [], label: 'Head' },
@@ -68,12 +69,24 @@ export class TemperatureChartComponent {
   chartType: ChartType = 'line';
 
   update(temperatures: SystemTemperatures, setpoint: number): void {
+    // Shift data out of buffer when full
+    let dataset: ChartDataSets;
+    for (dataset of this.datasets){
+      if (dataset.data.length >= this.chartWidth) {
+        dataset.data.shift();
+      }
+    }
+    if (this.labels.length >= this.chartWidth) {
+      this.labels.shift();
+    }
+
+    // Now update
     this.datasets[0].data.push(temperatures.T_head);
     this.datasets[1].data.push(setpoint);
-    this.datasets[2].data.push(temperatures.T_boiler)
-    this.datasets[3].data.push(temperatures.T_prod)
-    this.datasets[4].data.push(temperatures.T_radiator)
-    this.datasets[5].data.push(temperatures.T_reflux)
+    this.datasets[2].data.push(temperatures.T_boiler);
+    this.datasets[3].data.push(temperatures.T_prod);
+    this.datasets[4].data.push(temperatures.T_radiator);
+    this.datasets[5].data.push(temperatures.T_reflux);
     this.labels.push(temperatures.getTimeStr());
 
     this.chart.chart.update();
