@@ -40,37 +40,44 @@ export class AppComponent {
   constructor(private socketService: SocketService,
               public chartConfig: ChartService) {
     this.socketService.connect('ws://192.168.1.201:80/ws')
-      .subscribe(data => {
-        switch(data.MessageType)
-        {
-          case "Temperature Data":
-            this.temperatures.update(data);
-            this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
-            break;
-          case "Controller tuning":
-            this.ctrlTuning.update(data);
-            break
-          case "Controller settings":
-            this.ctrlSettings.update(data);
-            break;
-          case "Controller command":
-            this.ctrlPeripheralState.update(data);
-            break;
-          case "Flowrate Data":
-            this.flowrates.update(data);
-            break;
-          case "Concentration Data":
-            this.concentrations.update(data);
-            break;
-          case "Controller State":
-            this.ctrlState.update(data);
-            this.ctrlStateChart.update(this.ctrlState);
-            break;
-          case "Log":
-            console.log(data['log']);
-            break;
-        }
-      });
+      .subscribe(
+        msg => {
+          console.log(msg);
+          switch(msg.MessageType)
+          {
+            case "Temperature Data":
+              this.temperatures.update(msg);
+              this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
+              break;
+            case "Controller tuning":
+              this.ctrlTuning.update(msg);
+              break
+            case "Controller settings":
+              this.ctrlSettings.update(msg);
+              break;
+            case "Controller command":
+              this.ctrlPeripheralState.update(msg);
+              break;
+            case "Flowrate Data":
+              this.flowrates.update(msg);
+              break;
+            case "Concentration Data":
+              this.concentrations.update(msg);
+              break;
+            case "Controller State":
+              this.ctrlState.update(msg);
+              this.ctrlStateChart.update(this.ctrlState);
+              break;
+            case "Log":
+              console.log(msg['log']);
+              break;
+          }
+      },
+      // err => console.log(err), 
+      // // Called if WebSocket API signals some kind of error    
+      // () => console.log('complete') 
+      // // Called when connection is closed (for whatever reason)  
+    );
   }
 
   public get PumpMode(): typeof PumpMode {
