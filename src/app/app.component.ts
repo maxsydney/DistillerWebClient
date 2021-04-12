@@ -39,7 +39,7 @@ export class AppComponent {
     this.socketService.connect('ws://192.168.1.201:80/ws')
       .subscribe(
         msg => {
-          console.log(msg);
+          // console.log(msg);
           this.handleMessage(msg);
         },
         err => {
@@ -81,8 +81,8 @@ export class AppComponent {
         this.ctrlState.update(msg);
         this.ctrlStateChart.update(this.ctrlState);
         break;
-      case "Log":
-        console.log(msg['log']);
+      case "Socket Log":
+        console.log(msg['Log']);
         break;
     }
   }
