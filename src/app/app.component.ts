@@ -5,6 +5,7 @@ import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData,
 import { PumpMode } from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
+import { ConsoleComponent } from './console/console.component'
 
 enum chartType {
   mainChart,
@@ -21,6 +22,7 @@ enum chartType {
 export class AppComponent {
   @ViewChild(TemperatureChartComponent) public tempChart: TemperatureChartComponent;
   @ViewChild(ControllerStateChartComponent) public ctrlStateChart: ControllerStateChartComponent;
+  @ViewChild(ConsoleComponent) public console: ConsoleComponent;
 
   ctrlTuning = new ControllerTuning;
   ctrlSettings = new ControllerSettings;
@@ -82,6 +84,7 @@ export class AppComponent {
         this.ctrlStateChart.update(this.ctrlState);
         break;
       case "Socket Log":
+        this.console.logMessage(msg['Log']);
         console.log(msg['Log']);
         break;
     }

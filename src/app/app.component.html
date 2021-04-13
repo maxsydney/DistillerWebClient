@@ -171,12 +171,18 @@
         </div> 
       </div>
     </nav>
-
-<main role="main" class="col-md-9 ml-sm-auto col-lg-10">
-  <div class="container-fluid">
-    <div class="w-100 pb-2 mb-3 border-bottom">
-      <app-temperature-chart [hidden]="activeChart!=0"></app-temperature-chart>
-      <app-controller-state-chart [hidden]="activeChart!=1"></app-controller-state-chart>
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10">
+      <div class="container-fluid">
+        <div class="w-100 border-bottom">
+          <app-temperature-chart [hidden]="activeChart!=0"></app-temperature-chart>
+          <app-controller-state-chart [hidden]="activeChart!=1"></app-controller-state-chart>
+        </div>
+      </div>
+    </main>
+    <div class="col-md-9 ml-sm-auto col-lg-10 w-100">
+      <app-console></app-console>
     </div>
   </div>
-</main>
+</div>
+    
+    

@@ -1,0 +1,14 @@
+.console-viewport {
+    height: 150px;
+    width: 100%;
+    /* border: 1px solid black; */
+    margin-top: -3rem !important;
+    font-family:Courier New;
+  }
+  .nobull {
+    list-style-type: none;
+   }
+
+  .smallList {
+    margin: 10px 0;
+  }

@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { AssignSensorsComponent } from './assign-sensors/assign-sensors.component';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component';
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component';
+import { ConsoleComponent } from './console/console.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { ControllerStateChartComponent } from './controller-state-chart/controll
     TuneControllerComponent,
     AssignSensorsComponent,
     TemperatureChartComponent,
-    ControllerStateChartComponent
+    ControllerStateChartComponent,
+    ConsoleComponent
   ],
   imports: [
     BrowserModule,
