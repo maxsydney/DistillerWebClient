@@ -11,6 +11,7 @@ export class ControllerTuning {
   IGain = 0.0;
   DGain = 0.0;
   LPFCutoff = 0.0;
+  LPFSampleFreq = 0.0;
 
   update(data: JSON): void {
     this.Setpoint = data['Setpoint'];
@@ -18,6 +19,7 @@ export class ControllerTuning {
     this.IGain = data['IGain'];
     this.DGain = data['DGain'];
     this.LPFCutoff = data['LPFCutoff'];
+    this.LPFSampleFreq = data["LPFSampleFreq"]
   }
 }
 
