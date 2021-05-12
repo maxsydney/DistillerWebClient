@@ -12,7 +12,7 @@
           <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle> {{ selectStr }} </button>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
             <div *ngFor="let sensor of availableSensors">
-              <button ngbDropdownItem on-click="selectSensor(sensor)"> {{toHexString(sensor)}} </button>
+              <button ngbDropdownItem on-click="selectSensor(sensor)"> {{toHexString(sensor.addr)}} </button>
             </div>
           </div>
         </div>

@@ -41,7 +41,7 @@ export class AppComponent {
     this.socketService.connect('ws://192.168.1.201:80/ws')
       .subscribe(
         msg => {
-          // console.log(msg);
+          // console.log(JSON.stringify(msg, null, 2));
           this.handleMessage(msg);
         },
         err => {

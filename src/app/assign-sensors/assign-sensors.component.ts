@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { WebSocketSubject } from 'rxjs/webSocket';
-import { Observable, Subject} from 'rxjs';
+import { Component } from '@angular/core';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { Observable} from 'rxjs';
 import { SocketService } from '../socket.service';
 import { SensorAssignCommand, SensorAssignMsg} from '../comm-types';
 import { TempSensor } from '../data-types';
@@ -11,15 +10,15 @@ import { TempSensor } from '../data-types';
   templateUrl: './assign-sensors.component.html',
   styleUrls: ['./assign-sensors.component.css']
 })
-export class AssignSensorsComponent implements OnInit {
+export class AssignSensorsComponent{
 
   modalReference: NgbModalRef;
   private conn: Observable<string>;
   subscription: any;
   taskStr: string;
   selectStr: string;
-  selectedSensor = new TempSensor;
-  availableSensors = [];
+  selectedSensor = new TempSensor();
+  availableSensors: Array<TempSensor> = [];
   intervalID;
   tasks = [
     'Head',
@@ -40,8 +39,8 @@ export class AssignSensorsComponent implements OnInit {
       
       this.subscription = this.conn.subscribe(
         msg => {
-          if (msg['type'] === 'sensorID') {
-            this.processSensorIDs(msg);
+          if (msg['type'] === 'availableSensors') {
+            this.processSensors(msg);
           }
         }
       );
@@ -65,8 +64,16 @@ export class AssignSensorsComponent implements OnInit {
       this.socketService.sendMessage(msg);
     }
 
-    processSensorIDs(data: any): void {
-      this.availableSensors = data['sensors'];
+    processSensors(data: any): void {
+      // Clear the array
+      this.availableSensors.length = 0;
+
+      // Write available sensors to array
+      data['sensors'].forEach(element => {
+        let t = new TempSensor();
+        t.fromJSON(element);
+        this.availableSensors.push(t);
+      });
     }
 
     toHexString(byteArray) {
@@ -75,9 +82,9 @@ export class AssignSensorsComponent implements OnInit {
         '');
     }
 
-    selectSensor(addr: Array<number>): void {
-      this.selectedSensor.addr = addr;
-      this.selectStr = this.toHexString(addr);
+    selectSensor(sensor: TempSensor): void {
+      this.selectedSensor = sensor;
+      this.selectStr = this.toHexString(sensor.addr);
     }
 
     selectTask(i: number): void {
@@ -92,9 +99,5 @@ export class AssignSensorsComponent implements OnInit {
       this.socketService.sendMessage(msg);
       clearInterval(this.intervalID);
       this.modalReference.close();
-    }
-
-    ngOnInit() {
-
     }
 }

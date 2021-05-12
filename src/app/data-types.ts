@@ -175,10 +175,18 @@ export class ConcentrationData {
 
 export class TempSensor {
   addr: Array<number>;
+  calibration: Array<number>;
   task: number;
 
   constructor() {
     this.addr = [];
+    this.calibration = [1, 0];
+    this.task = -1;
+  }
+
+  fromJSON(data: JSON) {
+    this.addr = data["romCode"];
+    this.calibration = data["calibration"]
     this.task = -1;
   }
 }
