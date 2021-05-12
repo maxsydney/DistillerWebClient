@@ -54,6 +54,22 @@ export class SensorAssignMsg {
   }
 }
 
+export class SensorCalibrateMsg {
+  type: string;
+  subtype: string;
+  data: TempSensor;
+
+  constructor() {
+    this.type = 'Command';
+    this.subtype = 'AssignSensor';
+    this.data = new TempSensor;
+  }
+
+  update(sensor: TempSensor): void {
+    this.data = sensor;
+  }
+}
+
 export class OTACommand {
   type = 'CMD';
   subtype = 'OTA';
