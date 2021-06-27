@@ -16,21 +16,19 @@ export class TuneControllerComponent {
 
   constructor(private modalService: NgbModal,
               private socketService: SocketService) {
-    
   }
 
-    open(content: any) {
-      this.ctrlTuningNew = Object.assign(new ControllerTuning(), this.ctrlTuning);;
-      this.modalReference = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
-    }
+  open(content: any) {
+    this.ctrlTuningNew = Object.assign(new ControllerTuning(), this.ctrlTuning);
+    this.modalReference = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
+  }
 
-    sendParams() {
+  sendParams() {
+    const PIDmsg = new ControllerTuningMsg;
+    PIDmsg.update(this.ctrlTuningNew)
 
-      const PIDmsg = new ControllerTuningMsg;
-      PIDmsg.update(this.ctrlTuningNew)
+    this.messageEvent.emit(PIDmsg);
 
-      this.messageEvent.emit(PIDmsg);
-
-      this.modalReference.close();
-    }
+    this.modalReference.close();
+  }
 }

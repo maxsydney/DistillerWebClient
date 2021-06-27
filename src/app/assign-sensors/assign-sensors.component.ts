@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Observable} from 'rxjs';
 import { SocketService } from '../socket.service';
-import { SensorAssignCommand, SensorAssignMsg} from '../comm-types';
+import { RequestSensorsCommand, SensorAssignMsg} from '../comm-types';
 import { TempSensor } from '../data-types';
 
 @Component({
@@ -19,7 +19,7 @@ export class AssignSensorsComponent{
   selectStr: string;
   selectedSensor = new TempSensor();
   availableSensors: Array<TempSensor> = [];
-  intervalID;
+  intervalID: any;
   tasks = [
     'Head',
     'Reflux out',
@@ -45,8 +45,9 @@ export class AssignSensorsComponent{
         }
       );
 
-      this.modalReference. result.then(() => { }, () => {
+      this.modalReference. result.then(() => {}, () => {
         clearInterval(this.intervalID);
+        this.selectedSensor = new TempSensor()
         this.subscription.unsubscribe();
       });
     }
@@ -60,7 +61,7 @@ export class AssignSensorsComponent{
     }
 
     requestAvailableSensors(): void {
-      const msg = new SensorAssignCommand();
+      const msg = new RequestSensorsCommand();
       this.socketService.sendMessage(msg);
     }
 

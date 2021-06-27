@@ -175,18 +175,22 @@ export class ConcentrationData {
 
 export class TempSensor {
   addr: Array<number>;
-  calibration: Array<number>;
+  calCoeffA: number;  // Linear scaling coefficient
+  calCoeffB: number;  // Constant offset coefficient
   task: number;
 
   constructor() {
     this.addr = [];
-    this.calibration = [1, 0];
+    this.calCoeffA = 0;
+    this.calCoeffB = 0;
     this.task = -1;
   }
 
   fromJSON(data: JSON) {
     this.addr = data["romCode"];
-    this.calibration = data["calibration"]
+    console.log(data["calibration"])
+    this.calCoeffA = data["calibration"].calCoeffA;
+    this.calCoeffB = data["calibration"].calCoeffB;
     this.task = -1;
   }
 }

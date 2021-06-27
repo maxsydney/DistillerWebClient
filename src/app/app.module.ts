@@ -10,6 +10,7 @@ import { AssignSensorsComponent } from './assign-sensors/assign-sensors.componen
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component';
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component';
 import { ConsoleComponent } from './console/console.component';
+import { CalibrateSensorComponent } from './calibrate-sensor/calibrate-sensor.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { ConsoleComponent } from './console/console.component';
     AssignSensorsComponent,
     TemperatureChartComponent,
     ControllerStateChartComponent,
-    ConsoleComponent
+    ConsoleComponent,
+    CalibrateSensorComponent
   ],
   imports: [
     BrowserModule,
