@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
-import { Observable, Subject} from 'rxjs';
+import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class SocketService {
@@ -11,7 +11,10 @@ export class SocketService {
   connect(url: string): Observable<any> {
     if (!this.socket) {
       console.log('Established connection');
-      this.socket = new WebSocketSubject(url);
+      this.socket = new WebSocketSubject({
+        url: url,
+        deserializer: ({ data }) => data
+      });
     }
 
     return this.socket;
