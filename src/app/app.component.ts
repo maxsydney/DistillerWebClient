@@ -6,11 +6,13 @@ import { PumpMode } from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 import { ConsoleComponent } from './console/console.component'
+// import { TemperatureData } from './SensorManagerMessaging'
+import { MessageWrapper, PBMessageType } from '../../PBProtobuf/Generated/TypeScript/Proto/MessageBase';
 
 enum chartType {
   mainChart,
   secondaryChart,
-  concentrationChart
+  concentrationChart 
 }
 
 @Component({
@@ -42,9 +44,7 @@ export class AppComponent {
       .subscribe(
         msg => {
           console.log(msg)
-          // console.log(Array(msg));
-          // console.log(JSON.stringify(msg, null, 2));
-          // this.handleMessage(msg);
+          this.handleMessage(msg);
         },
         err => {
           console.log('Websocket error detected');
@@ -60,36 +60,38 @@ export class AppComponent {
   // Process incoming data packets
   //
   handleMessage(msg: any): void {
-    switch(msg.MessageType)
-    {
-      case "Temperature Data":
-        this.temperatures.update(msg);
-        this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
-        break;
-      case "Controller tuning":
-        this.ctrlTuning.update(msg);
-        break
-      case "Controller settings":
-        this.ctrlSettings.update(msg);
-        break;
-      case "Controller command":
-        this.ctrlPeripheralState.update(msg);
-        break;
-      case "Flowrate Data":
-        this.flowrates.update(msg);
-        break;
-      case "Concentration Data":
-        this.concentrations.update(msg);
-        break;
-      case "Controller State":
-        this.ctrlState.update(msg);
-        this.ctrlStateChart.update(this.ctrlState);
-        break;
-      case "Socket Log":
-        this.console.logMessage(msg['Log']);
-        console.log(msg['Log']);
-        break;
-    }
+    let a = MessageWrapper.create();
+    console.log(a);
+    // switch(msg.MessageType)
+    // {
+    //   case "Temperature Data":
+    //     this.temperatures.update(msg);
+    //     this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
+    //     break;
+    //   case "Controller tuning":
+    //     this.ctrlTuning.update(msg);
+    //     break
+    //   case "Controller settings":
+    //     this.ctrlSettings.update(msg);
+    //     break;
+    //   case "Controller command":
+    //     this.ctrlPeripheralState.update(msg);
+    //     break;
+    //   case "Flowrate Data":
+    //     this.flowrates.update(msg);
+    //     break;
+    //   case "Concentration Data":
+    //     this.concentrations.update(msg);
+    //     break;
+    //   case "Controller State":
+    //     this.ctrlState.update(msg);
+    //     this.ctrlStateChart.update(this.ctrlState);
+    //     break;
+    //   case "Socket Log":
+    //     this.console.logMessage(msg['Log']);
+    //     console.log(msg['Log']);
+    //     break;
+    // }
   }
 
   public get PumpMode(): typeof PumpMode {

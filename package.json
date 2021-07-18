@@ -26,6 +26,8 @@
     "@angular/router": "9.1.7",
     "@ng-bootstrap/ng-bootstrap": "^6.2.0",
     "@popperjs/core": "^2.9.2",
+    "@protobuf-ts/runtime": "^2.0.0-alpha.27",
+    "@protobuf-ts/runtime-angular": "^2.0.0-alpha.27",
     "@types/chart.js": "^2.9.31",
     "ajv": "^6.12.6",
     "babel": "^6.23.0",
