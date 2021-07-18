@@ -1,16 +1,16 @@
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Pissbot</a>
   <ul class="navbar-nav nav-fill w-100">
-    <li class="nav-item">Head temp: {{ temperatures.T_head | number:'2.2-2'}} °C</li>
+    <li class="nav-item">Head temp: {{ temperatures.headTemp | number:'2.2-2'}} °C</li>
   </ul>
   <ul class="navbar-nav nav-fill w-100">
-    <li class="nav-item">Boiler temp: {{ temperatures.T_boiler | number:'2.2-2'}} °C</li>
+    <li class="nav-item">Boiler temp: {{ temperatures.boilerTemp | number:'2.2-2'}} °C</li>
   </ul>
   <ul class="navbar-nav nav-fill w-100">
     <li class="nav-item">Setpoint: {{ ctrlTuning.Setpoint | number:'2.2-2'}} °C</li>
   </ul>
   <ul class="navbar-nav nav-fill w-100">
-    <li class="nav-item">Run time: {{ temperatures.getTimeStr() }} </li>
+    <li class="nav-item">Run time: {{ getTimeStr(temperatures.timeStamp) }}</li>
   </ul>
 </nav>
 
@@ -69,7 +69,7 @@
         <tbody class="">
           <tr>
             <td>ΔT</td>
-            <td class="text-right">{{ temperatures.T_head - temperatures.T_radiator | number:'2.2-2'}} °C</td>
+            <td class="text-right">{{ temperatures.headTemp - temperatures.radiatorTemp | number:'2.2-2'}} °C</td>
           </tr>
           <tr>
             <td>Reflux Flowrate</td>
@@ -81,7 +81,7 @@
           </tr>
           <tr>
             <td>Reflux Qdot</td>
-            <td class="text-right">{{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.T_head - temperatures.T_radiator ) | number:'1.2-2' }} kW </td>
+            <td class="text-right">{{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.headTemp - temperatures.radiatorTemp ) | number:'1.2-2' }} kW </td>
           </tr>
           <tr>
             <td>Vapour</td>

@@ -6,8 +6,9 @@ import { PumpMode } from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 import { ConsoleComponent } from './console/console.component'
-// import { TemperatureData } from './SensorManagerMessaging'
-import { MessageWrapper, PBMessageType } from '../../PBProtobuf/Generated/TypeScript/Proto/MessageBase';
+import { TemperatureData } from './ProtoBuf/SensorManagerMessaging'
+import { MessageWrapper, PBMessageType } from './ProtoBuf/MessageBase';
+import { MessageType } from '@protobuf-ts/runtime';
 
 enum chartType {
   mainChart,
@@ -30,7 +31,7 @@ export class AppComponent {
   ctrlSettings = new ControllerSettings;
   ctrlPeripheralState = new ControllerPeripheralState;
   ctrlState = new ControllerState;
-  temperatures = new SystemTemperatures;
+  temperatures: TemperatureData;
   flowrates = new FlowrateData;
   concentrations = new ConcentrationData;
   activeChart = chartType.mainChart;
@@ -59,39 +60,44 @@ export class AppComponent {
   //
   // Process incoming data packets
   //
-  handleMessage(msg: any): void {
-    let a = MessageWrapper.create();
-    console.log(a);
-    // switch(msg.MessageType)
-    // {
-    //   case "Temperature Data":
-    //     this.temperatures.update(msg);
-    //     this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
-    //     break;
-    //   case "Controller tuning":
-    //     this.ctrlTuning.update(msg);
-    //     break
-    //   case "Controller settings":
-    //     this.ctrlSettings.update(msg);
-    //     break;
-    //   case "Controller command":
-    //     this.ctrlPeripheralState.update(msg);
-    //     break;
-    //   case "Flowrate Data":
-    //     this.flowrates.update(msg);
-    //     break;
-    //   case "Concentration Data":
-    //     this.concentrations.update(msg);
-    //     break;
-    //   case "Controller State":
-    //     this.ctrlState.update(msg);
-    //     this.ctrlStateChart.update(this.ctrlState);
-    //     break;
-    //   case "Socket Log":
-    //     this.console.logMessage(msg['Log']);
-    //     console.log(msg['Log']);
-    //     break;
-    // }
+  async handleMessage(msg: any) {
+    // Decode wrapper
+    let msgBuffer = await new Response(msg).arrayBuffer();
+    let arr = new Uint8Array(msgBuffer);
+    let wrapped = MessageWrapper.fromBinary(arr);
+
+    // Decode payload
+    switch(wrapped.type)
+    {
+      case PBMessageType.TemperatureData:
+        this.temperatures = TemperatureData.fromBinary(wrapped.payload);
+        console.log(this.temperatures.headTemp);
+        this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
+        break;
+      case PBMessageType.ControllerTuning:
+        this.ctrlTuning.update(msg);
+        break
+      case PBMessageType.ControllerSettings:
+        this.ctrlSettings.update(msg);
+        break;
+      case PBMessageType.ControllerCommand:
+        this.ctrlPeripheralState.update(msg);
+        break;
+      case PBMessageType.FlowrateData:
+        this.flowrates.update(msg);
+        break;
+      case PBMessageType.ConcentrationData:
+        this.concentrations.update(msg);
+        break;
+      case PBMessageType.ControllerState:
+        this.ctrlState.update(msg);
+        this.ctrlStateChart.update(this.ctrlState);
+        break;
+      case PBMessageType.SocketLog:
+        this.console.logMessage(msg['Log']);
+        console.log(msg['Log']);
+        break;
+    }
   }
 
   public get PumpMode(): typeof PumpMode {
@@ -178,6 +184,25 @@ export class AppComponent {
 
   swapCharts() {
     this.activeChart = (this.activeChart + 1) % 2;
+  }
+
+  // The following two functions are duplicates. Figure out a way to share these amongst all modules
+  getTimeStr(uptime_us: number): string {
+    let seconds = uptime_us / 1e6;
+    const hours = Math.floor(seconds / 3600);
+    seconds = seconds % 3600;
+    const mins = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+
+    return `${this.FormatNumberLength(hours, 2)}:${this.FormatNumberLength(mins, 2)}:${this.FormatNumberLength(seconds, 2)}`;
+  }
+
+  FormatNumberLength(num: number, length: number): string {
+    let r = '' + num;
+    while (r.length < length) {
+        r = '0' + r;
+    }
+    return r;
   }
 }
 
