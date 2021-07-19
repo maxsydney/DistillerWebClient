@@ -7,7 +7,7 @@
     <li class="nav-item">Boiler temp: {{ temperatures.boilerTemp | number:'2.2-2'}} °C</li>
   </ul>
   <ul class="navbar-nav nav-fill w-100">
-    <li class="nav-item">Setpoint: {{ ctrlTuning.Setpoint | number:'2.2-2'}} °C</li>
+    <li class="nav-item">Setpoint: {{ ctrlTuning.setpoint | number:'2.2-2'}} °C</li>
   </ul>
   <ul class="navbar-nav nav-fill w-100">
     <li class="nav-item">Run time: {{ getTimeStr(temperatures.timeStamp) }}</li>
@@ -31,19 +31,19 @@
         <tbody class="">
           <tr>
             <td>P Gain</td>
-            <td class="text-right">{{ ctrlTuning.PGain | number}}</td>
+            <td class="text-right">{{ ctrlTuning.pGain | number}}</td>
           </tr>
           <tr>
             <td>I Gain</td>
-            <td class="text-right">{{ ctrlTuning.IGain | number}}</td>
+            <td class="text-right">{{ ctrlTuning.iGain | number}}</td>
           </tr>
           <tr>
             <td>D Gain</td>
-            <td class="text-right">{{ ctrlTuning.DGain | number}}</td>
+            <td class="text-right">{{ ctrlTuning.dGain | number}}</td>
           </tr>
           <tr>
             <td>Setpoint</td>
-            <td class="text-right">{{ ctrlTuning.Setpoint | number:'.0-0'}} °C</td>
+            <td class="text-right">{{ ctrlTuning.setpoint | number:'.0-0'}} °C</td>
           </tr>
           <tr>
             <td>LPF Cutoff Freq</td>
@@ -135,22 +135,22 @@
           <tr>
             <td>Reflux Pump</td>
             <td class="text-right">
-              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.Off" (click)="controlRefluxCondensor()" type="button"
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.PUMP_OFF" (click)="controlRefluxCondensor()" type="button"
                 class="btn btn-danger btn-sm custom-button w-100"> Off </button>
-              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.ActiveControl" (click)="controlRefluxCondensor()" type="button"
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.ACTIVE_CONTROL" (click)="controlRefluxCondensor()" type="button"
                 class="btn btn-success btn-sm custom-button w-100"> Auto </button>
-              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.ManualControl" (click)="controlRefluxCondensor()" type="button"
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.MANUAL_CONTROL" (click)="controlRefluxCondensor()" type="button"
                 class="btn btn-warning btn-sm custom-button w-100"> Manual </button>
             </td>
           </tr>
           <tr>
-            <td>Product Pump</td>
+            <td>Product Pump</td> 
             <td class="text-right">
-              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.Off" (click)="controlProductCondensor()" type="button"
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.PUMP_OFF" (click)="controlProductCondensor()" type="button"
                 class="btn btn-danger btn-sm w-100"> Off </button>
-              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.ActiveControl" (click)="controlProductCondensor()" type="button"
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.ACTIVE_CONTROL" (click)="controlProductCondensor()" type="button"
                 class="btn btn-success btn-sm w-100"> Auto </button>
-              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.ManualControl" (click)="controlProductCondensor()" type="button"
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.MANUAL_CONTROL" (click)="controlProductCondensor()" type="button"
                 class="btn btn-warning btn-sm w-100"> Manual </button>
             </td>
           </tr>

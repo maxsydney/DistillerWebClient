@@ -1,15 +1,14 @@
 import { Component, ViewChild} from '@angular/core';
 import { SocketService } from './socket.service';
 import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg} from './comm-types';
-import { FlowrateData, ConcentrationData, ControllerPeripheralState} from './data-types';
-import { PumpMode } from './data-types';
+import { ControllerPeripheralState} from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 import { ConsoleComponent } from './console/console.component'
-import { TemperatureData } from './ProtoBuf/SensorManagerMessaging'
+import { TemperatureData, FlowrateData, ConcentrationData} from './ProtoBuf/SensorManagerMessaging'
 import { MessageWrapper, PBMessageType } from './ProtoBuf/MessageBase';
-import { ControllerTuning, ControllerSettings, ControllerState } from './ProtoBuf/ControllerMessaging';
-import { MessageType } from '@protobuf-ts/runtime';
+import { ControllerTuning, ControllerSettings, ControllerState, PumpMode } from './ProtoBuf/ControllerMessaging';
+import { SocketLogMessage } from './ProtoBuf/WebserverMessaging';
 
 enum chartType {
   mainChart,
@@ -33,8 +32,8 @@ export class AppComponent {
   ctrlPeripheralState = new ControllerPeripheralState;
   ctrlState: ControllerState;
   temperatures: TemperatureData;
-  flowrates = new FlowrateData;
-  concentrations = new ConcentrationData;
+  flowrates: FlowrateData;
+  concentrations: ConcentrationData;
   activeChart = chartType.mainChart;
   OTA_IP: string;
 
@@ -45,7 +44,6 @@ export class AppComponent {
     this.socketService.connect('ws://192.168.1.201:80/ws')
       .subscribe(
         msg => {
-          console.log(msg)
           this.handleMessage(msg);
         },
         err => {
@@ -72,13 +70,13 @@ export class AppComponent {
     {
       case PBMessageType.TemperatureData:
         this.temperatures = TemperatureData.fromBinary(wrapped.payload);
-        console.log(this.temperatures.headTemp);
-        this.tempChart.update(this.temperatures, 5);
+        this.tempChart.update(this.temperatures, this.ctrlTuning.setpoint);
+        console.log(this.ctrlSettings.refluxPumpMode == PumpMode.ACTIVE_CONTROL);
         break;
       case PBMessageType.ControllerTuning:
         this.ctrlTuning = ControllerTuning.fromBinary(wrapped.payload);
         console.log("Got controller tuning message")
-        console.log(this.ctrlTuning);
+        console.log(this.ctrlTuning.pGain);
         break
       case PBMessageType.ControllerSettings:
         console.log("Got controller settings message")
@@ -88,19 +86,20 @@ export class AppComponent {
         this.ctrlPeripheralState.update(msg);
         break;
       case PBMessageType.FlowrateData:
-        this.flowrates.update(msg);
+        this.flowrates = FlowrateData.fromBinary(wrapped.payload);
         break;
       case PBMessageType.ConcentrationData:
-        this.concentrations.update(msg);
+        this.concentrations = ConcentrationData.fromBinary(wrapped.payload);
         break;
       case PBMessageType.ControllerState:
         this.ctrlState = ControllerState.fromBinary(wrapped.payload);
-        console.log(this.ctrlState.timeStamp);
         this.ctrlStateChart.update(this.ctrlState);
         break;
       case PBMessageType.SocketLog:
-        this.console.logMessage(msg['Log']);
-        console.log(msg['Log']);
+
+        let logMsg = SocketLogMessage.fromBinary(wrapped.payload);
+        this.console.logMessage(logMsg.logMsg);
+        console.log(logMsg.logMsg);
         break;
     }
   }
@@ -108,7 +107,6 @@ export class AppComponent {
   public get PumpMode(): typeof PumpMode {
     return PumpMode; 
   }
-  
 
   receiveControllerParamsMsg($event) {
     const PIDmsg: ControllerTuningMsg = $event;
@@ -151,7 +149,7 @@ export class AppComponent {
     var updatedState = JSON.parse(JSON.stringify(this.ctrlSettings));
     const status = (updatedState.productPumpMode + 1) % 3;
     updatedState.productPumpMode = status;
-    if (status == PumpMode.ManualControl) {
+    if (status == PumpMode.MANUAL_CONTROL) {
       updatedState.productPumpSpeedManual = 1024;
     }
     const msg = new ControllerSettingsMsg;
@@ -163,7 +161,7 @@ export class AppComponent {
     var updatedState = JSON.parse(JSON.stringify(this.ctrlSettings));
     const status = (updatedState.refluxPumpMode + 1) % 3;
     updatedState.refluxPumpMode = status;
-    if (status == PumpMode.ManualControl) {
+    if (status == PumpMode.MANUAL_CONTROL) {
       updatedState.refluxPumpSpeedManual = 1024;
     }
     const msg = new ControllerSettingsMsg;
