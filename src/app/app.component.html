@@ -108,7 +108,7 @@
           <tr>
             <td>Fan</td>
             <td class="text-right">
-              <button *ngIf="!ctrlPeripheralState.fanState" (click)="fanControl(1)" type="button"
+              <button *ngIf="ctrlPeripheralState.fanState == 0" (click)="fanControl(1)" type="button"
                 class="btn btn-danger btn-sm custom-button w-100"> Off</button>
               <button *ngIf="ctrlPeripheralState.fanState" (click)="fanControl(0)" type="button"
                 class="btn btn-success btn-sm custom-button w-100"> On </button>
@@ -117,19 +117,19 @@
           <tr>
             <td>2.4 kw Element</td>
             <td class="text-right">
-              <button *ngIf="ctrlPeripheralState.LPElement == 0" (click)="elementControlLowPower(0.25)" type="button"
+              <button *ngIf="ctrlPeripheralState.lPElementDutyCycle == 0" (click)="elementControlLowPower(0.25)" type="button"
                 class="btn btn-danger btn-sm custom-button w-100"> Off </button>
-              <button *ngIf="ctrlPeripheralState.LPElement != 0" (click)="elementControlLowPower(0.25)" type="button"
-                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.LPElement * 100 }} % </button>
+              <button *ngIf="ctrlPeripheralState.lPElementDutyCycle != 0" (click)="elementControlLowPower(0.25)" type="button"
+                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.lPElementDutyCycle * 100 }} % </button>
             </td>
           </tr>
           <tr>
             <td>3.0 kw Element</td>
             <td class="text-right">
-              <button *ngIf="ctrlPeripheralState.HPElement == 0" (click)="elementControlHighPower(0.25)" type="button"
+              <button *ngIf="ctrlPeripheralState.hPElementDutyCycle == 0" (click)="elementControlHighPower(0.25)" type="button"
                 class="btn btn-danger btn-sm custom-button w-100"> Off </button>
-              <button *ngIf="ctrlPeripheralState.HPElement != 0" (click)="elementControlHighPower(0.25)" type="button"
-                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.HPElement * 100 }} % </button>
+              <button *ngIf="ctrlPeripheralState.hPElementDutyCycle != 0" (click)="elementControlHighPower(0.25)" type="button"
+                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.hPElementDutyCycle * 100 }} % </button>
             </td>
           </tr>
           <tr>

@@ -1,13 +1,12 @@
 import { Component, ViewChild} from '@angular/core';
 import { SocketService } from './socket.service';
 import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg} from './comm-types';
-import { ControllerPeripheralState} from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 import { ConsoleComponent } from './console/console.component'
 import { TemperatureData, FlowrateData, ConcentrationData} from './ProtoBuf/SensorManagerMessaging'
 import { MessageWrapper, PBMessageType } from './ProtoBuf/MessageBase';
-import { ControllerTuning, ControllerSettings, ControllerState, PumpMode } from './ProtoBuf/ControllerMessaging';
+import { ControllerTuning, ControllerSettings, ControllerState, PumpMode, ControllerCommand, ComponentState } from './ProtoBuf/ControllerMessaging';
 import { SocketLogMessage } from './ProtoBuf/WebserverMessaging';
 
 enum chartType {
@@ -29,7 +28,7 @@ export class AppComponent {
 
   ctrlTuning: ControllerTuning;
   ctrlSettings: ControllerSettings;
-  ctrlPeripheralState = new ControllerPeripheralState;
+  ctrlPeripheralState: ControllerCommand;
   ctrlState: ControllerState;
   temperatures: TemperatureData;
   flowrates: FlowrateData;
@@ -71,19 +70,15 @@ export class AppComponent {
       case PBMessageType.TemperatureData:
         this.temperatures = TemperatureData.fromBinary(wrapped.payload);
         this.tempChart.update(this.temperatures, this.ctrlTuning.setpoint);
-        console.log(this.ctrlSettings.refluxPumpMode == PumpMode.ACTIVE_CONTROL);
         break;
       case PBMessageType.ControllerTuning:
         this.ctrlTuning = ControllerTuning.fromBinary(wrapped.payload);
-        console.log("Got controller tuning message")
-        console.log(this.ctrlTuning.pGain);
         break
       case PBMessageType.ControllerSettings:
-        console.log("Got controller settings message")
         this.ctrlSettings = ControllerSettings.fromBinary(wrapped.payload);
         break;
       case PBMessageType.ControllerCommand:
-        this.ctrlPeripheralState.update(msg);
+        this.ctrlPeripheralState = ControllerCommand.fromBinary(wrapped.payload);
         break;
       case PBMessageType.FlowrateData:
         this.flowrates = FlowrateData.fromBinary(wrapped.payload);
@@ -96,10 +91,9 @@ export class AppComponent {
         this.ctrlStateChart.update(this.ctrlState);
         break;
       case PBMessageType.SocketLog:
-
         let logMsg = SocketLogMessage.fromBinary(wrapped.payload);
         this.console.logMessage(logMsg.logMsg);
-        console.log(logMsg.logMsg);
+        // console.log(logMsg.logMsg);
         break;
     }
   }
@@ -158,15 +152,14 @@ export class AppComponent {
   }
 
   controlRefluxCondensor() {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlSettings));
-    const status = (updatedState.refluxPumpMode + 1) % 3;
-    updatedState.refluxPumpMode = status;
-    if (status == PumpMode.MANUAL_CONTROL) {
-      updatedState.refluxPumpSpeedManual = 1024;
-    }
-    const msg = new ControllerSettingsMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+    var ctrlState = ControllerState.create(this.ctrlState);
+    ctrlState.propOutput = 5;
+
+    console.log(ControllerState.toBinary(ctrlState));
+    
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerState.toBinary(ctrlState), PBMessageType.ControllerState);
+    console.log(wrapped);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   convertFlowRateVolToMass(vDot) {
@@ -207,6 +200,14 @@ export class AppComponent {
         r = '0' + r;
     }
     return r;
+  }
+
+  wrapMessage(messageSerialized: Uint8Array, type: PBMessageType): MessageWrapper {
+    // TODO: How to specify base interface type as type
+    let outMsg = MessageWrapper.create();
+    outMsg.type = type;
+    outMsg.payload = messageSerialized;
+    return outMsg;
   }
 }
 

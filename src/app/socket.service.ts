@@ -5,7 +5,6 @@ import { Observable, Subject } from 'rxjs';
 @Injectable()
 export class SocketService {
 
-  sock: WebSocket;
   private socket: WebSocketSubject<any>;
 
   connect(url: string): Observable<any> {
@@ -13,7 +12,8 @@ export class SocketService {
       console.log('Established connection');
       this.socket = new WebSocketSubject({
         url: url,
-        deserializer: ({ data }) => data
+        deserializer: ({ data }) => data,
+        serializer: ({ data }) => {let a = new Blob([data]); console.log(a); return a}
       });
     }
 
