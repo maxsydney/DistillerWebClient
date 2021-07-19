@@ -1,13 +1,14 @@
 import { Component, ViewChild} from '@angular/core';
 import { SocketService } from './socket.service';
 import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg} from './comm-types';
-import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState, ControllerState} from './data-types';
+import { FlowrateData, ConcentrationData, ControllerPeripheralState} from './data-types';
 import { PumpMode } from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 import { ConsoleComponent } from './console/console.component'
 import { TemperatureData } from './ProtoBuf/SensorManagerMessaging'
 import { MessageWrapper, PBMessageType } from './ProtoBuf/MessageBase';
+import { ControllerTuning, ControllerSettings, ControllerState } from './ProtoBuf/ControllerMessaging';
 import { MessageType } from '@protobuf-ts/runtime';
 
 enum chartType {
@@ -27,10 +28,10 @@ export class AppComponent {
   @ViewChild(ControllerStateChartComponent) public ctrlStateChart: ControllerStateChartComponent;
   @ViewChild(ConsoleComponent) public console: ConsoleComponent;
 
-  ctrlTuning = new ControllerTuning;
-  ctrlSettings = new ControllerSettings;
+  ctrlTuning: ControllerTuning;
+  ctrlSettings: ControllerSettings;
   ctrlPeripheralState = new ControllerPeripheralState;
-  ctrlState = new ControllerState;
+  ctrlState: ControllerState;
   temperatures: TemperatureData;
   flowrates = new FlowrateData;
   concentrations = new ConcentrationData;
@@ -72,13 +73,16 @@ export class AppComponent {
       case PBMessageType.TemperatureData:
         this.temperatures = TemperatureData.fromBinary(wrapped.payload);
         console.log(this.temperatures.headTemp);
-        this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
+        this.tempChart.update(this.temperatures, 5);
         break;
       case PBMessageType.ControllerTuning:
-        this.ctrlTuning.update(msg);
+        this.ctrlTuning = ControllerTuning.fromBinary(wrapped.payload);
+        console.log("Got controller tuning message")
+        console.log(this.ctrlTuning);
         break
       case PBMessageType.ControllerSettings:
-        this.ctrlSettings.update(msg);
+        console.log("Got controller settings message")
+        this.ctrlSettings = ControllerSettings.fromBinary(wrapped.payload);
         break;
       case PBMessageType.ControllerCommand:
         this.ctrlPeripheralState.update(msg);
@@ -90,7 +94,8 @@ export class AppComponent {
         this.concentrations.update(msg);
         break;
       case PBMessageType.ControllerState:
-        this.ctrlState.update(msg);
+        this.ctrlState = ControllerState.fromBinary(wrapped.payload);
+        console.log(this.ctrlState.timeStamp);
         this.ctrlStateChart.update(this.ctrlState);
         break;
       case PBMessageType.SocketLog:
@@ -103,6 +108,7 @@ export class AppComponent {
   public get PumpMode(): typeof PumpMode {
     return PumpMode; 
   }
+  
 
   receiveControllerParamsMsg($event) {
     const PIDmsg: ControllerTuningMsg = $event;
