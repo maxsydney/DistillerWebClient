@@ -108,12 +108,14 @@ export class AppComponent {
     // console.log(PIDmsg);
   }
 
-  fanControl(status) {
-    // var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
-    // updatedState.fanState = status;
-    // const msg = new ControllerPeripheralStateMsg;
-    // msg.update(updatedState);
-    // this.socketService.sendMessage(msg);
+  fanControl(status: any) {
+    var ctrlCommand = ControllerCommand.create(this.ctrlPeripheralState);
+    ctrlCommand.fanState = status;
+
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
+    console.log(wrapped);
+
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   elementControlLowPower(increment) {
@@ -176,9 +178,9 @@ export class AppComponent {
   }
 
   runOTA() {
-    const OTA = new OTACommand;
-    OTA.IP = this.OTA_IP;
-    this.socketService.sendMessage(JSON.stringify(OTA));
+    // const OTA = new OTACommand;
+    // OTA.IP = this.OTA_IP;
+    // this.socketService.sendMessage(JSON.stringify(OTA));
   }
 
   swapCharts() {
