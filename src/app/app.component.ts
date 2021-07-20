@@ -151,15 +151,25 @@ export class AppComponent {
     this.socketService.sendMessage(msg);
   }
 
-  controlRefluxCondensor() {
+  async controlRefluxCondensor() {
     var ctrlState = ControllerState.create(this.ctrlState);
     ctrlState.propOutput = 5;
 
-    console.log(ControllerState.toBinary(ctrlState));
+    // console.log(ControllerState.toBinary(ctrlState));
     
     let wrapped: MessageWrapper = this.wrapMessage(ControllerState.toBinary(ctrlState), PBMessageType.ControllerState);
     console.log(wrapped);
-    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
+
+    // Convert to blob, then back to array and check content is preserved
+    let a = new Blob([MessageWrapper.toBinary(wrapped)]);
+
+    let msgBuffer = await new Response(a).arrayBuffer();
+    let arr = new Uint8Array(msgBuffer);
+    let out = MessageWrapper.fromBinary(arr);
+
+    console.log(out);
+
+    this.socketService.sendMessage(out);
   }
 
   convertFlowRateVolToMass(vDot) {
