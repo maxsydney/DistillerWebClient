@@ -1,6 +1,5 @@
 import { Component, ViewChild} from '@angular/core';
 import { SocketService } from './socket.service';
-import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg} from './comm-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 import { ConsoleComponent } from './console/console.component'
@@ -103,73 +102,66 @@ export class AppComponent {
   }
 
   receiveControllerParamsMsg($event) {
-    const PIDmsg: ControllerTuningMsg = $event;
+    // const PIDmsg: ControllerTuningMsg = $event;
 
-    this.socketService.sendMessage(PIDmsg);
-    console.log(PIDmsg);
+    // this.socketService.sendMessage(PIDmsg);
+    // console.log(PIDmsg);
   }
 
   fanControl(status) {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
-    updatedState.fanState = status;
-    const msg = new ControllerPeripheralStateMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+    // var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
+    // updatedState.fanState = status;
+    // const msg = new ControllerPeripheralStateMsg;
+    // msg.update(updatedState);
+    // this.socketService.sendMessage(msg);
   }
 
   elementControlLowPower(increment) {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
-    updatedState.LPElement += increment;
-    if (updatedState.LPElement > 1.0) {
-      updatedState.LPElement= 0.0;
+    var ctrlCommand = ControllerCommand.create(this.ctrlPeripheralState);
+    ctrlCommand.lPElementDutyCycle += increment;
+
+    if (ctrlCommand.lPElementDutyCycle > 1.0) {
+      ctrlCommand.lPElementDutyCycle = 0;
     }
-    const msg = new ControllerPeripheralStateMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+    
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
+    console.log(wrapped);
+
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   elementControlHighPower(increment) {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
-    updatedState.HPElement += increment;
-    if (updatedState.HPElement > 1.0) {
-      updatedState.HPElement = 0.0;
+    var ctrlCommand = ControllerCommand.create(this.ctrlPeripheralState);
+    ctrlCommand.hPElementDutyCycle += increment;
+
+    if (ctrlCommand.hPElementDutyCycle > 1.0) {
+      ctrlCommand.hPElementDutyCycle = 0;
     }
-    const msg = new ControllerPeripheralStateMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+    
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
+    console.log(wrapped);
+
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   controlProductCondensor() {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlSettings));
-    const status = (updatedState.productPumpMode + 1) % 3;
-    updatedState.productPumpMode = status;
-    if (status == PumpMode.MANUAL_CONTROL) {
-      updatedState.productPumpSpeedManual = 1024;
-    }
-    const msg = new ControllerSettingsMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+    var ctrlSettings = ControllerSettings.create(this.ctrlSettings);
+    ctrlSettings.productPumpMode = (ctrlSettings.productPumpMode + 1) % 3
+    
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerSettings.toBinary(ctrlSettings), PBMessageType.ControllerSettings);
+    console.log(wrapped);
+
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   async controlRefluxCondensor() {
-    var ctrlState = ControllerState.create(this.ctrlState);
-    ctrlState.propOutput = 5;
-
-    // console.log(ControllerState.toBinary(ctrlState));
+    var ctrlSettings = ControllerSettings.create(this.ctrlSettings);
+    ctrlSettings.refluxPumpMode = (ctrlSettings.refluxPumpMode + 1) % 3
     
-    let wrapped: MessageWrapper = this.wrapMessage(ControllerState.toBinary(ctrlState), PBMessageType.ControllerState);
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerSettings.toBinary(ctrlSettings), PBMessageType.ControllerSettings);
     console.log(wrapped);
 
-    // Convert to blob, then back to array and check content is preserved
-    let a = new Blob([MessageWrapper.toBinary(wrapped)]);
-
-    let msgBuffer = await new Response(a).arrayBuffer();
-    let arr = new Uint8Array(msgBuffer);
-    let out = MessageWrapper.fromBinary(arr);
-
-    console.log(out);
-
-    this.socketService.sendMessage(a);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   convertFlowRateVolToMass(vDot) {
