@@ -169,7 +169,7 @@ export class AppComponent {
 
     console.log(out);
 
-    this.socketService.sendMessage(out);
+    this.socketService.sendMessage(a);
   }
 
   convertFlowRateVolToMass(vDot) {

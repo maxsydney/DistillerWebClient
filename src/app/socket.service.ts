@@ -1,32 +1,39 @@
 import { Injectable } from '@angular/core';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { Observable, Subject } from 'rxjs';
-import * as io from "socket.io-client";
-
 @Injectable()
 export class SocketService {
 
-  private io_socket;
-  private socket: WebSocketSubject<any>;
+  private socket: WebSocket;
 
   connect(url: string): Observable<any> {
-    this.io_socket = io(url)
-    if (!this.socket) {
-      console.log('Established connection');
-      this.socket = new WebSocketSubject({
-        url: url,
-        deserializer: ({ data }) => data,
-        serializer: ({ data }) => data
-      });
-      
-    }
 
-    return this.socket;
+    console.log('Established connection');
+    this.socket = new WebSocket(url);      
+
+    return new Observable(
+      observer => {
+        this.socket.onmessage = (event) => {
+          observer.next(event.data);
+        }
+
+        this.socket.onerror = (event) => {
+          observer.error(event);
+        }
+
+        this.socket.onclose = (event) => {
+          observer.complete();
+        }
+
+        return () => {
+          this.socket.close(1000, "The user disconnected");
+        }
+      }
+    );
   }
 
   sendMessage(msg: any): void {
-    // this.socket.next(msg);
-    this.io_socket.emit("hello", "world");
+    this.socket.send(msg);
     console.log(msg);
   }
 }
