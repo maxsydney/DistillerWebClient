@@ -14,7 +14,7 @@
                 <h5>P gain: </h5>
               </div>
               <div class="col-sm-2">
-                <input type="number" [(ngModel)]="ctrlTuningNew.PGain" name="P Gain"/>
+                <input type="number" [(ngModel)]="ctrlTuningNew.pGain" name="P Gain"/>
               </div>
             </div>
             <div class="input-group mb-3 row">
@@ -22,7 +22,7 @@
                 <h5>I gain: </h5>
               </div>
               <div class="col-sm-2">
-                <input type="number" [(ngModel)]="ctrlTuningNew.IGain" name="I_gain"/>
+                <input type="number" [(ngModel)]="ctrlTuningNew.iGain" name="I_gain"/>
               </div>
             </div>
             <div class="input-group mb-3 row">
@@ -30,7 +30,7 @@
                 <h5>D gain: </h5>
               </div>
               <div class="col-sm-2">
-                <input type="number" [(ngModel)]="ctrlTuningNew.DGain" name="D_gain"/>
+                <input type="number" [(ngModel)]="ctrlTuningNew.dGain" name="D_gain"/>
               </div>
             </div>
             <div class="input-group mb-3 row">
@@ -38,16 +38,16 @@
                 <h5>Setpoint: </h5>
               </div>
               <div class="col-sm-2">
-                <input type="number" [(ngModel)]="ctrlTuningNew.Setpoint" name="setpoint"/>
+                <input type="number" [(ngModel)]="ctrlTuningNew.setpoint" name="setpoint"/>
               </div>
             </div>
           </div>
-          <div class="input-group mb-3 row">
+          <!-- <div class="input-group mb-3 row">
             <div class="col-sm-4">
               <h5>LPF Cutoff Freq: </h5>
             </div>
             <div class="col-sm-2">
-              <input type="number" [(ngModel)]="ctrlTuningNew.LPFCutoff" name="LPFCutoff"/>
+              <input type="number" [(ngModel)]="ctrlTuningNew.lPFTuning.cutoffFreq" name="LPFCutoff"/>
             </div>
           </div>
           <div class="input-group mb-3 row">
@@ -55,9 +55,9 @@
               <h5>LPF Sample Freq: </h5>
             </div>
             <div class="col-sm-2">
-              <input type="number" [(ngModel)]="ctrlTuningNew.LPFSampleFreq" name="LPFSampleFreq"/>
+              <input type="number" [(ngModel)]="ctrlTuningNew.lPFTuning.sampleFreq" name="LPFSampleFreq"/>
             </div>
-          </div>
+          </div> -->
       </div>
     </form>
   </div>

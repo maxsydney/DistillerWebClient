@@ -66,9 +66,9 @@ export interface ControllerState {
     timeStamp: number;
 }
 /**
- * @generated from protobuf message IIRLowpassFilterConfig
+ * @generated from protobuf message IIRLowpassFilterTuning
  */
-export interface IIRLowpassFilterConfig {
+export interface IIRLowpassFilterTuning {
     /**
      * @generated from protobuf field: double sampleFreq = 1;
      */
@@ -98,10 +98,6 @@ export interface ControllerTuning {
      * @generated from protobuf field: double DGain = 4 [json_name = "DGain"];
      */
     dGain: number;
-    /**
-     * @generated from protobuf field: IIRLowpassFilterConfig derivFilterSettings = 5;
-     */
-    derivFilterSettings?: IIRLowpassFilterConfig;
 }
 /**
  * @generated from protobuf message ControllerCommand
@@ -365,22 +361,22 @@ class ControllerState$Type extends MessageType<ControllerState> {
 }
 export const ControllerState = new ControllerState$Type();
 /**
- * Type for protobuf message IIRLowpassFilterConfig
+ * Type for protobuf message IIRLowpassFilterTuning
  */
-class IIRLowpassFilterConfig$Type extends MessageType<IIRLowpassFilterConfig> {
+class IIRLowpassFilterTuning$Type extends MessageType<IIRLowpassFilterTuning> {
     constructor() {
-        super("IIRLowpassFilterConfig", [
+        super("IIRLowpassFilterTuning", [
             { no: 1, name: "sampleFreq", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
             { no: 2, name: "cutoffFreq", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ }
         ]);
     }
-    create(value?: PartialMessage<IIRLowpassFilterConfig>): IIRLowpassFilterConfig {
+    create(value?: PartialMessage<IIRLowpassFilterTuning>): IIRLowpassFilterTuning {
         const message = { sampleFreq: 0, cutoffFreq: 0 };
         if (value !== undefined)
-            reflectionMergePartial<IIRLowpassFilterConfig>(this, message, value);
+            reflectionMergePartial<IIRLowpassFilterTuning>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: IIRLowpassFilterConfig): IIRLowpassFilterConfig {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: IIRLowpassFilterTuning): IIRLowpassFilterTuning {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
@@ -402,7 +398,7 @@ class IIRLowpassFilterConfig$Type extends MessageType<IIRLowpassFilterConfig> {
         }
         return message;
     }
-    internalBinaryWrite(message: IIRLowpassFilterConfig, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: IIRLowpassFilterTuning, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* double sampleFreq = 1; */
         if (message.sampleFreq !== 0)
             writer.tag(1, WireType.Bit64).double(message.sampleFreq);
@@ -415,7 +411,7 @@ class IIRLowpassFilterConfig$Type extends MessageType<IIRLowpassFilterConfig> {
         return writer;
     }
 }
-export const IIRLowpassFilterConfig = new IIRLowpassFilterConfig$Type();
+export const IIRLowpassFilterTuning = new IIRLowpassFilterTuning$Type();
 /**
  * Type for protobuf message ControllerTuning
  */
@@ -425,8 +421,7 @@ class ControllerTuning$Type extends MessageType<ControllerTuning> {
             { no: 1, name: "setpoint", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
             { no: 2, name: "PGain", kind: "scalar", jsonName: "PGain", T: 1 /*ScalarType.DOUBLE*/ },
             { no: 3, name: "IGain", kind: "scalar", jsonName: "IGain", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 4, name: "DGain", kind: "scalar", jsonName: "DGain", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 5, name: "derivFilterSettings", kind: "message", T: () => IIRLowpassFilterConfig }
+            { no: 4, name: "DGain", kind: "scalar", jsonName: "DGain", T: 1 /*ScalarType.DOUBLE*/ }
         ]);
     }
     create(value?: PartialMessage<ControllerTuning>): ControllerTuning {
@@ -452,9 +447,6 @@ class ControllerTuning$Type extends MessageType<ControllerTuning> {
                 case /* double DGain = 4 [json_name = "DGain"];*/ 4:
                     message.dGain = reader.double();
                     break;
-                case /* IIRLowpassFilterConfig derivFilterSettings */ 5:
-                    message.derivFilterSettings = IIRLowpassFilterConfig.internalBinaryRead(reader, reader.uint32(), options, message.derivFilterSettings);
-                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -479,9 +471,6 @@ class ControllerTuning$Type extends MessageType<ControllerTuning> {
         /* double DGain = 4 [json_name = "DGain"]; */
         if (message.dGain !== 0)
             writer.tag(4, WireType.Bit64).double(message.dGain);
-        /* IIRLowpassFilterConfig derivFilterSettings = 5; */
-        if (message.derivFilterSettings)
-            IIRLowpassFilterConfig.internalBinaryWrite(message.derivFilterSettings, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

@@ -102,10 +102,9 @@ export class AppComponent {
   }
 
   receiveControllerParamsMsg($event) {
-    // const PIDmsg: ControllerTuningMsg = $event;
-
-    // this.socketService.sendMessage(PIDmsg);
-    // console.log(PIDmsg);
+    let PIDmsg: ControllerTuning = $event;
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerTuning.toBinary(PIDmsg), PBMessageType.ControllerTuning);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   fanControl(status: any) {
@@ -113,8 +112,6 @@ export class AppComponent {
     ctrlCommand.fanState = status;
 
     let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
-    console.log(wrapped);
-
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
@@ -127,8 +124,6 @@ export class AppComponent {
     }
     
     let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
-    console.log(wrapped);
-
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
@@ -141,8 +136,6 @@ export class AppComponent {
     }
     
     let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
-    console.log(wrapped);
-
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
@@ -151,8 +144,6 @@ export class AppComponent {
     ctrlSettings.productPumpMode = (ctrlSettings.productPumpMode + 1) % 3
     
     let wrapped: MessageWrapper = this.wrapMessage(ControllerSettings.toBinary(ctrlSettings), PBMessageType.ControllerSettings);
-    console.log(wrapped);
-
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
@@ -161,8 +152,6 @@ export class AppComponent {
     ctrlSettings.refluxPumpMode = (ctrlSettings.refluxPumpMode + 1) % 3
     
     let wrapped: MessageWrapper = this.wrapMessage(ControllerSettings.toBinary(ctrlSettings), PBMessageType.ControllerSettings);
-    console.log(wrapped);
-
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
