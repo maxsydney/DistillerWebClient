@@ -33,7 +33,10 @@ export class SocketService {
   }
 
   sendMessage(msg: any): void {
-    this.socket.send(msg);
-    console.log(msg);
+    if (this.socket.readyState == WebSocket.OPEN) {
+      this.socket.send(msg);
+    } else {
+      console.log("Failed to send message. Socket was closed, closing or connecting");
+    }
   }
 }

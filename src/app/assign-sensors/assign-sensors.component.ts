@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Observable} from 'rxjs';
 import { SocketService } from '../socket.service';
-import { SensorAssignCommand, SensorAssignMsg} from '../comm-types';
-import { TempSensor } from '../data-types';
+import { SensorManagerCommandMessage, DeviceData, SensorManagerCmdType } from '../ProtoBuf/SensorManagerMessaging'
+import { DS18B20Sensor } from '../ProtoBuf/DS18B20Messaging'
+import { MessageWrapper, PBMessageType } from '../ProtoBuf/MessageBase';
 
 @Component({
   selector: 'app-assign-sensors',
@@ -17,8 +18,8 @@ export class AssignSensorsComponent{
   subscription: any;
   taskStr: string;
   selectStr: string;
-  selectedSensor = new TempSensor();
-  availableSensors: Array<TempSensor> = [];
+  selectedSensor: DS18B20Sensor;
+  availableSensors: DeviceData;
   intervalID;
   tasks = [
     'Head',
@@ -32,16 +33,21 @@ export class AssignSensorsComponent{
               private socketService: SocketService) { }
 
     open(content: any) {
-      this.startSensorAssignTask();
       this.modalReference = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
-      this.conn = this.socketService.connect('ws://192.168.1.202:80/ws');
-      this.intervalID = setInterval(this.requestAvailableSensors.bind(this), 2000);
+      this.conn = this.socketService.connect('ws://192.168.1.202:80/ws'); // Sort this out
+      this.startSensorAssignTask();
+      // this.intervalID = setInterval(this.requestAvailableSensors.bind(this), 2000);
       
       this.subscription = this.conn.subscribe(
         msg => {
-          if (msg['type'] === 'availableSensors') {
-            this.processSensors(msg);
-          }
+          this.handleMessage(msg);
+        },
+        err => {
+          console.log('Websocket error detected');
+          console.log(err);
+        },  
+        () => {
+          console.log('complete');
         }
       );
 
@@ -51,30 +57,53 @@ export class AssignSensorsComponent{
       });
     }
 
+    async handleMessage(msg: any) {
+      // Decode wrapper
+      let msgBuffer = await new Response(msg).arrayBuffer();
+      let arr = new Uint8Array(msgBuffer);
+      let wrapped = MessageWrapper.fromBinary(arr);
+      
+      switch(wrapped.type) {
+        case PBMessageType.DeviceData: {
+          this.availableSensors = DeviceData.fromBinary(wrapped.payload);
+          console.log("Got device data message");
+          console.log(this.availableSensors);
+          break;
+        }
+        default: {
+          console.log("Assign sensor component can only process device data messages")
+        }
+      }
+    }
+
     startSensorAssignTask(): void {
-      this.taskStr = 'Assign to';
-      this.selectStr = 'Select sensor';
-      this.selectedSensor.addr = [];
-      this.selectedSensor.task = -1;
+      // this.taskStr = 'Assign to';
+      // this.selectStr = 'Select sensor';
+      // this.selectedSensor.addr = [];
+      // this.selectedSensor.task = -1;
       this.requestAvailableSensors();
     }
 
     requestAvailableSensors(): void {
-      const msg = new SensorAssignCommand();
+      const msg = SensorManagerCommandMessage.create();
+      msg.cmdType = SensorManagerCmdType.CMD_BROADCAST_SENSORS;
+
+      let wrapped: MessageWrapper = this.wrapMessage(SensorManagerCommandMessage.toBinary(msg), PBMessageType.SensorManagerCommand);
+      this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
       this.socketService.sendMessage(msg);
     }
 
-    processSensors(data: any): void {
-      // Clear the array
-      this.availableSensors.length = 0;
+    // processSensors(data: any): void {
+    //   // Clear the array
+    //   this.availableSensors.length = 0;
 
-      // Write available sensors to array
-      data['sensors'].forEach(element => {
-        let t = new TempSensor();
-        t.fromJSON(element);
-        this.availableSensors.push(t);
-      });
-    }
+    //   // Write available sensors to array
+    //   data['sensors'].forEach(element => {
+    //     let t = new TempSensor();
+    //     t.fromJSON(element);
+    //     this.availableSensors.push(t);
+    //   });
+    // }
 
     toHexString(byteArray) {
       return byteArray.reduce((output, elem) =>
@@ -99,5 +128,13 @@ export class AssignSensorsComponent{
       this.socketService.sendMessage(msg);
       clearInterval(this.intervalID);
       this.modalReference.close();
+    }
+
+    wrapMessage(messageSerialized: Uint8Array, type: PBMessageType): MessageWrapper {
+      // TODO: How to specify base interface type as type
+      let outMsg = MessageWrapper.create();
+      outMsg.type = type;
+      outMsg.payload = messageSerialized;
+      return outMsg;
     }
 }
