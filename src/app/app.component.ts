@@ -25,13 +25,13 @@ export class AppComponent {
   @ViewChild(ControllerStateChartComponent) public ctrlStateChart: ControllerStateChartComponent;
   @ViewChild(ConsoleComponent) public console: ConsoleComponent;
 
-  ctrlTuning: ControllerTuning;
-  ctrlSettings: ControllerSettings;
-  ctrlPeripheralState: ControllerCommand;
-  ctrlState: ControllerState;
-  temperatures: TemperatureData;
-  flowrates: FlowrateData;
-  concentrations: ConcentrationData;
+  ctrlTuning: ControllerTuning = ControllerTuning.create();
+  ctrlSettings: ControllerSettings = ControllerSettings.create();
+  ctrlPeripheralState: ControllerCommand = ControllerCommand.create();
+  ctrlState: ControllerState = ControllerState.create();
+  temperatures: TemperatureData = TemperatureData.create();
+  flowrates: FlowrateData = FlowrateData.create();
+  concentrations: ConcentrationData = ConcentrationData.create();
   activeChart = chartType.mainChart;
   OTA_IP: string;
 
