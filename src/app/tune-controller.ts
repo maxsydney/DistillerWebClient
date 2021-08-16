@@ -13,9 +13,7 @@ export class TuneControllerComponent {
   @Input() ctrlTuning: ControllerTuning;
   @Output() messageEvent = new EventEmitter<ControllerTuning>();
 
-  constructor(private modalService: NgbModal) {
-    
-  }
+  constructor(private modalService: NgbModal) {}
 
     open(content: any) {
       this.ctrlTuningNew = ControllerTuning.create(this.ctrlTuning);

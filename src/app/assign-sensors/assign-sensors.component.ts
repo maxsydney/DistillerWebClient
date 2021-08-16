@@ -3,7 +3,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Observable} from 'rxjs';
 import { SocketService, SocketObservable } from '../socket.service';
 import { SensorManagerCommandMessage, DeviceData, SensorManagerCmdType, AssignSensorCommand } from '../ProtoBuf/SensorManagerMessaging'
-import { DS18B20Sensor } from '../ProtoBuf/DS18B20Messaging'
+import { DS18B20Sensor, DS18B20Role } from '../ProtoBuf/DS18B20Messaging'
 import { MessageWrapper, PBMessageType } from '../ProtoBuf/MessageBase';
 
 @Component({
@@ -20,8 +20,10 @@ export class AssignSensorsComponent{
   selectStr: string;
   selectedSensor: DS18B20Sensor = DS18B20Sensor.create();
   availableSensors: DeviceData = DeviceData.create();
+  selectedRole: DS18B20Role = DS18B20Role.NONE;
   intervalID;
   tasks = [
+    'None',
     'Head',
     'Reflux out',
     'Product out',
@@ -76,7 +78,7 @@ export class AssignSensorsComponent{
       this.taskStr = 'Assign to';
       this.selectStr = 'Select sensor';
       this.selectedSensor.romCode.fill(0);
-      this.selectedSensor.role = -1;
+      this.selectedRole = -1;
       this.requestAvailableSensors();
     }
 
@@ -101,15 +103,15 @@ export class AssignSensorsComponent{
 
     selectTask(i: number): void {
       this.taskStr = this.tasks[i];
-      this.selectedSensor.role = i;
+      this.selectedRole = i;
     }
 
     sendAssignSensorMsg(): void {
       let message = AssignSensorCommand.create();
       message.sensor = this.selectedSensor;
+      message.role = this.selectedRole;
       let wrapped: MessageWrapper = this.wrapMessage(AssignSensorCommand.toBinary(message), PBMessageType.AssignSensor);
       this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
-      console.log(message);
       this.modalReference.close();
     }
 

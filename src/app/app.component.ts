@@ -92,7 +92,6 @@ export class AppComponent {
       case PBMessageType.SocketLog:
         let logMsg = SocketLogMessage.fromBinary(wrapped.payload);
         this.console.logMessage(logMsg.logMsg);
-        // console.log(logMsg.logMsg);
         break;
     }
   }

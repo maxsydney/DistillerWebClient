@@ -11,6 +11,7 @@ import { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 import { DS18B20Sensor } from "./DS18B20Messaging";
+import { DS18B20Role } from "./DS18B20Messaging";
 /**
  * @generated from protobuf message SensorManagerCommandMessage
  */
@@ -51,7 +52,11 @@ export interface ConcentrationData {
  */
 export interface AssignSensorCommand {
     /**
-     * @generated from protobuf field: DS18B20Sensor sensor = 1;
+     * @generated from protobuf field: DS18B20Role role = 1;
+     */
+    role: DS18B20Role;
+    /**
+     * @generated from protobuf field: DS18B20Sensor sensor = 2;
      */
     sensor?: DS18B20Sensor;
 }
@@ -102,9 +107,9 @@ export enum SensorManagerCmdType {
      */
     CMD_NONE = 0,
     /**
-     * @generated from protobuf enum value: CMD_BROADCAST_SENSORS = 2;
+     * @generated from protobuf enum value: CMD_BROADCAST_SENSORS = 1;
      */
-    CMD_BROADCAST_SENSORS = 2
+    CMD_BROADCAST_SENSORS = 1
 }
 /**
  * Type for protobuf message SensorManagerCommandMessage
@@ -261,11 +266,12 @@ export const ConcentrationData = new ConcentrationData$Type();
 class AssignSensorCommand$Type extends MessageType<AssignSensorCommand> {
     constructor() {
         super("AssignSensorCommand", [
-            { no: 1, name: "sensor", kind: "message", T: () => DS18B20Sensor }
+            { no: 1, name: "role", kind: "enum", T: () => ["DS18B20Role", DS18B20Role] },
+            { no: 2, name: "sensor", kind: "message", T: () => DS18B20Sensor }
         ]);
     }
     create(value?: PartialMessage<AssignSensorCommand>): AssignSensorCommand {
-        const message = {};
+        const message = { role: 0 };
         if (value !== undefined)
             reflectionMergePartial<AssignSensorCommand>(this, message, value);
         return message;
@@ -275,7 +281,10 @@ class AssignSensorCommand$Type extends MessageType<AssignSensorCommand> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* DS18B20Sensor sensor */ 1:
+                case /* DS18B20Role role */ 1:
+                    message.role = reader.int32();
+                    break;
+                case /* DS18B20Sensor sensor */ 2:
                     message.sensor = DS18B20Sensor.internalBinaryRead(reader, reader.uint32(), options, message.sensor);
                     break;
                 default:
@@ -290,9 +299,12 @@ class AssignSensorCommand$Type extends MessageType<AssignSensorCommand> {
         return message;
     }
     internalBinaryWrite(message: AssignSensorCommand, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* DS18B20Sensor sensor = 1; */
+        /* DS18B20Role role = 1; */
+        if (message.role !== 0)
+            writer.tag(1, WireType.Varint).int32(message.role);
+        /* DS18B20Sensor sensor = 2; */
         if (message.sensor)
-            DS18B20Sensor.internalBinaryWrite(message.sensor, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+            DS18B20Sensor.internalBinaryWrite(message.sensor, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

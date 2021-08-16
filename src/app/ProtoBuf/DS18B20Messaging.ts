@@ -15,19 +15,15 @@ import { MessageType } from "@protobuf-ts/runtime";
  */
 export interface DS18B20Sensor {
     /**
-     * @generated from protobuf field: DS18B20Role role = 1;
-     */
-    role: DS18B20Role;
-    /**
-     * @generated from protobuf field: bytes romCode = 2;
+     * @generated from protobuf field: bytes romCode = 1;
      */
     romCode: Uint8Array;
     /**
-     * @generated from protobuf field: double calibLinear = 3;
+     * @generated from protobuf field: double calibLinear = 2;
      */
     calibLinear: number;
     /**
-     * @generated from protobuf field: double calibOffset = 4;
+     * @generated from protobuf field: double calibOffset = 3;
      */
     calibOffset: number;
 }
@@ -66,14 +62,13 @@ export enum DS18B20Role {
 class DS18B20Sensor$Type extends MessageType<DS18B20Sensor> {
     constructor() {
         super("DS18B20Sensor", [
-            { no: 1, name: "role", kind: "enum", T: () => ["DS18B20Role", DS18B20Role] },
-            { no: 2, name: "romCode", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
-            { no: 3, name: "calibLinear", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 4, name: "calibOffset", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ }
+            { no: 1, name: "romCode", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
+            { no: 2, name: "calibLinear", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 3, name: "calibOffset", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ }
         ]);
     }
     create(value?: PartialMessage<DS18B20Sensor>): DS18B20Sensor {
-        const message = { role: 0, romCode: new Uint8Array(0), calibLinear: 0, calibOffset: 0 };
+        const message = { romCode: new Uint8Array(0), calibLinear: 0, calibOffset: 0 };
         if (value !== undefined)
             reflectionMergePartial<DS18B20Sensor>(this, message, value);
         return message;
@@ -83,16 +78,13 @@ class DS18B20Sensor$Type extends MessageType<DS18B20Sensor> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* DS18B20Role role */ 1:
-                    message.role = reader.int32();
-                    break;
-                case /* bytes romCode */ 2:
+                case /* bytes romCode */ 1:
                     message.romCode = reader.bytes();
                     break;
-                case /* double calibLinear */ 3:
+                case /* double calibLinear */ 2:
                     message.calibLinear = reader.double();
                     break;
-                case /* double calibOffset */ 4:
+                case /* double calibOffset */ 3:
                     message.calibOffset = reader.double();
                     break;
                 default:
@@ -107,18 +99,15 @@ class DS18B20Sensor$Type extends MessageType<DS18B20Sensor> {
         return message;
     }
     internalBinaryWrite(message: DS18B20Sensor, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* DS18B20Role role = 1; */
-        if (message.role !== 0)
-            writer.tag(1, WireType.Varint).int32(message.role);
-        /* bytes romCode = 2; */
+        /* bytes romCode = 1; */
         if (message.romCode.length)
-            writer.tag(2, WireType.LengthDelimited).bytes(message.romCode);
-        /* double calibLinear = 3; */
+            writer.tag(1, WireType.LengthDelimited).bytes(message.romCode);
+        /* double calibLinear = 2; */
         if (message.calibLinear !== 0)
-            writer.tag(3, WireType.Bit64).double(message.calibLinear);
-        /* double calibOffset = 4; */
+            writer.tag(2, WireType.Bit64).double(message.calibLinear);
+        /* double calibOffset = 3; */
         if (message.calibOffset !== 0)
-            writer.tag(4, WireType.Bit64).double(message.calibOffset);
+            writer.tag(3, WireType.Bit64).double(message.calibOffset);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
