@@ -4,8 +4,8 @@ import { TemperatureChartComponent } from './temperature-chart/temperature-chart
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 import { ConsoleComponent } from './console/console.component'
 import { TemperatureData, FlowrateData, ConcentrationData} from './ProtoBuf/SensorManagerMessaging'
-import { MessageWrapper, PBMessageType } from './ProtoBuf/MessageBase';
-import { ControllerTuning, ControllerSettings, ControllerState, PumpMode, ControllerCommand, ComponentState } from './ProtoBuf/ControllerMessaging';
+import { MessageOrigin, MessageWrapper, PBMessageType } from './ProtoBuf/MessageBase';
+import { ControllerTuning, ControllerSettings, ControllerState, PumpMode, ControllerCommand } from './ProtoBuf/ControllerMessaging';
 import { SocketLogMessage } from './ProtoBuf/WebserverMessaging';
 
 enum chartType {
@@ -103,6 +103,7 @@ export class AppComponent {
   receiveControllerParamsMsg($event) {
     let PIDmsg: ControllerTuning = $event;
     let wrapped: MessageWrapper = this.wrapMessage(ControllerTuning.toBinary(PIDmsg), PBMessageType.ControllerTuning);
+    console.log(wrapped);
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
@@ -195,9 +196,9 @@ export class AppComponent {
   }
 
   wrapMessage(messageSerialized: Uint8Array, type: PBMessageType): MessageWrapper {
-    // TODO: How to specify base interface type as type
     let outMsg = MessageWrapper.create();
     outMsg.type = type;
+    outMsg.origin = MessageOrigin.Webclient;
     outMsg.payload = messageSerialized;
     return outMsg;
   }

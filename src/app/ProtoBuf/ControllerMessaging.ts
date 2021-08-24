@@ -66,19 +66,6 @@ export interface ControllerState {
     timeStamp: number;
 }
 /**
- * @generated from protobuf message IIRLowpassFilterTuning
- */
-export interface IIRLowpassFilterTuning {
-    /**
-     * @generated from protobuf field: double sampleFreq = 1;
-     */
-    sampleFreq: number;
-    /**
-     * @generated from protobuf field: double cutoffFreq = 2;
-     */
-    cutoffFreq: number;
-}
-/**
  * @generated from protobuf message ControllerTuning
  */
 export interface ControllerTuning {
@@ -98,6 +85,14 @@ export interface ControllerTuning {
      * @generated from protobuf field: double DGain = 4 [json_name = "DGain"];
      */
     dGain: number;
+    /**
+     * @generated from protobuf field: double LPFsampleFreq = 5 [json_name = "LPFsampleFreq"];
+     */
+    lPFsampleFreq: number;
+    /**
+     * @generated from protobuf field: double LPFcutoffFreq = 6 [json_name = "LPFcutoffFreq"];
+     */
+    lPFcutoffFreq: number;
 }
 /**
  * @generated from protobuf message ControllerCommand
@@ -361,58 +356,6 @@ class ControllerState$Type extends MessageType<ControllerState> {
 }
 export const ControllerState = new ControllerState$Type();
 /**
- * Type for protobuf message IIRLowpassFilterTuning
- */
-class IIRLowpassFilterTuning$Type extends MessageType<IIRLowpassFilterTuning> {
-    constructor() {
-        super("IIRLowpassFilterTuning", [
-            { no: 1, name: "sampleFreq", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 2, name: "cutoffFreq", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ }
-        ]);
-    }
-    create(value?: PartialMessage<IIRLowpassFilterTuning>): IIRLowpassFilterTuning {
-        const message = { sampleFreq: 0, cutoffFreq: 0 };
-        if (value !== undefined)
-            reflectionMergePartial<IIRLowpassFilterTuning>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: IIRLowpassFilterTuning): IIRLowpassFilterTuning {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* double sampleFreq */ 1:
-                    message.sampleFreq = reader.double();
-                    break;
-                case /* double cutoffFreq */ 2:
-                    message.cutoffFreq = reader.double();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: IIRLowpassFilterTuning, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* double sampleFreq = 1; */
-        if (message.sampleFreq !== 0)
-            writer.tag(1, WireType.Bit64).double(message.sampleFreq);
-        /* double cutoffFreq = 2; */
-        if (message.cutoffFreq !== 0)
-            writer.tag(2, WireType.Bit64).double(message.cutoffFreq);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-export const IIRLowpassFilterTuning = new IIRLowpassFilterTuning$Type();
-/**
  * Type for protobuf message ControllerTuning
  */
 class ControllerTuning$Type extends MessageType<ControllerTuning> {
@@ -421,11 +364,13 @@ class ControllerTuning$Type extends MessageType<ControllerTuning> {
             { no: 1, name: "setpoint", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
             { no: 2, name: "PGain", kind: "scalar", jsonName: "PGain", T: 1 /*ScalarType.DOUBLE*/ },
             { no: 3, name: "IGain", kind: "scalar", jsonName: "IGain", T: 1 /*ScalarType.DOUBLE*/ },
-            { no: 4, name: "DGain", kind: "scalar", jsonName: "DGain", T: 1 /*ScalarType.DOUBLE*/ }
+            { no: 4, name: "DGain", kind: "scalar", jsonName: "DGain", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 5, name: "LPFsampleFreq", kind: "scalar", jsonName: "LPFsampleFreq", T: 1 /*ScalarType.DOUBLE*/ },
+            { no: 6, name: "LPFcutoffFreq", kind: "scalar", jsonName: "LPFcutoffFreq", T: 1 /*ScalarType.DOUBLE*/ }
         ]);
     }
     create(value?: PartialMessage<ControllerTuning>): ControllerTuning {
-        const message = { setpoint: 0, pGain: 0, iGain: 0, dGain: 0 };
+        const message = { setpoint: 0, pGain: 0, iGain: 0, dGain: 0, lPFsampleFreq: 0, lPFcutoffFreq: 0 };
         if (value !== undefined)
             reflectionMergePartial<ControllerTuning>(this, message, value);
         return message;
@@ -446,6 +391,12 @@ class ControllerTuning$Type extends MessageType<ControllerTuning> {
                     break;
                 case /* double DGain = 4 [json_name = "DGain"];*/ 4:
                     message.dGain = reader.double();
+                    break;
+                case /* double LPFsampleFreq = 5 [json_name = "LPFsampleFreq"];*/ 5:
+                    message.lPFsampleFreq = reader.double();
+                    break;
+                case /* double LPFcutoffFreq = 6 [json_name = "LPFcutoffFreq"];*/ 6:
+                    message.lPFcutoffFreq = reader.double();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -471,6 +422,12 @@ class ControllerTuning$Type extends MessageType<ControllerTuning> {
         /* double DGain = 4 [json_name = "DGain"]; */
         if (message.dGain !== 0)
             writer.tag(4, WireType.Bit64).double(message.dGain);
+        /* double LPFsampleFreq = 5 [json_name = "LPFsampleFreq"]; */
+        if (message.lPFsampleFreq !== 0)
+            writer.tag(5, WireType.Bit64).double(message.lPFsampleFreq);
+        /* double LPFcutoffFreq = 6 [json_name = "LPFcutoffFreq"]; */
+        if (message.lPFcutoffFreq !== 0)
+            writer.tag(6, WireType.Bit64).double(message.lPFcutoffFreq);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

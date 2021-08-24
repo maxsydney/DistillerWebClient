@@ -19,6 +19,10 @@ export interface MessageWrapper {
      */
     type: PBMessageType;
     /**
+     * @generated from protobuf field: MessageOrigin origin = 2;
+     */
+    origin: MessageOrigin;
+    /**
      * @generated from protobuf field: bytes payload = 3;
      */
     payload: Uint8Array;
@@ -85,17 +89,55 @@ export enum PBMessageType {
     SocketLog = 13
 }
 /**
+ * @generated from protobuf enum MessageOrigin
+ */
+export enum MessageOrigin {
+    /**
+     * @generated from protobuf enum value: OriginUnknown = 0;
+     */
+    OriginUnknown = 0,
+    /**
+     * @generated from protobuf enum value: DistillerManager = 1;
+     */
+    DistillerManager = 1,
+    /**
+     * @generated from protobuf enum value: SensorManager = 2;
+     */
+    SensorManager = 2,
+    /**
+     * @generated from protobuf enum value: Controller = 3;
+     */
+    Controller = 3,
+    /**
+     * @generated from protobuf enum value: Webserver = 4;
+     */
+    Webserver = 4,
+    /**
+     * @generated from protobuf enum value: OneWireBus = 5;
+     */
+    OneWireBus = 5,
+    /**
+     * @generated from protobuf enum value: Log = 6;
+     */
+    Log = 6,
+    /**
+     * @generated from protobuf enum value: Webclient = 7;
+     */
+    Webclient = 7
+}
+/**
  * Type for protobuf message MessageWrapper
  */
 class MessageWrapper$Type extends MessageType<MessageWrapper> {
     constructor() {
         super("MessageWrapper", [
             { no: 1, name: "type", kind: "enum", T: () => ["PBMessageType", PBMessageType] },
+            { no: 2, name: "origin", kind: "enum", T: () => ["MessageOrigin", MessageOrigin] },
             { no: 3, name: "payload", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
         ]);
     }
     create(value?: PartialMessage<MessageWrapper>): MessageWrapper {
-        const message = { type: 0, payload: new Uint8Array(0) };
+        const message = { type: 0, origin: 0, payload: new Uint8Array(0) };
         if (value !== undefined)
             reflectionMergePartial<MessageWrapper>(this, message, value);
         return message;
@@ -107,6 +149,9 @@ class MessageWrapper$Type extends MessageType<MessageWrapper> {
             switch (fieldNo) {
                 case /* PBMessageType type */ 1:
                     message.type = reader.int32();
+                    break;
+                case /* MessageOrigin origin */ 2:
+                    message.origin = reader.int32();
                     break;
                 case /* bytes payload */ 3:
                     message.payload = reader.bytes();
@@ -126,6 +171,9 @@ class MessageWrapper$Type extends MessageType<MessageWrapper> {
         /* PBMessageType type = 1; */
         if (message.type !== 0)
             writer.tag(1, WireType.Varint).int32(message.type);
+        /* MessageOrigin origin = 2; */
+        if (message.origin !== 0)
+            writer.tag(2, WireType.Varint).int32(message.origin);
         /* bytes payload = 3; */
         if (message.payload.length)
             writer.tag(3, WireType.LengthDelimited).bytes(message.payload);

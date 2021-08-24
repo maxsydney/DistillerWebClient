@@ -56,9 +56,9 @@ export interface AssignSensorCommand {
      */
     role: DS18B20Role;
     /**
-     * @generated from protobuf field: DS18B20Sensor sensor = 2;
+     * @generated from protobuf field: bytes address = 2;
      */
-    sensor?: DS18B20Sensor;
+    address: Uint8Array;
 }
 /**
  * @generated from protobuf message TemperatureData
@@ -94,9 +94,34 @@ export interface TemperatureData {
  */
 export interface DeviceData {
     /**
-     * @generated from protobuf field: repeated DS18B20Sensor sensors = 1;
+     * @generated from protobuf field: repeated bytes addresses = 1;
      */
-    sensors: DS18B20Sensor[];
+    addresses: Uint8Array[];
+}
+/**
+ * @generated from protobuf message AssignedSensorRegistry
+ */
+export interface AssignedSensorRegistry {
+    /**
+     * @generated from protobuf field: DS18B20Sensor headTempSensor = 1;
+     */
+    headTempSensor?: DS18B20Sensor;
+    /**
+     * @generated from protobuf field: DS18B20Sensor refluxTempSensor = 2;
+     */
+    refluxTempSensor?: DS18B20Sensor;
+    /**
+     * @generated from protobuf field: DS18B20Sensor productTempSensor = 3;
+     */
+    productTempSensor?: DS18B20Sensor;
+    /**
+     * @generated from protobuf field: DS18B20Sensor radiatorTempSensor = 4;
+     */
+    radiatorTempSensor?: DS18B20Sensor;
+    /**
+     * @generated from protobuf field: DS18B20Sensor boilerTempSensor = 5;
+     */
+    boilerTempSensor?: DS18B20Sensor;
 }
 /**
  * @generated from protobuf enum SensorManagerCmdType
@@ -267,11 +292,11 @@ class AssignSensorCommand$Type extends MessageType<AssignSensorCommand> {
     constructor() {
         super("AssignSensorCommand", [
             { no: 1, name: "role", kind: "enum", T: () => ["DS18B20Role", DS18B20Role] },
-            { no: 2, name: "sensor", kind: "message", T: () => DS18B20Sensor }
+            { no: 2, name: "address", kind: "scalar", T: 12 /*ScalarType.BYTES*/ }
         ]);
     }
     create(value?: PartialMessage<AssignSensorCommand>): AssignSensorCommand {
-        const message = { role: 0 };
+        const message = { role: 0, address: new Uint8Array(0) };
         if (value !== undefined)
             reflectionMergePartial<AssignSensorCommand>(this, message, value);
         return message;
@@ -284,8 +309,8 @@ class AssignSensorCommand$Type extends MessageType<AssignSensorCommand> {
                 case /* DS18B20Role role */ 1:
                     message.role = reader.int32();
                     break;
-                case /* DS18B20Sensor sensor */ 2:
-                    message.sensor = DS18B20Sensor.internalBinaryRead(reader, reader.uint32(), options, message.sensor);
+                case /* bytes address */ 2:
+                    message.address = reader.bytes();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -302,9 +327,9 @@ class AssignSensorCommand$Type extends MessageType<AssignSensorCommand> {
         /* DS18B20Role role = 1; */
         if (message.role !== 0)
             writer.tag(1, WireType.Varint).int32(message.role);
-        /* DS18B20Sensor sensor = 2; */
-        if (message.sensor)
-            DS18B20Sensor.internalBinaryWrite(message.sensor, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* bytes address = 2; */
+        if (message.address.length)
+            writer.tag(2, WireType.LengthDelimited).bytes(message.address);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -398,11 +423,11 @@ export const TemperatureData = new TemperatureData$Type();
 class DeviceData$Type extends MessageType<DeviceData> {
     constructor() {
         super("DeviceData", [
-            { no: 1, name: "sensors", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => DS18B20Sensor }
+            { no: 1, name: "addresses", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 12 /*ScalarType.BYTES*/ }
         ]);
     }
     create(value?: PartialMessage<DeviceData>): DeviceData {
-        const message = { sensors: [] };
+        const message = { addresses: [] };
         if (value !== undefined)
             reflectionMergePartial<DeviceData>(this, message, value);
         return message;
@@ -412,8 +437,8 @@ class DeviceData$Type extends MessageType<DeviceData> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* repeated DS18B20Sensor sensors */ 1:
-                    message.sensors.push(DS18B20Sensor.internalBinaryRead(reader, reader.uint32(), options));
+                case /* repeated bytes addresses */ 1:
+                    message.addresses.push(reader.bytes());
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -427,9 +452,9 @@ class DeviceData$Type extends MessageType<DeviceData> {
         return message;
     }
     internalBinaryWrite(message: DeviceData, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* repeated DS18B20Sensor sensors = 1; */
-        for (let i = 0; i < message.sensors.length; i++)
-            DS18B20Sensor.internalBinaryWrite(message.sensors[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* repeated bytes addresses = 1; */
+        for (let i = 0; i < message.addresses.length; i++)
+            writer.tag(1, WireType.LengthDelimited).bytes(message.addresses[i]);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -437,3 +462,76 @@ class DeviceData$Type extends MessageType<DeviceData> {
     }
 }
 export const DeviceData = new DeviceData$Type();
+/**
+ * Type for protobuf message AssignedSensorRegistry
+ */
+class AssignedSensorRegistry$Type extends MessageType<AssignedSensorRegistry> {
+    constructor() {
+        super("AssignedSensorRegistry", [
+            { no: 1, name: "headTempSensor", kind: "message", T: () => DS18B20Sensor },
+            { no: 2, name: "refluxTempSensor", kind: "message", T: () => DS18B20Sensor },
+            { no: 3, name: "productTempSensor", kind: "message", T: () => DS18B20Sensor },
+            { no: 4, name: "radiatorTempSensor", kind: "message", T: () => DS18B20Sensor },
+            { no: 5, name: "boilerTempSensor", kind: "message", T: () => DS18B20Sensor }
+        ]);
+    }
+    create(value?: PartialMessage<AssignedSensorRegistry>): AssignedSensorRegistry {
+        const message = {};
+        if (value !== undefined)
+            reflectionMergePartial<AssignedSensorRegistry>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AssignedSensorRegistry): AssignedSensorRegistry {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* DS18B20Sensor headTempSensor */ 1:
+                    message.headTempSensor = DS18B20Sensor.internalBinaryRead(reader, reader.uint32(), options, message.headTempSensor);
+                    break;
+                case /* DS18B20Sensor refluxTempSensor */ 2:
+                    message.refluxTempSensor = DS18B20Sensor.internalBinaryRead(reader, reader.uint32(), options, message.refluxTempSensor);
+                    break;
+                case /* DS18B20Sensor productTempSensor */ 3:
+                    message.productTempSensor = DS18B20Sensor.internalBinaryRead(reader, reader.uint32(), options, message.productTempSensor);
+                    break;
+                case /* DS18B20Sensor radiatorTempSensor */ 4:
+                    message.radiatorTempSensor = DS18B20Sensor.internalBinaryRead(reader, reader.uint32(), options, message.radiatorTempSensor);
+                    break;
+                case /* DS18B20Sensor boilerTempSensor */ 5:
+                    message.boilerTempSensor = DS18B20Sensor.internalBinaryRead(reader, reader.uint32(), options, message.boilerTempSensor);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: AssignedSensorRegistry, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* DS18B20Sensor headTempSensor = 1; */
+        if (message.headTempSensor)
+            DS18B20Sensor.internalBinaryWrite(message.headTempSensor, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* DS18B20Sensor refluxTempSensor = 2; */
+        if (message.refluxTempSensor)
+            DS18B20Sensor.internalBinaryWrite(message.refluxTempSensor, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* DS18B20Sensor productTempSensor = 3; */
+        if (message.productTempSensor)
+            DS18B20Sensor.internalBinaryWrite(message.productTempSensor, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+        /* DS18B20Sensor radiatorTempSensor = 4; */
+        if (message.radiatorTempSensor)
+            DS18B20Sensor.internalBinaryWrite(message.radiatorTempSensor, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+        /* DS18B20Sensor boilerTempSensor = 5; */
+        if (message.boilerTempSensor)
+            DS18B20Sensor.internalBinaryWrite(message.boilerTempSensor, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+export const AssignedSensorRegistry = new AssignedSensorRegistry$Type();

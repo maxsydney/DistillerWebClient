@@ -3,8 +3,8 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Observable} from 'rxjs';
 import { SocketService, SocketObservable } from '../socket.service';
 import { SensorManagerCommandMessage, DeviceData, SensorManagerCmdType, AssignSensorCommand } from '../ProtoBuf/SensorManagerMessaging'
-import { DS18B20Sensor, DS18B20Role } from '../ProtoBuf/DS18B20Messaging'
-import { MessageWrapper, PBMessageType } from '../ProtoBuf/MessageBase';
+import { DS18B20Role } from '../ProtoBuf/DS18B20Messaging'
+import { MessageOrigin, MessageWrapper, PBMessageType } from '../ProtoBuf/MessageBase';
 
 @Component({
   selector: 'app-assign-sensors',
@@ -18,7 +18,7 @@ export class AssignSensorsComponent{
   subscription: any;
   taskStr: string;
   selectStr: string;
-  selectedSensor: DS18B20Sensor = DS18B20Sensor.create();
+  selectedSensor: Uint8Array = new Uint8Array(8);
   availableSensors: DeviceData = DeviceData.create();
   selectedRole: DS18B20Role = DS18B20Role.NONE;
   intervalID;
@@ -71,13 +71,14 @@ export class AssignSensorsComponent{
       // Only process deviceData messages
       if (wrapped.type == PBMessageType.DeviceData) {
         this.availableSensors = DeviceData.fromBinary(wrapped.payload);
+        console.log(this.availableSensors);
       }
     }
 
     startSensorAssignTask(): void {
       this.taskStr = 'Assign to';
       this.selectStr = 'Select sensor';
-      this.selectedSensor.romCode.fill(0);
+      this.selectedSensor.fill(0);
       this.selectedRole = -1;
       this.requestAvailableSensors();
     }
@@ -96,9 +97,9 @@ export class AssignSensorsComponent{
         '');
     }
 
-    selectSensor(sensor: DS18B20Sensor): void {
+    selectSensor(sensor: Uint8Array): void {
       this.selectedSensor = sensor;
-      this.selectStr = this.toHexString(sensor.romCode);
+      this.selectStr = this.toHexString(sensor);
     }
 
     selectTask(i: number): void {
@@ -108,7 +109,7 @@ export class AssignSensorsComponent{
 
     sendAssignSensorMsg(): void {
       let message = AssignSensorCommand.create();
-      message.sensor = this.selectedSensor;
+      message.address = this.selectedSensor;
       message.role = this.selectedRole;
       let wrapped: MessageWrapper = this.wrapMessage(AssignSensorCommand.toBinary(message), PBMessageType.AssignSensor);
       this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
@@ -118,6 +119,7 @@ export class AssignSensorsComponent{
     wrapMessage(messageSerialized: Uint8Array, type: PBMessageType): MessageWrapper {
       let outMsg = MessageWrapper.create();
       outMsg.type = type;
+      outMsg.origin = MessageOrigin.Webclient;
       outMsg.payload = messageSerialized;
       return outMsg;
     }
