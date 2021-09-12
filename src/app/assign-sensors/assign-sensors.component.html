@@ -11,8 +11,8 @@
         <div ngbDropdown class="d-inline-block">
           <button class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle> {{ selectStr }} </button>
           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-            <div *ngFor="let sensor of availableSensors">
-              <button ngbDropdownItem on-click="selectSensor(sensor)"> {{toHexString(sensor.addr)}} </button>
+            <div *ngFor="let sensor of availableSensors.addresses">
+              <button ngbDropdownItem on-click="selectSensor(sensor)"> {{toHexString(sensor)}} </button>
             </div>
           </div>
         </div>

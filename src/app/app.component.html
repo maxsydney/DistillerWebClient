@@ -1,16 +1,16 @@
 <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Pissbot</a>
   <ul class="navbar-nav nav-fill w-100">
-    <li class="nav-item">Head temp: {{ temperatures.T_head | number:'2.2-2'}} °C</li>
+    <li class="nav-item">Head temp: {{ temperatures.headTemp | number:'2.2-2'}} °C</li>
   </ul>
   <ul class="navbar-nav nav-fill w-100">
-    <li class="nav-item">Boiler temp: {{ temperatures.T_boiler | number:'2.2-2'}} °C</li>
+    <li class="nav-item">Boiler temp: {{ temperatures.boilerTemp | number:'2.2-2'}} °C</li>
   </ul>
   <ul class="navbar-nav nav-fill w-100">
-    <li class="nav-item">Setpoint: {{ ctrlTuning.Setpoint | number:'2.2-2'}} °C</li>
+    <li class="nav-item">Setpoint: {{ ctrlTuning.setpoint | number:'2.2-2'}} °C</li>
   </ul>
   <ul class="navbar-nav nav-fill w-100">
-    <li class="nav-item">Run time: {{ temperatures.getTimeStr() }} </li>
+    <li class="nav-item">Run time: {{ getTimeStr(temperatures.timeStamp) }}</li>
   </ul>
 </nav>
 
@@ -31,27 +31,27 @@
         <tbody class="">
           <tr>
             <td>P Gain</td>
-            <td class="text-right">{{ ctrlTuning.PGain | number}}</td>
+            <td class="text-right">{{ ctrlTuning.pGain | number}}</td>
           </tr>
           <tr>
             <td>I Gain</td>
-            <td class="text-right">{{ ctrlTuning.IGain | number}}</td>
+            <td class="text-right">{{ ctrlTuning.iGain | number}}</td>
           </tr>
           <tr>
             <td>D Gain</td>
-            <td class="text-right">{{ ctrlTuning.DGain | number}}</td>
+            <td class="text-right">{{ ctrlTuning.dGain | number}}</td>
           </tr>
           <tr>
             <td>Setpoint</td>
-            <td class="text-right">{{ ctrlTuning.Setpoint | number:'.0-0'}} °C</td>
+            <td class="text-right">{{ ctrlTuning.setpoint | number:'.0-0'}} °C</td>
           </tr>
           <tr>
             <td>LPF Cutoff Freq</td>
-            <td class="text-right">{{ ctrlTuning.LPFCutoff | number:'.0-2'}} Hz</td>
+            <td class="text-right">{{ ctrlTuning.lPFcutoffFreq | number:'.0-2'}} Hz</td>
           </tr>
           <tr>
             <td>LPF Sample Freq</td>
-            <td class="text-right">{{ ctrlTuning.LPFSampleFreq | number:'.0-2'}} Hz</td>
+            <td class="text-right">{{ ctrlTuning.lPFsampleFreq | number:'.0-2'}} Hz</td>
           </tr>
         </tbody>
       </table>
@@ -69,7 +69,7 @@
         <tbody class="">
           <tr>
             <td>ΔT</td>
-            <td class="text-right">{{ temperatures.T_head - temperatures.T_radiator | number:'2.2-2'}} °C</td>
+            <td class="text-right">{{ temperatures.headTemp - temperatures.radiatorTemp | number:'2.2-2'}} °C</td>
           </tr>
           <tr>
             <td>Reflux Flowrate</td>
@@ -81,7 +81,7 @@
           </tr>
           <tr>
             <td>Reflux Qdot</td>
-            <td class="text-right">{{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.T_head - temperatures.T_radiator ) | number:'1.2-2' }} kW </td>
+            <td class="text-right">{{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.headTemp - temperatures.radiatorTemp ) | number:'1.2-2' }} kW </td>
           </tr>
           <tr>
             <td>Vapour</td>
@@ -108,7 +108,7 @@
           <tr>
             <td>Fan</td>
             <td class="text-right">
-              <button *ngIf="!ctrlPeripheralState.fanState" (click)="fanControl(1)" type="button"
+              <button *ngIf="ctrlPeripheralState.fanState == 0" (click)="fanControl(1)" type="button"
                 class="btn btn-danger btn-sm custom-button w-100"> Off</button>
               <button *ngIf="ctrlPeripheralState.fanState" (click)="fanControl(0)" type="button"
                 class="btn btn-success btn-sm custom-button w-100"> On </button>
@@ -117,40 +117,40 @@
           <tr>
             <td>2.4 kw Element</td>
             <td class="text-right">
-              <button *ngIf="ctrlPeripheralState.LPElement == 0" (click)="elementControlLowPower(0.25)" type="button"
+              <button *ngIf="ctrlPeripheralState.lPElementDutyCycle == 0" (click)="elementControlLowPower(0.25)" type="button"
                 class="btn btn-danger btn-sm custom-button w-100"> Off </button>
-              <button *ngIf="ctrlPeripheralState.LPElement != 0" (click)="elementControlLowPower(0.25)" type="button"
-                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.LPElement * 100 }} % </button>
+              <button *ngIf="ctrlPeripheralState.lPElementDutyCycle != 0" (click)="elementControlLowPower(0.25)" type="button"
+                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.lPElementDutyCycle * 100 }} % </button>
             </td>
           </tr>
           <tr>
             <td>3.0 kw Element</td>
             <td class="text-right">
-              <button *ngIf="ctrlPeripheralState.HPElement == 0" (click)="elementControlHighPower(0.25)" type="button"
+              <button *ngIf="ctrlPeripheralState.hPElementDutyCycle == 0" (click)="elementControlHighPower(0.25)" type="button"
                 class="btn btn-danger btn-sm custom-button w-100"> Off </button>
-              <button *ngIf="ctrlPeripheralState.HPElement != 0" (click)="elementControlHighPower(0.25)" type="button"
-                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.HPElement * 100 }} % </button>
+              <button *ngIf="ctrlPeripheralState.hPElementDutyCycle != 0" (click)="elementControlHighPower(0.25)" type="button"
+                class="btn btn-success btn-sm custom-button w-100"> {{ ctrlPeripheralState.hPElementDutyCycle * 100 }} % </button>
             </td>
           </tr>
           <tr>
             <td>Reflux Pump</td>
             <td class="text-right">
-              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.Off" (click)="controlRefluxCondensor()" type="button"
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.PUMP_OFF" (click)="controlRefluxCondensor()" type="button"
                 class="btn btn-danger btn-sm custom-button w-100"> Off </button>
-              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.ActiveControl" (click)="controlRefluxCondensor()" type="button"
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.ACTIVE_CONTROL" (click)="controlRefluxCondensor()" type="button"
                 class="btn btn-success btn-sm custom-button w-100"> Auto </button>
-              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.ManualControl" (click)="controlRefluxCondensor()" type="button"
+              <button *ngIf="ctrlSettings.refluxPumpMode == PumpMode.MANUAL_CONTROL" (click)="controlRefluxCondensor()" type="button"
                 class="btn btn-warning btn-sm custom-button w-100"> Manual </button>
             </td>
           </tr>
           <tr>
-            <td>Product Pump</td>
+            <td>Product Pump</td> 
             <td class="text-right">
-              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.Off" (click)="controlProductCondensor()" type="button"
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.PUMP_OFF" (click)="controlProductCondensor()" type="button"
                 class="btn btn-danger btn-sm w-100"> Off </button>
-              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.ActiveControl" (click)="controlProductCondensor()" type="button"
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.ACTIVE_CONTROL" (click)="controlProductCondensor()" type="button"
                 class="btn btn-success btn-sm w-100"> Auto </button>
-              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.ManualControl" (click)="controlProductCondensor()" type="button"
+              <button *ngIf="ctrlSettings.productPumpMode == PumpMode.MANUAL_CONTROL" (click)="controlProductCondensor()" type="button"
                 class="btn btn-warning btn-sm w-100"> Manual </button>
             </td>
           </tr>

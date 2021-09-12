@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { BaseChartDirective, Label, Color } from 'ng2-charts';
-import { ControllerState } from "../data-types"
+import { ControllerState } from '../ProtoBuf/ControllerMessaging';
 
 @Component({
   selector: 'app-controller-state-chart',
@@ -78,12 +78,30 @@ export class ControllerStateChartComponent {
     }
 
     // Now update
-    this.datasets[0].data.push(ctrlState.proportionalOutput);
+    this.datasets[0].data.push(ctrlState.propOutput);
     this.datasets[1].data.push(ctrlState.integralOutput);
-    this.datasets[2].data.push(ctrlState.derivativeOutout);
+    this.datasets[2].data.push(ctrlState.derivOutput);
     this.datasets[3].data.push(ctrlState.totalOutput);
-    this.labels.push(ctrlState.getTimeStr());
+    this.labels.push(this.getTimeStr(ctrlState.timeStamp));
 
     this.chart.chart.update();
+  }
+
+  getTimeStr(uptime_us: number): string {
+    let seconds = uptime_us / 1e6;
+    const hours = Math.floor(seconds / 3600);
+    seconds = seconds % 3600;
+    const mins = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+
+    return `${this.FormatNumberLength(hours, 2)}:${this.FormatNumberLength(mins, 2)}:${this.FormatNumberLength(seconds, 2)}`;
+  }
+
+  FormatNumberLength(num: number, length: number): string {
+    let r = '' + num;
+    while (r.length < length) {
+        r = '0' + r;
+    }
+    return r;
   }
 }

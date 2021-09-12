@@ -1,16 +1,17 @@
 import { Component, ViewChild} from '@angular/core';
 import { SocketService } from './socket.service';
-import { ControllerTuningMsg, ControllerSettingsMsg, OTACommand, ControllerPeripheralStateMsg} from './comm-types';
-import { ControllerTuning, ControllerSettings, SystemTemperatures, FlowrateData, ConcentrationData, ControllerPeripheralState, ControllerState} from './data-types';
-import { PumpMode } from './data-types';
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component'
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component'
 import { ConsoleComponent } from './console/console.component'
+import { TemperatureData, FlowrateData, ConcentrationData} from './ProtoBuf/SensorManagerMessaging'
+import { MessageOrigin, MessageWrapper, PBMessageType } from './ProtoBuf/MessageBase';
+import { ControllerTuning, ControllerSettings, ControllerState, PumpMode, ControllerCommand } from './ProtoBuf/ControllerMessaging';
+import { SocketLogMessage } from './ProtoBuf/WebserverMessaging';
 
 enum chartType {
   mainChart,
   secondaryChart,
-  concentrationChart
+  concentrationChart 
 }
 
 @Component({
@@ -24,13 +25,13 @@ export class AppComponent {
   @ViewChild(ControllerStateChartComponent) public ctrlStateChart: ControllerStateChartComponent;
   @ViewChild(ConsoleComponent) public console: ConsoleComponent;
 
-  ctrlTuning = new ControllerTuning;
-  ctrlSettings = new ControllerSettings;
-  ctrlPeripheralState = new ControllerPeripheralState;
-  ctrlState = new ControllerState;
-  temperatures = new SystemTemperatures;
-  flowrates = new FlowrateData;
-  concentrations = new ConcentrationData;
+  ctrlTuning: ControllerTuning = ControllerTuning.create();
+  ctrlSettings: ControllerSettings = ControllerSettings.create();
+  ctrlPeripheralState: ControllerCommand = ControllerCommand.create();
+  ctrlState: ControllerState = ControllerState.create();
+  temperatures: TemperatureData = TemperatureData.create();
+  flowrates: FlowrateData = FlowrateData.create();
+  concentrations: ConcentrationData = ConcentrationData.create();
   activeChart = chartType.mainChart;
   OTA_IP: string;
 
@@ -41,7 +42,6 @@ export class AppComponent {
     this.socketService.connect('ws://192.168.1.201:80/ws')
       .subscribe(
         msg => {
-          // console.log(JSON.stringify(msg, null, 2));
           this.handleMessage(msg);
         },
         err => {
@@ -57,35 +57,41 @@ export class AppComponent {
   //
   // Process incoming data packets
   //
-  handleMessage(msg: any): void {
-    switch(msg.MessageType)
+  async handleMessage(msg: any) {
+    // Decode wrapper
+    let msgBuffer = await new Response(msg).arrayBuffer();
+    let arr = new Uint8Array(msgBuffer);
+    let wrapped = MessageWrapper.fromBinary(arr);
+
+    // Decode payload
+    switch(wrapped.type)
     {
-      case "Temperature Data":
-        this.temperatures.update(msg);
-        this.tempChart.update(this.temperatures, this.ctrlTuning.Setpoint);
+      case PBMessageType.TemperatureData:
+        this.temperatures = TemperatureData.fromBinary(wrapped.payload);
+        this.tempChart.update(this.temperatures, this.ctrlTuning.setpoint);
         break;
-      case "Controller tuning":
-        this.ctrlTuning.update(msg);
+      case PBMessageType.ControllerTuning:
+        this.ctrlTuning = ControllerTuning.fromBinary(wrapped.payload);
         break
-      case "Controller settings":
-        this.ctrlSettings.update(msg);
+      case PBMessageType.ControllerSettings:
+        this.ctrlSettings = ControllerSettings.fromBinary(wrapped.payload);
         break;
-      case "Controller command":
-        this.ctrlPeripheralState.update(msg);
+      case PBMessageType.ControllerCommand:
+        this.ctrlPeripheralState = ControllerCommand.fromBinary(wrapped.payload);
         break;
-      case "Flowrate Data":
-        this.flowrates.update(msg);
+      case PBMessageType.FlowrateData:
+        this.flowrates = FlowrateData.fromBinary(wrapped.payload);
         break;
-      case "Concentration Data":
-        this.concentrations.update(msg);
+      case PBMessageType.ConcentrationData:
+        this.concentrations = ConcentrationData.fromBinary(wrapped.payload);
         break;
-      case "Controller State":
-        this.ctrlState.update(msg);
+      case PBMessageType.ControllerState:
+        this.ctrlState = ControllerState.fromBinary(wrapped.payload);
         this.ctrlStateChart.update(this.ctrlState);
         break;
-      case "Socket Log":
-        this.console.logMessage(msg['Log']);
-        console.log(msg['Log']);
+      case PBMessageType.SocketLog:
+        let logMsg = SocketLogMessage.fromBinary(wrapped.payload);
+        this.console.logMessage(logMsg.logMsg);
         break;
     }
   }
@@ -95,64 +101,79 @@ export class AppComponent {
   }
 
   receiveControllerParamsMsg($event) {
-    const PIDmsg: ControllerTuningMsg = $event;
-
-    this.socketService.sendMessage(PIDmsg);
-    console.log(PIDmsg);
+    let PIDmsg: ControllerTuning = $event;
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerTuning.toBinary(PIDmsg), PBMessageType.ControllerTuning);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
-  fanControl(status) {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
-    updatedState.fanState = status;
-    const msg = new ControllerPeripheralStateMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+  fanControl(status: any) {
+    var ctrlCommand = ControllerCommand.create(this.ctrlPeripheralState);
+    ctrlCommand.fanState = status;
+
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   elementControlLowPower(increment) {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
-    updatedState.LPElement += increment;
-    if (updatedState.LPElement > 1.0) {
-      updatedState.LPElement= 0.0;
+    var ctrlCommand = ControllerCommand.create(this.ctrlPeripheralState);
+    ctrlCommand.lPElementDutyCycle += increment;
+
+    if (ctrlCommand.lPElementDutyCycle > 1.0) {
+      ctrlCommand.lPElementDutyCycle = 0.0;
     }
-    const msg = new ControllerPeripheralStateMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+    
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   elementControlHighPower(increment) {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlPeripheralState));
-    updatedState.HPElement += increment;
-    if (updatedState.HPElement > 1.0) {
-      updatedState.HPElement = 0.0;
+    var ctrlCommand = ControllerCommand.create(this.ctrlPeripheralState);
+    ctrlCommand.hPElementDutyCycle += increment;
+
+    if (ctrlCommand.hPElementDutyCycle > 1.0) {
+      ctrlCommand.hPElementDutyCycle = 0;
     }
-    const msg = new ControllerPeripheralStateMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+    
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   controlProductCondensor() {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlSettings));
-    const status = (updatedState.productPumpMode + 1) % 3;
-    updatedState.productPumpMode = status;
-    if (status == PumpMode.ManualControl) {
-      updatedState.productPumpSpeedManual = 1024;
+    var ctrlSettings = ControllerSettings.create(this.ctrlSettings);
+    ctrlSettings.productPumpMode = (ctrlSettings.productPumpMode + 1) % 4;
+
+    // TODO: Make this state transition better
+    if (ctrlSettings.productPumpMode == PumpMode.PUMP_MODE_UNKNOWN) {
+      ctrlSettings.productPumpMode = PumpMode.PUMP_OFF;
     }
-    const msg = new ControllerSettingsMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+
+    // Set the manual speed to a constant for now
+    // TODO: Control this value from the browser
+    if (ctrlSettings.productPumpMode == PumpMode.MANUAL_CONTROL) {
+      ctrlSettings.manualPumpSpeeds.productPumpSpeed = 512;
+    }
+    
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerSettings.toBinary(ctrlSettings), PBMessageType.ControllerSettings);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
-  controlRefluxCondensor() {
-    var updatedState = JSON.parse(JSON.stringify(this.ctrlSettings));
-    const status = (updatedState.refluxPumpMode + 1) % 3;
-    updatedState.refluxPumpMode = status;
-    if (status == PumpMode.ManualControl) {
-      updatedState.refluxPumpSpeedManual = 1024;
+  async controlRefluxCondensor() {
+    var ctrlSettings = ControllerSettings.create(this.ctrlSettings);
+    ctrlSettings.refluxPumpMode = (ctrlSettings.refluxPumpMode + 1) % 4;
+
+    // TODO: Make this state transition better
+    if (ctrlSettings.refluxPumpMode == PumpMode.PUMP_MODE_UNKNOWN) {
+      ctrlSettings.refluxPumpMode = PumpMode.PUMP_OFF;
     }
-    const msg = new ControllerSettingsMsg;
-    msg.update(updatedState);
-    this.socketService.sendMessage(msg);
+
+    // Set the manual speed to a constant for now
+    // TODO: Control this value from the browser
+    if (ctrlSettings.refluxPumpMode == PumpMode.MANUAL_CONTROL) {
+      ctrlSettings.manualPumpSpeeds.refluxPumpSpeed = 512;
+    }
+    
+    let wrapped: MessageWrapper = this.wrapMessage(ControllerSettings.toBinary(ctrlSettings), PBMessageType.ControllerSettings);
+    this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
   convertFlowRateVolToMass(vDot) {
@@ -167,13 +188,40 @@ export class AppComponent {
   }
 
   runOTA() {
-    const OTA = new OTACommand;
-    OTA.IP = this.OTA_IP;
-    this.socketService.sendMessage(JSON.stringify(OTA));
+    // const OTA = new OTACommand;
+    // OTA.IP = this.OTA_IP;
+    // this.socketService.sendMessage(JSON.stringify(OTA));
   }
 
   swapCharts() {
     this.activeChart = (this.activeChart + 1) % 2;
+  }
+
+  // The following two functions are duplicates. Figure out a way to share these amongst all modules
+  getTimeStr(uptime_us: number): string {
+    let seconds = uptime_us / 1e6;
+    const hours = Math.floor(seconds / 3600);
+    seconds = seconds % 3600;
+    const mins = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+
+    return `${this.FormatNumberLength(hours, 2)}:${this.FormatNumberLength(mins, 2)}:${this.FormatNumberLength(seconds, 2)}`;
+  }
+
+  FormatNumberLength(num: number, length: number): string {
+    let r = '' + num;
+    while (r.length < length) {
+        r = '0' + r;
+    }
+    return r;
+  }
+
+  wrapMessage(messageSerialized: Uint8Array, type: PBMessageType): MessageWrapper {
+    let outMsg = MessageWrapper.create();
+    outMsg.type = type;
+    outMsg.origin = MessageOrigin.Webclient;
+    outMsg.payload = messageSerialized;
+    return outMsg;
   }
 }
 

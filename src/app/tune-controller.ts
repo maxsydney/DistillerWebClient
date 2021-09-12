@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NgbModal, ModalDismissReasons, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { SocketService } from './socket.service';
-import { ControllerTuningMsg } from './comm-types';
-import { ControllerTuning } from './data-types';
+import { ControllerTuning } from './ProtoBuf/ControllerMessaging';
 
 @Component({
   selector: 'app-tune-controller',
@@ -12,25 +11,17 @@ export class TuneControllerComponent {
   modalReference: NgbModalRef;
   ctrlTuningNew: ControllerTuning;
   @Input() ctrlTuning: ControllerTuning;
-  @Output() messageEvent = new EventEmitter<ControllerTuningMsg>();
+  @Output() messageEvent = new EventEmitter<ControllerTuning>();
 
-  constructor(private modalService: NgbModal,
-              private socketService: SocketService) {
-    
-  }
+  constructor(private modalService: NgbModal) {}
 
     open(content: any) {
-      this.ctrlTuningNew = Object.assign(new ControllerTuning(), this.ctrlTuning);;
+      this.ctrlTuningNew = ControllerTuning.create(this.ctrlTuning);
       this.modalReference = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'});
     }
 
     sendParams() {
-
-      const PIDmsg = new ControllerTuningMsg;
-      PIDmsg.update(this.ctrlTuningNew)
-
-      this.messageEvent.emit(PIDmsg);
-
+      this.messageEvent.emit(this.ctrlTuningNew);
       this.modalReference.close();
     }
 }

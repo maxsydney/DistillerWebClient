@@ -1,0 +1,3 @@
+[submodule "PBProtobuf"]
+	path = PBProtobuf
+	url = https://github.com/maxsydney/PBProtoBuf.git
