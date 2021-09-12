@@ -103,7 +103,6 @@ export class AppComponent {
   receiveControllerParamsMsg($event) {
     let PIDmsg: ControllerTuning = $event;
     let wrapped: MessageWrapper = this.wrapMessage(ControllerTuning.toBinary(PIDmsg), PBMessageType.ControllerTuning);
-    console.log(wrapped);
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
   }
 
@@ -120,7 +119,7 @@ export class AppComponent {
     ctrlCommand.lPElementDutyCycle += increment;
 
     if (ctrlCommand.lPElementDutyCycle > 1.0) {
-      ctrlCommand.lPElementDutyCycle = 0;
+      ctrlCommand.lPElementDutyCycle = 0.0;
     }
     
     let wrapped: MessageWrapper = this.wrapMessage(ControllerCommand.toBinary(ctrlCommand), PBMessageType.ControllerCommand);
@@ -141,7 +140,18 @@ export class AppComponent {
 
   controlProductCondensor() {
     var ctrlSettings = ControllerSettings.create(this.ctrlSettings);
-    ctrlSettings.productPumpMode = (ctrlSettings.productPumpMode + 1) % 3
+    ctrlSettings.productPumpMode = (ctrlSettings.productPumpMode + 1) % 4;
+
+    // TODO: Make this state transition better
+    if (ctrlSettings.productPumpMode == PumpMode.PUMP_MODE_UNKNOWN) {
+      ctrlSettings.productPumpMode = PumpMode.PUMP_OFF;
+    }
+
+    // Set the manual speed to a constant for now
+    // TODO: Control this value from the browser
+    if (ctrlSettings.productPumpMode == PumpMode.MANUAL_CONTROL) {
+      ctrlSettings.manualPumpSpeeds.productPumpSpeed = 512;
+    }
     
     let wrapped: MessageWrapper = this.wrapMessage(ControllerSettings.toBinary(ctrlSettings), PBMessageType.ControllerSettings);
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));
@@ -149,7 +159,18 @@ export class AppComponent {
 
   async controlRefluxCondensor() {
     var ctrlSettings = ControllerSettings.create(this.ctrlSettings);
-    ctrlSettings.refluxPumpMode = (ctrlSettings.refluxPumpMode + 1) % 3
+    ctrlSettings.refluxPumpMode = (ctrlSettings.refluxPumpMode + 1) % 4;
+
+    // TODO: Make this state transition better
+    if (ctrlSettings.refluxPumpMode == PumpMode.PUMP_MODE_UNKNOWN) {
+      ctrlSettings.refluxPumpMode = PumpMode.PUMP_OFF;
+    }
+
+    // Set the manual speed to a constant for now
+    // TODO: Control this value from the browser
+    if (ctrlSettings.refluxPumpMode == PumpMode.MANUAL_CONTROL) {
+      ctrlSettings.manualPumpSpeeds.refluxPumpSpeed = 512;
+    }
     
     let wrapped: MessageWrapper = this.wrapMessage(ControllerSettings.toBinary(ctrlSettings), PBMessageType.ControllerSettings);
     this.socketService.sendMessage(MessageWrapper.toBinary(wrapped));

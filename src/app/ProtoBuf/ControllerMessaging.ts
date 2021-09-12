@@ -146,30 +146,38 @@ export enum ControllerDataRequestType {
  */
 export enum ComponentState {
     /**
-     * @generated from protobuf enum value: OFF_STATE = 0;
+     * @generated from protobuf enum value: STATE_UNKNOWN = 0;
      */
-    OFF_STATE = 0,
+    STATE_UNKNOWN = 0,
     /**
-     * @generated from protobuf enum value: ON_STATE = 1;
+     * @generated from protobuf enum value: OFF_STATE = 1;
      */
-    ON_STATE = 1
+    OFF_STATE = 1,
+    /**
+     * @generated from protobuf enum value: ON_STATE = 2;
+     */
+    ON_STATE = 2
 }
 /**
  * @generated from protobuf enum PumpMode
  */
 export enum PumpMode {
     /**
-     * @generated from protobuf enum value: PUMP_OFF = 0;
+     * @generated from protobuf enum value: PUMP_MODE_UNKNOWN = 0;
      */
-    PUMP_OFF = 0,
+    PUMP_MODE_UNKNOWN = 0,
     /**
-     * @generated from protobuf enum value: ACTIVE_CONTROL = 1;
+     * @generated from protobuf enum value: PUMP_OFF = 1;
      */
-    ACTIVE_CONTROL = 1,
+    PUMP_OFF = 1,
     /**
-     * @generated from protobuf enum value: MANUAL_CONTROL = 2;
+     * @generated from protobuf enum value: ACTIVE_CONTROL = 2;
      */
-    MANUAL_CONTROL = 2
+    ACTIVE_CONTROL = 2,
+    /**
+     * @generated from protobuf enum value: MANUAL_CONTROL = 3;
+     */
+    MANUAL_CONTROL = 3
 }
 /**
  * Type for protobuf message PumpSpeeds
