@@ -1,0 +1,90 @@
+.paddingDiv {
+  padding-top: 50px; /* Whatever the height of your navbar is; the
+                           default is 50px */
+}
+
+.nav-item {
+  color: white;
+}
+
+.top-buffer {
+  margin-top: 10px;
+}
+
+.mycontent-left {
+  border-right: 2px solid rgb(75, 72, 72);
+}
+
+.top-border {
+  border-top: 2px solid #828891;
+  border-bottom: 2px solid #828891;
+}
+
+.row-element {
+  padding-top: 0px;
+  padding-bottom: 0px;
+};
+
+.custom-button {
+  max-width: 100%;
+  padding-left:25px;
+  padding-right:25px;
+};
+
+/* #container_2 {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+} */
+
+input#rotateVertical{
+  transform: rotate(270deg);
+}
+
+::ng-deep {
+  .custom-slider .ngx-slider .ngx-slider-bar {
+    background: #ffe4d1;
+    height: 2px;
+  }
+  .custom-slider .ngx-slider .ngx-slider-selection {
+    background: orange;
+  }
+
+  .custom-slider .ngx-slider .ngx-slider-pointer {
+    width: 8px;
+    height: 16px;
+    top: auto; /* to remove the default positioning */
+    bottom: 0;
+    background-color: #333;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+  }
+
+  .custom-slider .ngx-slider .ngx-slider-pointer:after {
+    display: none;
+  }
+
+  .custom-slider .ngx-slider .ngx-slider-bubble {
+    bottom: 14px;
+  }
+
+  .custom-slider .ngx-slider .ngx-slider-limit {
+    font-weight: bold;
+    color: orange;
+  }
+
+  .custom-slider .ngx-slider .ngx-slider-tick {
+    width: 1px;
+    height: 10px;
+    margin-left: 4px;
+    border-radius: 0;
+    background: #ffe4d1;
+    top: -1px;
+  }
+
+  .custom-slider .ngx-slider .ngx-slider-tick.ngx-slider-selected {
+    background: orange;
+  }
+}
