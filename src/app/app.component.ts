@@ -39,10 +39,10 @@ export class AppComponent {
   chartLabels = [];
   chartLabelsCtrlState = [];
 
-  value: number = 5;
+  value: number = 0;
   options: Options = {
     floor: 0,
-    ceil: 10,
+    ceil: 100,
     vertical: true
   };
 
