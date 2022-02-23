@@ -14,85 +14,109 @@
   </ul>
 </nav>
 
-<div class="container-fluid pt-5">
+<div class="container-fluid pt-5 bg">
   <div class="row">
-    <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-      <table class="table-borderless w-100">
-        <thead>
-          <tr>
-            <th scope="col" style="width: 70%">
-              <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
-                Settings 
-              </h5>
-            </th>
-            <th scope="col" style="width: 30%"></th>
-          </tr>
-        </thead>
-        <tbody class="">
-          <tr>
-            <td>P Gain</td>
-            <td class="text-right">{{ ctrlTuning.pGain | number}}</td>
-          </tr>
-          <tr>
-            <td>I Gain</td>
-            <td class="text-right">{{ ctrlTuning.iGain | number}}</td>
-          </tr>
-          <tr>
-            <td>D Gain</td>
-            <td class="text-right">{{ ctrlTuning.dGain | number}}</td>
-          </tr>
-          <tr>
-            <td>Setpoint</td>
-            <td class="text-right">{{ ctrlTuning.setpoint | number:'.0-0'}} °C</td>
-          </tr>
-          <tr>
-            <td>LPF Cutoff Freq</td>
-            <td class="text-right">{{ ctrlTuning.lPFcutoffFreq | number:'.0-2'}} Hz</td>
-          </tr>
-          <tr>
-            <td>LPF Sample Freq</td>
-            <td class="text-right">{{ ctrlTuning.lPFsampleFreq | number:'.0-2'}} Hz</td>
-          </tr>
-        </tbody>
-      </table>
-      <table class="table-borderless w-100">
-        <thead>
-          <tr>
-            <th scope="col" style="width: 70%">
-              <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
-                System State 
-              </h5>
-            </th>
-            <th scope="col"  style="width: 30%"></th>
-          </tr>
-        </thead>
-        <tbody class="">
-          <tr>
-            <td>ΔT</td>
-            <td class="text-right">{{ temperatures.headTemp - temperatures.radiatorTemp | number:'2.2-2'}} °C</td>
-          </tr>
-          <tr>
-            <td>Reflux Flowrate</td>
-            <td class="text-right">{{ flowrates.refluxFlowrate | number:'1.2-2'}} kg/s </td>
-          </tr>
-          <tr>
-            <td>Product Flowrate</td>
-            <td class="text-right">{{ flowrates.productFlowrate | number:'1.2-2'}} kg/s </td>
-          </tr>
-          <tr>
-            <td>Reflux Qdot</td>
-            <td class="text-right">{{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.headTemp - temperatures.radiatorTemp ) | number:'1.2-2' }} kW </td>
-          </tr>
-          <tr>
-            <td>Vapour</td>
-            <td class="text-right">{{ concentrations.vapourConcentration | number:'1.2-2' }} % </td>
-          </tr>
-          <tr>
-            <td>Boiler</td>
-            <td class="text-right">{{ concentrations.boilerConcentration | number:'1.2-2' }} %</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="col-md-5 bg-light">
+      <div class="row">
+        <div class="col-md-6">
+          <table class="w-100">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 70%">
+                  <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
+                    Settings 
+                  </h5>
+                </th>
+                <th scope="col" style="width: 30%"></th>
+              </tr>
+            </thead>
+            <tbody class="">
+              <tr>
+                <td>P Gain</td>
+                <td class="text-right">{{ ctrlTuning.pGain | number}}</td>
+              </tr>
+              <tr>
+                <td>I Gain</td>
+                <td class="text-right">{{ ctrlTuning.iGain | number}}</td>
+              </tr>
+              <tr>
+                <td>D Gain</td>
+                <td class="text-right">{{ ctrlTuning.dGain | number}}</td>
+              </tr>
+              <tr>
+                <td>Setpoint</td>
+                <td class="text-right">{{ ctrlTuning.setpoint | number:'.0-0'}} °C</td>
+              </tr>
+              <tr>
+                <td>LPF Cutoff Freq</td>
+                <td class="text-right">{{ ctrlTuning.lPFcutoffFreq | number:'.0-2'}} Hz</td>
+              </tr>
+              <tr>
+                <td>LPF Sample Freq</td>
+                <td class="text-right">{{ ctrlTuning.lPFsampleFreq | number:'.0-2'}} Hz</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="table-borderless w-100">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 70%">
+                  <h5 class="sidebar-heading d-flex justify-content-between px-3 mt-4 mb-1"> 
+                    System State 
+                  </h5>
+                </th>
+                <th scope="col"  style="width: 30%"></th>
+              </tr>
+            </thead>
+            <tbody class="">
+              <tr>
+                <td>ΔT</td>
+                <td class="text-right">{{ temperatures.headTemp - temperatures.radiatorTemp | number:'2.2-2'}} °C</td>
+              </tr>
+              <tr>
+                <td>Reflux Flowrate</td>
+                <td class="text-right">{{ flowrates.refluxFlowrate | number:'1.2-2'}} kg/s </td>
+              </tr>
+              <tr>
+                <td>Product Flowrate</td>
+                <td class="text-right">{{ flowrates.productFlowrate | number:'1.2-2'}} kg/s </td>
+              </tr>
+              <tr>
+                <td>Reflux Qdot</td>
+                <td class="text-right">{{ convertFlowRateVolToMass(flowrates.refluxFlowrate) * (temperatures.headTemp - temperatures.radiatorTemp ) | number:'1.2-2' }} kW </td>
+              </tr>
+              <tr>
+                <td>Vapour</td>
+                <td class="text-right">{{ concentrations.vapourConcentration | number:'1.2-2' }} % </td>
+              </tr>
+              <tr>
+                <td>Boiler</td>
+                <td class="text-right">{{ concentrations.boilerConcentration | number:'1.2-2' }} %</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <div class="row">
+                <div class="col-md-4">
+                  Low power element
+                </div>
+                <div class="col-md-4">
+                  <button type="button" class="btn btn-success btn-sm custom-button mb-1"> On </button>
+                  <button type="button" class="btn btn-danger btn-sm custom-button"> Off </button>
+                </div>
+                <div class="col-md-4 custom-slider">
+                  <ngx-slider [(value)]="value" [(highValue)]="highValue" [options]="options"></ngx-slider> 
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
       <table class="table-borderless w-100">
         <thead>
           <tr>
@@ -174,17 +198,17 @@
           </div>
         </div> 
       </div>
-    </nav>
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10">
-      <div class="container-fluid">
-        <div class="w-100 border-bottom">
+    </div>
+    <div class="col-lg-7 bg-light">
+      <div class="row-lg-12">
+        <div class="container-fluid">
           <app-temperature-chart [hidden]="activeChart!=0"></app-temperature-chart>
           <app-controller-state-chart [hidden]="activeChart!=1"></app-controller-state-chart>
         </div>
       </div>
-    </main>
-    <div class="col-md-9 ml-sm-auto col-lg-10 w-100">
-      <app-console></app-console>
+      <div class="row-lg-12">
+          <app-console></app-console>
+      </div>
     </div>
   </div>
 </div>

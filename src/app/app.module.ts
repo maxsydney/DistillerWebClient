@@ -10,6 +10,7 @@ import { AssignSensorsComponent } from './assign-sensors/assign-sensors.componen
 import { TemperatureChartComponent } from './temperature-chart/temperature-chart.component';
 import { ControllerStateChartComponent } from './controller-state-chart/controller-state-chart.component';
 import { ConsoleComponent } from './console/console.component';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { ConsoleComponent } from './console/console.component';
     BrowserModule,
     ChartsModule,
     NgbModule,
-    FormsModule
+    FormsModule,
+    NgxSliderModule
   ],
   providers: [SocketService],
   bootstrap: [AppComponent]

@@ -7,6 +7,7 @@ import { TemperatureData, FlowrateData, ConcentrationData} from './ProtoBuf/Sens
 import { MessageOrigin, MessageWrapper, PBMessageType } from './ProtoBuf/MessageBase';
 import { ControllerTuning, ControllerSettings, ControllerState, PumpMode, ControllerCommand } from './ProtoBuf/ControllerMessaging';
 import { SocketLogMessage } from './ProtoBuf/WebserverMessaging';
+import { Options } from '@angular-slider/ngx-slider';
 
 enum chartType {
   mainChart,
@@ -17,7 +18,7 @@ enum chartType {
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 
 export class AppComponent {
@@ -37,6 +38,13 @@ export class AppComponent {
 
   chartLabels = [];
   chartLabelsCtrlState = [];
+
+  value: number = 5;
+  options: Options = {
+    floor: 0,
+    ceil: 10,
+    vertical: true
+  };
 
   constructor(private socketService: SocketService) {
     this.socketService.connect('ws://192.168.1.201:80/ws')

@@ -12,7 +12,7 @@ import { TemperatureData } from '../ProtoBuf/SensorManagerMessaging'
 export class TemperatureChartComponent {
   @ViewChild(BaseChartDirective, {static: false})
   public chart: BaseChartDirective;
-  chartWidth: number = 3000;    // About 10 minutes of data
+  chartWidth: number = 300;    // About 1 minutes of data
 
   datasets: ChartDataSets[] = [
     { data: [], label: 'Head' },
